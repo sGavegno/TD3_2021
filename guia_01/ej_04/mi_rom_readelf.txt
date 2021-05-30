@@ -1,0 +1,106 @@
+Encabezado ELF:
+  Mágico:   7f 45 4c 46 01 01 01 00 00 00 00 00 00 00 00 00 
+  Clase:                             ELF32
+  Datos:                             complemento a 2, little endian
+  Version:                           1 (current)
+  OS/ABI:                            UNIX - System V
+  Versión ABI:                       0
+  Tipo:                              EXEC (Fichero ejecutable)
+  Máquina:                           Intel 80386
+  Versión:                           0x1
+  Dirección del punto de entrada:               0xfffffff0
+  Inicio de encabezados de programa:          52 (bytes en el fichero)
+  Inicio de encabezados de sección:          13456 (bytes en el fichero)
+  Opciones:                          0x0
+  Size of this header:               52 (bytes)
+  Size of program headers:           32 (bytes)
+  Number of program headers:         4
+  Size of section headers:           40 (bytes)
+  Number of section headers:         9
+  Section header string table index: 8
+
+Encabezados de Sección:
+  [Nr] Nombre            Tipo            Direc    Desp   Tam    ES Opt En Inf Al
+  [ 0]                   NULL            00000000 000000 000000 00      0   0  0
+  [ 1] .init             PROGBITS        ffff0000 001000 0000bd 00  AX  0   0  1
+  [ 2] .data             PROGBITS        ffff00bd 0010bd 00001e 00  WA  0   0  1
+  [ 3] .rutinas          PROGBITS        00010000 002000 00000e 00   A  0   0  1
+  [ 4] .kernel           PROGBITS        00020200 002200 00000a 00   A  0   0  1
+  [ 5] .reset            PROGBITS        fffffff0 002ff0 000010 00   A  0   0 16
+  [ 6] .symtab           SYMTAB          00000000 003000 0002a0 10      7  18  4
+  [ 7] .strtab           STRTAB          00000000 0032a0 0001ae 00      0   0  1
+  [ 8] .shstrtab         STRTAB          00000000 00344e 00003f 00      0   0  1
+Key to Flags:
+  W (write), A (alloc), X (execute), M (merge), S (strings), I (info),
+  L (link order), O (extra OS processing required), G (group), T (TLS),
+  C (compressed), x (unknown), o (OS specific), E (exclude),
+  p (processor specific)
+
+No hay grupos de sección en este fichero.
+
+Encabezados de Programa:
+  Tipo           Desplaz  DirVirt    DirFísica  TamFich TamMem  Opt Alin
+  LOAD           0x001000 0xffff0000 0xffff0000 0x000db 0x000db RWE 0x1000
+  LOAD           0x002000 0x00010000 0xffff00db 0x0000e 0x0000e R   0x1000
+  LOAD           0x002200 0x00020200 0xffff00e9 0x0000a 0x0000a R   0x1000
+  LOAD           0x002ff0 0xfffffff0 0xfffffff0 0x00010 0x00010 R   0x1000
+
+ mapeo de Sección a Segmento:
+  Segmento Secciones...
+   00     .init .data 
+   01     .rutinas 
+   02     .kernel 
+   03     .reset 
+
+No hay sección dinámica en este fichero.
+
+No hay reubicaciones en este fichero.
+
+The decoding of unwind sections for machine type Intel 80386 is not currently supported.
+
+Symbol table '.symtab' contains 42 entries:
+   Num:    Valor  Tam  Tipo    Unión  Vis      Nombre Ind
+     0: 00000000     0 NOTYPE  LOCAL  DEFAULT  UND 
+     1: ffff0000     0 SECTION LOCAL  DEFAULT    1 
+     2: ffff00bd     0 SECTION LOCAL  DEFAULT    2 
+     3: 00010000     0 SECTION LOCAL  DEFAULT    3 
+     4: 00020200     0 SECTION LOCAL  DEFAULT    4 
+     5: fffffff0     0 SECTION LOCAL  DEFAULT    5 
+     6: 00000000     0 FILE    LOCAL  DEFAULT  ABS init32.asm
+     7: ffff00ba     0 NOTYPE  LOCAL  DEFAULT    1 init32.guard
+     8: 00000000     0 FILE    LOCAL  DEFAULT  ABS sys_tables.asm
+     9: ffff00bd     0 NOTYPE  LOCAL  DEFAULT    2 GDT_32
+    10: 00000000     0 NOTYPE  LOCAL  DEFAULT  ABS NULL_SEL
+    11: 00000018     0 NOTYPE  LOCAL  DEFAULT  ABS GDT_SIZE_32
+    12: 00000000     0 FILE    LOCAL  DEFAULT  ABS main.asm
+    13: 00020207     0 NOTYPE  LOCAL  DEFAULT    4 main32_init.guard
+    14: 0002020a     0 NOTYPE  LOCAL  DEFAULT    4 main32_end
+    15: 00010000     0 NOTYPE  LOCAL  DEFAULT    3 func
+    16: 0001000e     0 NOTYPE  LOCAL  DEFAULT    3 end_func
+    17: 00000000     0 FILE    LOCAL  DEFAULT  ABS reset.asm
+    18: ffff00bd     0 NOTYPE  GLOBAL DEFAULT    1 __INIT_size
+    19: 00000010     0 NOTYPE  GLOBAL DEFAULT  ABS DS_SEL
+    20: 0001000e     0 NOTYPE  GLOBAL DEFAULT    3 __RUTINAS_size
+    21: 0002020a     0 NOTYPE  GLOBAL DEFAULT    4 __KERNEL_VMA_END
+    22: 0002020a     0 NOTYPE  GLOBAL DEFAULT    4 __KERNEL_size
+    23: ffff00bd     0 NOTYPE  GLOBAL DEFAULT    1 __SYS_TABLES_VMA
+    24: ffff00db     0 NOTYPE  GLOBAL DEFAULT  ABS __RUTINAS_LMA
+    25: 00020200     0 NOTYPE  GLOBAL DEFAULT  ABS __KERNEL_VMA
+    26: ffff00d5     0 NOTYPE  GLOBAL DEFAULT    2 _gdtr32
+    27: fffffff0     0 NOTYPE  GLOBAL DEFAULT    5 reset_vector
+    28: ffff0000     0 NOTYPE  GLOBAL DEFAULT    1 init32
+    29: 00020200     0 NOTYPE  GLOBAL DEFAULT    4 main32_init
+    30: 00004004     0 NOTYPE  GLOBAL DEFAULT  ABS __STACK_SIZE
+    31: 00010000     0 NOTYPE  GLOBAL DEFAULT  ABS __RUTINAS_VMA
+    32: ffff0000     0 NOTYPE  GLOBAL DEFAULT  ABS __INIT_LMA
+    33: 00000008     0 NOTYPE  GLOBAL DEFAULT  ABS CS_SEL
+    34: 2fff4000     0 NOTYPE  GLOBAL DEFAULT  ABS __STACK_START
+    35: 0001000e     0 NOTYPE  GLOBAL DEFAULT    3 __RUTINAS_VMA_END
+    36: ffff00e9     0 NOTYPE  GLOBAL DEFAULT  ABS __KERNEL_LMA
+    37: ffff00bd     0 NOTYPE  GLOBAL DEFAULT  ABS __SYS_TABLES_LMA
+    38: ffff00db     0 NOTYPE  GLOBAL DEFAULT    2 __SYS_TABLES_size
+    39: ffff0000     0 NOTYPE  GLOBAL DEFAULT  ABS __INIT_ROM
+    40: fffffff0     0 NOTYPE  GLOBAL DEFAULT  ABS __RESET
+    41: 2fff8004     0 NOTYPE  GLOBAL DEFAULT  ABS __STACK_END
+
+No se encontró información de versión en este fichero.
