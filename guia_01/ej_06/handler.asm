@@ -1,8 +1,11 @@
 
 
 ;-------------------------------VARIABLES EXTERNAS---------------------------------------
+EXTERN CONTADOR_TIMER
+
 
 ;------------------------------VARIABLES GLOBALES-----------------------------------------
+GLOBAL L_Handler_Timer
 GLOBAL L_Handler_Teclado
 
 GLOBAL L_Handler_DE
@@ -26,7 +29,9 @@ GLOBAL L_Handler_XM
 
 OFFSET_HANDLER equ 0x00100000
 
+L_Handler_Timer EQU (Handler_Timer - OFFSET_HANDLER)
 L_Handler_Teclado EQU (Handler_Teclado - OFFSET_HANDLER)
+
 
 L_Handler_DE equ (Handler_DE - OFFSET_HANDLER)
 L_Handler_NMI equ (Handler_NMI - OFFSET_HANDLER)
@@ -90,6 +95,20 @@ SECTION .handler
 USE32
 
 ;-----------------------------------HANDLER INTERUPCIONES--------------------------------------------
+Handler_Timer:
+    PUSHAD                              ;Salvo los registros de uso general.
+    
+    xchg bx,bx	
+
+    add CONTADOR_TIMER
+
+Timer_fin:
+    MOV al, 0x20                        ;Envío End of Interrupt al PIC.
+    OUT 0x20, al
+    POPAD                               ;Restauro registros de uso general.
+    IRET                                ;Fin de la interrupción.
+
+
 Handler_Teclado:
     PUSHAD                              ;Salvo los registros de uso general.
     

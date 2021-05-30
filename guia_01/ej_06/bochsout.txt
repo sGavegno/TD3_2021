@@ -19,7 +19,7 @@
 00000000000i[      ]   Sound support: no
 00000000000i[      ]   USB support: UHCI OHCI
 00000000000i[      ]   VGA extension support: vbe
-00000000000i[MEM0  ] allocated memory at 0x7fb4ede27010. after alignment, vector=0x7fb4ede28000
+00000000000i[MEM0  ] allocated memory at 0x7f42b3946010. after alignment, vector=0x7f42b3947000
 00000000000i[MEM0  ] 1024,00MB
 00000000000i[MEM0  ] mem block size = 0x00020000, blocks=8192
 00000000000i[MEM0  ] rom at 0xffff0000/65536 ('mi_rom.bin')
@@ -29,7 +29,7 @@
 00000000000i[DEV   ] PIIX3 PCI-to-ISA bridge present at device 1, function 0
 00000000000i[PLUGIN] init_dev of 'cmos' plugin device by virtual method
 00000000000i[CMOS  ] Using local time for initial clock
-00000000000i[CMOS  ] Setting initial clock to: Sun May 30 15:16:57 2021 (time0=1622413017)
+00000000000i[CMOS  ] Setting initial clock to: Sun May 30 15:44:00 2021 (time0=1622414640)
 00000000000i[PLUGIN] init_dev of 'dma' plugin device by virtual method
 00000000000i[DMA   ] channel 4 used by cascade
 00000000000i[PLUGIN] init_dev of 'pic' plugin device by virtual method
@@ -145,27 +145,31 @@
 00000000000i[PLUGIN] reset of 'usb_uhci' plugin device by virtual method
 00000000000i[XGUI  ] charmap update. Font is 9 x 16
 00000000007i[CPU0  ] [7] Stopped on MAGIC BREAKPOINT
-00000410464i[CPU0  ] [410464] Stopped on MAGIC BREAKPOINT
-00000410466i[CPU0  ] [410466] Stopped on MAGIC BREAKPOINT
-04443462509i[CPU0  ] [4443462509] Stopped on MAGIC BREAKPOINT
-04443462526i[CPU0  ] CPU is in protected mode (active)
-04443462526i[CPU0  ] CS.mode = 32 bit
-04443462526i[CPU0  ] SS.mode = 32 bit
-04443462526i[CPU0  ] EFER   = 0x00000000
-04443462526i[CPU0  ] | EAX=00000017  EBX=00cf9b00  ECX=00cf9300  EDX=0000ffff
-04443462526i[CPU0  ] | ESP=00000028  EBP=00000000  ESI=00000000  EDI=90909090
-04443462526i[CPU0  ] | IOPL=0 id vip vif ac vm rf nt of df if tf sf zf AF pf cf
-04443462526i[CPU0  ] | SEG sltr(index|ti|rpl)     base    limit G D
-04443462526i[CPU0  ] |  CS:0008( 0001| 0|  0) 00000000 ffffffff 1 1
-04443462526i[CPU0  ] |  DS:0010( 0002| 0|  0) 00000000 ffffffff 1 1
-04443462526i[CPU0  ] |  SS:0010( 0002| 0|  0) 00000000 ffffffff 1 1
-04443462526i[CPU0  ] |  ES:0010( 0002| 0|  0) 00000000 ffffffff 1 1
-04443462526i[CPU0  ] |  FS:0010( 0002| 0|  0) 00000000 ffffffff 1 1
-04443462526i[CPU0  ] |  GS:0010( 0002| 0|  0) 00000000 ffffffff 1 1
-04443462526i[CPU0  ] | EIP=00400000 (00400000)
-04443462526i[CPU0  ] | CR0=0x60000011 CR2=0x00000000
-04443462526i[CPU0  ] | CR3=0x00000000 CR4=0x00000000
-04443462526d[PCI   ] Exit
-04443462526i[CMOS  ] Last time is 1622413105 (Sun May 30 15:18:25 2021)
-04443462526i[XGUI  ] Exit
-04443462526i[SIM   ] quit_sim called with exit code 0
+00000410490i[CPU0  ] [410490] Stopped on MAGIC BREAKPOINT
+00000410492i[CPU0  ] [410492] Stopped on MAGIC BREAKPOINT
+00003156775i[CPU0  ] [3156775] Stopped on MAGIC BREAKPOINT
+00005903073i[CPU0  ] [5903073] Stopped on MAGIC BREAKPOINT
+00008649321i[CPU0  ] [8649321] Stopped on MAGIC BREAKPOINT
+00011395579i[CPU0  ] [11395579] Stopped on MAGIC BREAKPOINT
+00014141877i[CPU0  ] [14141877] Stopped on MAGIC BREAKPOINT
+00014141877i[CPU0  ] CPU is in protected mode (active)
+00014141877i[CPU0  ] CS.mode = 32 bit
+00014141877i[CPU0  ] SS.mode = 32 bit
+00014141877i[CPU0  ] EFER   = 0x00000000
+00014141877i[CPU0  ] | EAX=00000000  EBX=00000000  ECX=00000000  EDX=00000000
+00014141877i[CPU0  ] | ESP=2fff7fd4  EBP=2fff8000  ESI=ffff036f  EDI=2fff8000
+00014141877i[CPU0  ] | IOPL=0 id vip vif ac vm rf nt of df if tf sf ZF af PF cf
+00014141877i[CPU0  ] | SEG sltr(index|ti|rpl)     base    limit G D
+00014141877i[CPU0  ] |  CS:0008( 0001| 0|  0) 00000000 ffffffff 1 1
+00014141877i[CPU0  ] |  DS:0010( 0002| 0|  0) 00000000 ffffffff 1 1
+00014141877i[CPU0  ] |  SS:0010( 0002| 0|  0) 00000000 ffffffff 1 1
+00014141877i[CPU0  ] |  ES:0010( 0002| 0|  0) 00000000 ffffffff 1 1
+00014141877i[CPU0  ] |  FS:0010( 0002| 0|  0) 00000000 ffffffff 1 1
+00014141877i[CPU0  ] |  GS:0010( 0002| 0|  0) 00000000 ffffffff 1 1
+00014141877i[CPU0  ] | EIP=00100004 (00100004)
+00014141877i[CPU0  ] | CR0=0x60000011 CR2=0x00000000
+00014141877i[CPU0  ] | CR3=0x00000000 CR4=0x00000000
+00014141877d[PCI   ] Exit
+00014141877i[CMOS  ] Last time is 1622414640 (Sun May 30 15:44:00 2021)
+00014141877i[XGUI  ] Exit
+00014141877i[SIM   ] quit_sim called with exit code 0

@@ -21,11 +21,8 @@ typedef long unsigned direccion;
 typedef unsigned char byte;
 typedef unsigned long dword;
 
-
-//https://embeddedartistry.com/blog/2017/05/17/creating-a-circular-buffer-in-c-and-c/
-typedef struct ring_buffer
+typedef struct buffer
 {
-
     byte* cabeza;        //puntero a cabeza
     byte* cola;          //puntero a la cola
     byte buffer[LONG_BUFFER];            //buffer
@@ -35,9 +32,9 @@ typedef struct ring_buffer
     byte longitud;       //longitud en elementos
     byte longitud_en_bytes;
     byte tam_elemento;   //tamaño de cada elemento
-}ring_buffer;
+}buffer;
 
 
-void __ring_buffer_init(ring_buffer*);
-void __ring_buffer_clear(ring_buffer*);
-void ring_buffer_push(ring_buffer*,byte);
+void buffer_init(buffer*);
+void buffer_clear(buffer*);
+void buffer_push(buffer*,byte);

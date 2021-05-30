@@ -120,15 +120,13 @@ Handler_Teclado:
         UD2							
         jmp Teclado_fin
 
-	T_I: 					            ;#DE: division error, debe ser #DF: Doble falta
-        mov edx, 0        		 
-		mov eax, 0x10			
-		mov esi, 0
-		div esi
+	T_I: 					            ;#DF: Doble falta
+
         jmp Teclado_fin
                 
 	T_S: 							    ;#SS: Falta en el Stack Segment	
-
+        MOV esp,0
+        PUSH eax    
         jmp Teclado_fin
 
 	T_A: 							    ;#AC: Aligment check

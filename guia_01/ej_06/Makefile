@@ -9,7 +9,7 @@ ODFLAGS = -CprsSx --prefix-addresses
 LDSCRIPT = linker.ld
 RESET = reset_vector
 ROM_NAME = mi_rom
-OBJS = reset.o init32.o main.o sys_tables.o sys_tables_idt.o handler.o
+OBJS = reset.o init32.o main.o sys_tables.o handler.o
 
 all: $(ROM_NAME).bin $(ROM_NAME).elf
 	@echo	''
@@ -44,10 +44,6 @@ main.o: main.asm
 	$(AC) $(AFLAGS) $< -o $@ -l main.lst
 
 sys_tables.o: sys_tables.asm
-	@echo	'-----> Compilando sys_tables.asm'
-	$(AC) $(AFLAGS) $< -o $@ -l sys_tables.lst
-
-sys_tables_idt.o: sys_tables_idt.asm
 	@echo	'-----> Compilando sys_tables.asm'
 	$(AC) $(AFLAGS) $< -o $@ -l sys_tables.lst
 

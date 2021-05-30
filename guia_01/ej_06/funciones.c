@@ -5,7 +5,7 @@
 
 
 /*Funcion para inicializar el ring buffer de teclado*/
-__attribute__(( section(".funciones"))) void __ring_buffer_init(ring_buffer* rb_p)
+__attribute__(( section(".funciones"))) void buffer_init(buffer* rb_p)
 {
     rb_p->tam_elemento = sizeof(byte);
     rb_p->longitud=LONG_BUFFER*(rb_p->tam_elemento);
@@ -18,7 +18,7 @@ __attribute__(( section(".funciones"))) void __ring_buffer_init(ring_buffer* rb_
 }
 
 /*Funcion para limpiar el ring buffer de teclado*/
-__attribute__(( section(".funciones"))) void __ring_buffer_clear(ring_buffer* rb_p)
+__attribute__(( section(".funciones"))) void buffer_clear(buffer* rb_p)
 {
     static int i=0;
     rb_p->progreso=0;
@@ -30,14 +30,14 @@ __attribute__(( section(".funciones"))) void __ring_buffer_clear(ring_buffer* rb
 }
 
 /*Función para pushear dentro del ring buffer de teclado*/
-__attribute__(( section(".funciones"))) void ring_buffer_push(ring_buffer* rb_p,byte tecla_recibida)
+__attribute__(( section(".funciones"))) void buffer_push(buffer* rb_p,byte tecla_recibida)
 {
     rb_p->buffer[rb_p->progreso]=tecla_recibida;
     rb_p->cola=(byte*)(rb_p->buffer+rb_p->progreso);  
     rb_p->progreso++;
     if(rb_p->progreso == rb_p->longitud)
     {
-    __ring_buffer_clear((ring_buffer*) &__DATA_VMA);
+    buffer_clear((buffer*) &__DATA_VMA);
     }
 }
 
@@ -49,29 +49,29 @@ __attribute__(( section(".funciones"))) void __chequeo_tecla(byte tecla)
     {
     case TECLA_0:
         {
-        ring_buffer_push((ring_buffer*) &__DATA_VMA,0x00);
+        buffer_push((buffer*) &__DATA_VMA,0x00);
         break;
         }
 
     case TECLA_1:
         {
-        ring_buffer_push((ring_buffer*) &__DATA_VMA,0x01);
+        buffer_push((buffer*) &__DATA_VMA,0x01);
         break;
         }
     case TECLA_2:
         {
-        ring_buffer_push((ring_buffer*) &__DATA_VMA,0x02);
+        buffer_push((buffer*) &__DATA_VMA,0x02);
         break;
         }
     case TECLA_3:
         {
-        ring_buffer_push((ring_buffer*) &__DATA_VMA,0x03);
+        buffer_push((buffer*) &__DATA_VMA,0x03);
 
         break;
         }
    case TECLA_4:
         {
-        ring_buffer_push((ring_buffer*) &__DATA_VMA,0x04);
+        buffer_push((buffer*) &__DATA_VMA,0x04);
 
        // asm("xchg %%bx,%%bx"::);
         break;
@@ -79,21 +79,21 @@ __attribute__(( section(".funciones"))) void __chequeo_tecla(byte tecla)
     case TECLA_5:
         {
 
-        ring_buffer_push((ring_buffer*) &__DATA_VMA,0x05);
+        buffer_push((buffer*) &__DATA_VMA,0x05);
        // asm("xchg %%bx,%%bx"::);
         break;
         }
     case TECLA_6:
         {
 
-        ring_buffer_push((ring_buffer*) &__DATA_VMA,0x06);
+        buffer_push((buffer*) &__DATA_VMA,0x06);
        // asm("xchg %%bx,%%bx"::);
         break;
         }
     case TECLA_7:
         {
 
-        ring_buffer_push((ring_buffer*) &__DATA_VMA,0x07);
+        buffer_push((buffer*) &__DATA_VMA,0x07);
        // asm("xchg %%bx,%%bx"::);
         break;
         }
@@ -101,19 +101,19 @@ __attribute__(( section(".funciones"))) void __chequeo_tecla(byte tecla)
         {
        // asm("xchg %%bx,%%bx"::);
 
-        ring_buffer_push((ring_buffer*) &__DATA_VMA,0x08);
+        buffer_push((buffer*) &__DATA_VMA,0x08);
         break;
         }
     case TECLA_9:
         {
        // asm("xchg %%bx,%%bx"::);
 
-        ring_buffer_push((ring_buffer*) &__DATA_VMA,0x09);
+        buffer_push((buffer*) &__DATA_VMA,0x09);
         break;
         }
     case TECLA_ENTER:
         {
-        __ring_buffer_clear((ring_buffer*) &__DATA_VMA);       
+        buffer_clear((buffer*) &__DATA_VMA);       
         break;
         }
     default:

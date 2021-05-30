@@ -1,0 +1,221 @@
+
+mi_rom.elf:     formato del fichero elf32-i386
+mi_rom.elf
+arquitectura: i386, opciones 0x00000112:
+EXEC_P, HAS_SYMS, D_PAGED
+dirección de inicio 0xfffffff0
+
+Encabezado del Programa:
+    LOAD off    0x00001000 vaddr 0xffff0000 paddr 0xffff0000 align 2**12
+         filesz 0x00000145 memsz 0x00000145 flags r--
+    LOAD off    0x00002000 vaddr 0x00000000 paddr 0xffff0145 align 2**12
+         filesz 0x0000019c memsz 0x0000019c flags r--
+    LOAD off    0x00003000 vaddr 0x00100000 paddr 0xffff02e1 align 2**12
+         filesz 0x00000080 memsz 0x00000080 flags r--
+    LOAD off    0x00004000 vaddr 0x00202000 paddr 0xffff0361 align 2**12
+         filesz 0x0000000e memsz 0x0000000e flags r--
+    LOAD off    0x00004ff0 vaddr 0xfffffff0 paddr 0xfffffff0 align 2**12
+         filesz 0x00000010 memsz 0x00000010 flags r--
+
+Secciones:
+Idx Name          Size      VMA       LMA       File off  Algn
+  0 .init         00000145  ffff0000  ffff0000  00001000  2**0
+                  CONTENTS, ALLOC, LOAD, READONLY, DATA
+  1 .sys_tables   0000019c  00000000  ffff0145  00002000  2**0
+                  CONTENTS, ALLOC, LOAD, READONLY, DATA
+  2 .rutinas      00000080  00100000  ffff02e1  00003000  2**0
+                  CONTENTS, ALLOC, LOAD, READONLY, DATA
+  3 .kernel       0000000e  00202000  ffff0361  00004000  2**0
+                  CONTENTS, ALLOC, LOAD, READONLY, DATA
+  4 .reset        00000010  fffffff0  fffffff0  00004ff0  2**4
+                  CONTENTS, ALLOC, LOAD, READONLY, DATA
+SYMBOL TABLE:
+ffff0000 l    d  .init	00000000 .init
+00000000 l    d  .sys_tables	00000000 .sys_tables
+00100000 l    d  .rutinas	00000000 .rutinas
+00202000 l    d  .kernel	00000000 .kernel
+fffffff0 l    d  .reset	00000000 .reset
+00000000 l    df *ABS*	00000000 init32.asm
+ffff00f0 l       .init	00000000 ciclo1
+ffff00ff l       .init	00000000 ciclo2
+ffff0142 l       .init	00000000 ciclo2.guard
+00000000 l    df *ABS*	00000000 sys_tables.asm
+00000000 l       .sys_tables	00000000 GDT_32
+00000000 l       *ABS*	00000000 NULL_SEL
+00000018 l       *ABS*	00000000 GDT_SIZE_32
+00000010 l       *ABS*	00000000 H_ALTA
+0000001e l       .sys_tables	00000000 IDT_32
+00000000 l       *ABS*	00000000 ISR00_idt
+00000008 l       *ABS*	00000000 ISR01_idt
+00000010 l       *ABS*	00000000 ISR02_idt
+00000018 l       *ABS*	00000000 ISR03_idt
+00000020 l       *ABS*	00000000 ISR04_idt
+00000028 l       *ABS*	00000000 ISR05_idt
+00000030 l       *ABS*	00000000 ISR06_idt
+00000038 l       *ABS*	00000000 ISR07_idt
+00000040 l       *ABS*	00000000 ISR08_idt
+00000048 l       *ABS*	00000000 ISR09_idt
+00000050 l       *ABS*	00000000 ISR10_idt
+00000058 l       *ABS*	00000000 ISR11_idt
+00000060 l       *ABS*	00000000 ISR12_idt
+00000068 l       *ABS*	00000000 ISR13_idt
+00000070 l       *ABS*	00000000 ISR14_idt
+00000078 l       *ABS*	00000000 ISR15_idt
+00000080 l       *ABS*	00000000 ISR16_idt
+00000088 l       *ABS*	00000000 ISR17_idt
+00000090 l       *ABS*	00000000 ISR18_idt
+00000098 l       *ABS*	00000000 ISR19_idt
+000000a0 l       *ABS*	00000000 ISR20to31_idt
+00000100 l       *ABS*	00000000 ISR32_idt
+00000108 l       *ABS*	00000000 ISR33_idt
+00000110 l       *ABS*	00000000 ISR34to46_idt
+00000178 l       *ABS*	00000000 IDT_SIZE_32
+00000000 l    df *ABS*	00000000 handler.asm
+00100000 l       *ABS*	00000000 OFFSET_HANDLER
+00100000 l       .rutinas	00000000 Handler_Timer
+00100004 l       .rutinas	00000000 Timer_fin
+0010000a l       .rutinas	00000000 Handler_Teclado
+0010002c l       .rutinas	00000000 T_U
+00100030 l       .rutinas	00000000 T_I
+00100043 l       .rutinas	00000000 T_S
+00100045 l       .rutinas	00000000 T_A
+00100047 l       .rutinas	00000000 Teclado_fin
+0010004d l       .rutinas	00000000 Handler_Teclado_END
+0010004d l       .rutinas	00000000 Handler_DE
+00100050 l       .rutinas	00000000 Handler_NMI
+00100053 l       .rutinas	00000000 Handler_BP
+00100056 l       .rutinas	00000000 Handler_OF
+00100059 l       .rutinas	00000000 Handler_BR
+0010005c l       .rutinas	00000000 Handler_UD
+0010005f l       .rutinas	00000000 Handler_NM
+00100062 l       .rutinas	00000000 Handler_DF
+00100065 l       .rutinas	00000000 Handler_TS
+00100068 l       .rutinas	00000000 Handler_NP
+0010006b l       .rutinas	00000000 Handler_SS
+0010006e l       .rutinas	00000000 Handler_GP
+00100071 l       .rutinas	00000000 Handler_PF
+00100074 l       .rutinas	00000000 Handler_MF
+00100077 l       .rutinas	00000000 Handler_AC
+0010007a l       .rutinas	00000000 Handler_MC
+0010007d l       .rutinas	00000000 Handler_XM
+00000000 l    df *ABS*	00000000 main.asm
+00202003 l       .kernel	00000000 main32_init.guard
+00202006 l       .kernel	00000000 main32_end
+00202006 l       .kernel	00000000 func
+0020200e l       .kernel	00000000 end_func
+00000000 l    df *ABS*	00000000 reset.asm
+00100080 g       .rutinas	00000000 __HANDLER_VMA_END
+00000196 g       .sys_tables	00000000 _idtr32
+00000056 g       .rutinas	00000000 L_Handler_OF
+00000050 g       .rutinas	00000000 L_Handler_NMI
+0000019c g       .sys_tables	00000000 __SYS_TABLES_VMA_END
+ffff0145 g       .init	00000000 __INIT_size
+0000005f g       .rutinas	00000000 L_Handler_NM
+00000010 g       *ABS*	00000000 DS_SEL
+0020200e g       .kernel	00000000 __KERNEL_VMA_END
+00000068 g       .rutinas	00000000 L_Handler_NP
+0020200e g       .kernel	00000000 __KERNEL_size
+00210000 g       .sys_tables	00000000 __DATA_size
+00000077 g       .rutinas	00000000 L_Handler_AC
+00210000 g       *ABS*	00000000 __DATOS_VMA
+00000000 g       *ABS*	00000000 __SYS_TABLES_VMA
+00000071 g       .rutinas	00000000 L_Handler_PF
+ffff02e1 g       *ABS*	00000000 __HANDLER_LMA
+00000053 g       .rutinas	00000000 L_Handler_BP
+00202000 g       *ABS*	00000000 __KERNEL_VMA
+00000018 g       .sys_tables	00000000 _gdtr32
+fffffff0 g       .reset	00000000 reset_vector
+ffff0000 g       .init	00000000 init32
+00202000 g       .kernel	00000000 main32_init
+00004000 g       *ABS*	00000000 __STACK_SIZE
+00000065 g       .rutinas	00000000 L_Handler_TS
+ffff0000 g       *ABS*	00000000 __INIT_LMA
+00100080 g       .rutinas	00000000 __HANDLER_size
+00000059 g       .rutinas	00000000 L_Handler_BR
+0000007d g       .rutinas	00000000 L_Handler_XM
+00000008 g       *ABS*	00000000 CS_SEL
+0000006e g       .rutinas	00000000 L_Handler_GP
+00100000 g       *ABS*	00000000 __HANDLER_VMA
+2fff4000 g       *ABS*	00000000 __STACK_START
+0000005c g       .rutinas	00000000 L_Handler_UD
+00200000 g       *ABS*	00000000 __TABLES_DIGITOS_VMA
+00000074 g       .rutinas	00000000 L_Handler_MF
+0000007a g       .rutinas	00000000 L_Handler_MC
+0000004d g       .rutinas	00000000 L_Handler_DE
+00000000 g       .rutinas	00000000 L_Handler_Timer
+ffff0361 g       *ABS*	00000000 __KERNEL_LMA
+00210000 g       *ABS*	00000000 __DATA_VMA
+00210000 g       .init	00000000 __DATA_VMA_END
+ffff0145 g       *ABS*	00000000 __SYS_TABLES_LMA
+0000019c g       .sys_tables	00000000 __SYS_TABLES_size
+00000062 g       .rutinas	00000000 L_Handler_DF
+ffff0000 g       *ABS*	00000000 __INIT_ROM
+ffff0145 g       *ABS*	00000000 __DATA_LMA
+fffffff0 g       *ABS*	00000000 __RESET
+0000006b g       .rutinas	00000000 L_Handler_SS
+2fff8000 g       *ABS*	00000000 __STACK_END
+0000000a g       .rutinas	00000000 L_Handler_Teclado
+
+
+Contenido de la sección .init:
+ ffff0000 eb1e0000 00000000 0000ffff 0000009a  ................
+ ffff0010 cf00ffff 00000092 cf001700 0200ffff  ................
+ ffff0020 66a90000 0000751f 87db6631 c0fa2e66  f.....u...f1...f
+ ffff0030 0f01161a 000f20c0 6683c801 0f22c066  ...... .f....".f
+ ffff0040 ea4900ff ff0800eb fe66b810 008ed88e  .I.......f......
+ ffff0050 c08ee08e e8be4501 ffffbf00 000000b9  ......E.........
+ ffff0060 9c010000 81e90000 0000f3a4 be4501ff  .............E..
+ ffff0070 ffbf0000 2100b900 00210081 e9000021  ....!....!.....!
+ ffff0080 00f3a4be e102ffff bf000010 00b98000  ................
+ ffff0090 100081e9 00001000 f3a4be61 03ffffbf  ...........a....
+ ffff00a0 00202000 b90e2020 0081e900 202000f3  .  ...  ....  ..
+ ffff00b0 a40f0115 18000000 0f011d96 01000066  ...............f
+ ffff00c0 b810008e d0bc0080 ff2f89e5 31c0bf00  ........./..1...
+ ffff00d0 40ff2fb9 0080ff2f 81e90040 ff2ff3aa  @./..../...@./..
+ ffff00e0 b0ffe664 b9000100 00e2feb9 00000100  ...d............
+ ffff00f0 e460a801 e1fab0f4 e664b900 000100e4  .`.......d......
+ ffff0100 60a801e1 fae460b0 34e643b0 00e640e6  `.....`.4.C...@.
+ ffff0110 40b011e6 20e6a0b0 20e621b0 28e6a1b0  @... ... .!.(...
+ ffff0120 04e621b0 02e6a1b0 01e621e6 a1b0fce6  ..!.......!.....
+ ffff0130 21b0ffe6 a1fb31c0 6687dbea 00202000  !.....1.f....  .
+ ffff0140 0800f4eb fd                          .....           
+Contenido de la sección .sys_tables:
+ 0000 00000000 00000000 ffff0000 009acf00  ................
+ 0010 ffff0000 0092cf00 17000000 00004d00  ..............M.
+ 0020 0800008f 10000000 00000000 00005000  ..............P.
+ 0030 0800008f 10005300 0800008f 10005600  ......S.......V.
+ 0040 0800008f 10005900 0800008f 10005c00  ......Y.......\.
+ 0050 0800008f 10005f00 0800008f 10006200  ......_.......b.
+ 0060 0800008f 10000000 00000000 00006500  ..............e.
+ 0070 0800008f 10006800 0800008f 10006b00  ......h.......k.
+ 0080 0800008f 10006e00 0800008f 10007100  ......n.......q.
+ 0090 0800008f 10000000 00000000 00007400  ..............t.
+ 00a0 0800008f 10007700 0800008f 10007a00  ......w.......z.
+ 00b0 0800008f 10007d00 0800008f 10000000  ......}.........
+ 00c0 00000000 00000000 00000000 00000000  ................
+ 00d0 00000000 00000000 00000000 00000000  ................
+ 00e0 00000000 00000000 00000000 00000000  ................
+ 00f0 00000000 00000000 00000000 00000000  ................
+ 0100 00000000 00000000 00000000 00000000  ................
+ 0110 00000000 00000000 00000000 00000000  ................
+ 0120 0800008e 10000a00 0800008e 10000000  ................
+ 0130 00000000 00000000 00000000 00000000  ................
+ 0140 00000000 00000000 00000000 00000000  ................
+ 0150 00000000 00000000 00000000 00000000  ................
+ 0160 00000000 00000000 00000000 00000000  ................
+ 0170 00000000 00000000 00000000 00000000  ................
+ 0180 00000000 00000000 00000000 00000000  ................
+ 0190 00000000 00007701 1e000000           ......w.....    
+Contenido de la sección .rutinas:
+ 100000 606687db b020e620 61cf6066 87dbe460  `f... . a.`f...`
+ 100010 88c320c0 783180fb 16741180 fb177410  .. .x1...t....t.
+ 100020 80fb1f74 1e80fb1e 741beb1b 0f0beb17  ...t....t.......
+ 100030 ba000000 00b81000 0000be00 000000f7  ................
+ 100040 f6eb04eb 02eb00b0 20e62061 cfb2ffcf  ........ . a....
+ 100050 b202cfb2 03cfb204 cfb205cf b206cfb2  ................
+ 100060 07cfb208 cfb20acf b20bcfb2 0ccfb20d  ................
+ 100070 cfb20ecf b210cfb2 11cfb212 cfb213cf  ................
+Contenido de la sección .kernel:
+ 202000 6687dbf4 ebfd50b8 04000000 58cb      f.....P.....X.  
+Contenido de la sección .reset:
+ fffffff0 fafc66e9 0800ffff 90909090 90909090  ..f.............

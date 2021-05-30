@@ -16,9 +16,9 @@ EXTERN __DATA_LMA
 EXTERN __DATA_VMA
 EXTERN __DATA_VMA_END
 
-EXTERN __RUTINAS_LMA
-EXTERN __RUTINAS_VMA
-EXTERN __RUTINAS_VMA_END
+EXTERN __HANDLER_LMA
+EXTERN __HANDLER_VMA
+EXTERN __HANDLER_VMA_END
  
 EXTERN __KERNEL_LMA
 EXTERN __KERNEL_VMA
@@ -50,10 +50,10 @@ init32:
     sub ecx, __DATA_VMA                    ;Tamaño a copiar
     rep movsb     
 
-    mov esi, __RUTINAS_LMA                  ;Puntero al inicio de la LMA
-    mov edi, __RUTINAS_VMA                  ;Puntero a VMA
-    mov ecx, __RUTINAS_VMA_END
-    sub ecx, __RUTINAS_VMA                  ;Tamaño a copiar
+    mov esi, __HANDLER_LMA                  ;Puntero al inicio de la LMA
+    mov edi, __HANDLER_VMA                  ;Puntero a VMA
+    mov ecx, __HANDLER_VMA_END
+    sub ecx, __HANDLER_VMA                  ;Tamaño a copiar
     rep movsb 
 
     mov esi, __KERNEL_LMA                   ;Puntero al inicio de la LMA
@@ -98,6 +98,13 @@ ciclo2:
     LOOPZ  ciclo2
     IN al, 0x60          ;Vaciar el buffer de teclado.
 
+; Inicializar timer para que interrumpa cada 54.9 milisegundos.
+    MOV AL,00110100b    ;Canal cero, byte bajo y luego byte alto.
+    OUT 0x43,AL
+    MOV AL,0            ;Dividir 1193181 Hz por 65536. Eso da 18,2 Hz aprox.
+    OUT 0x40,AL         ;Programar byte bajo del timer de 16 bits.
+    OUT 0x40,AL         ;Programar byte alto del timer de 16 bits.
+
 ; Inicializar ambos PIC usando ICW (Initialization Control Words).
 ; ICW1 = Indicarle a los PIC que estamos inicializándolo.
     MOV al, 0x11        ;Palabra de inicialización (bit 4=1) indicando que 
@@ -123,7 +130,7 @@ ciclo2:
     OUT 0xA1, al         ;Enviar ICW4 al segundo PIC.
 
 ; Indicar cuales son los IRQ habilitados.
-    MOV al, 11111101b    ;Activar solo IRQ1 poniendo estos bits a cero.
+    MOV al, 11111100b    ;Activar solo IRQ1 poniendo estos bits a cero.
     OUT 0x21, al         ;Enviar máscara al primer PIC.
 
     MOV al, 11111111b    ;Todas desactivadas.
