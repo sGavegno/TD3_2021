@@ -12,7 +12,7 @@ GLOBAL BUFFER_TECLADO
 ;-------------------------------------SECTION-------------------------------------------
 section .tables_digito
 
-puntero_tabla_digito resb 16*80     ;mi tabla puede cargar hasta 80 numeros de 64bits
+puntero_tabla_digito resb 16*10     ;mi tabla puede cargar hasta 10 numeros de 64bits
 
 SECTION .data
 
@@ -20,4 +20,6 @@ CONTADOR_TIMER dw 0x0000
 
 ALIGN 16
 
-BUFFER_TECLADO  resb 20
+BUFFER_TECLADO  resb 19
+
+ALIGN 16

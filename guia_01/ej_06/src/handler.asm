@@ -226,29 +226,24 @@ T_9:
     add esp,8
     jmp Teclado_fin
 
-T_0:
-xchg bx,bx	
+T_0:	
     push 0x00
     push dword BUFFER_TECLADO
     call buffer_Push
     add esp,8
+    ;xchg bx,bx
     jmp Teclado_fin
 
 T_ENTER:
 	
+    ;xchg bx,bx
+
     push dword BUFFER_TECLADO
     push dword puntero_tabla_digito
     call cargar_tabla
     add esp,8
 
-    xchg bx,bx
-    
-    ;eliminar el borrado del bufer
-    push dword BUFFER_TECLADO
-    call buffer_Clear
-    add esp,4
-
-    xchg bx,bx
+    ;xchg bx,bx  
 
     jmp Teclado_fin
 

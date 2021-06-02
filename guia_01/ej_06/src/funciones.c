@@ -4,45 +4,39 @@
 
 __attribute__(( section(".funciones"))) void buffer_Push(buff* buff_p,byte Dato)
 {
-
-	if(buff_p->Cant < BUFF_SIZE)
-	{
-		buff_p->buffer[buff_p->In] = Dato;
-		buff_p->Cant++;
-		if(buff_p->In == BUFF_SIZE-1)
+	if(Dato >= 0x00 & Dato <= 0X15 )
+	{	
+		if(buff_p->Cant < BUFF_SIZE)
 		{
-			buff_p->In = 0;
-		}
-		else
-		{
+			buff_p->buffer[buff_p->In] = Dato;
+			buff_p->Cant++;
 			buff_p->In++;
+			if(buff_p->In == BUFF_SIZE)
+			{
+				buff_p->In = 0;
+			}
 		}
 	}
-
 }
 
 __attribute__(( section(".funciones"))) byte buffer_Pop(buff* buff_p) 
 {
-	static int retorno = -1;
+	byte retorno = 0xFF;
 
-	if(buff_p->Cant == 0)	
-	{
-		//Buff vacio
-		return retorno;
-	}
-	else
+	if(buff_p->Cant > 0)	
 	{
 		retorno = buff_p->buffer[buff_p->Out];
 		buff_p->Cant--;
-		if(buff_p->Out == BUFF_SIZE-1)
+		buff_p->Out++;
+		if(buff_p->Out == BUFF_SIZE)
 		{
 			buff_p->Out = 0;
 		}
-		else
-		{
-			buff_p->Out++;
-		}
 		return retorno;
+	}
+	else
+	{	
+		return retorno;				//Buffer vacio
 	}
 }
 
@@ -62,23 +56,25 @@ void buffer_Clear(buff* buff_p)
 
 void cargar_tabla(t_datos* table_p, buff* buff_p)
 {
-	static int i=0;
-	static int dato;
+	static char offset = 0;
+	word i=0;
+	byte dato = 0xFF;
 
-	for(i = 0; i < 16; i++)
-	{	//modificar para almacenar varios numeros de 64bits
-		table_p->tabla_datos[ i] = buff_p->buffer[i];
-/*
-		dato = buffer_Pop(buff_p);			//buff_p->buffer[i]
-		if(dato != -1)
-		{	
-			table_p->tabla_datos[i] = dato;
-		}
-		else
+	if(offset < 16*10)
+	{
+		for(i = 0; i < 16; i++)
 		{
-			dato = 0;
-			
+			dato = buffer_Pop(buff_p);	
+
+			if( dato != 0xFF)
+			{
+				table_p->buffer[offset] = dato;
+			}
+			else
+			{
+				table_p->buffer[offset] = 0;
+			}
+			offset++;
 		}
-		*/
 	}
 }

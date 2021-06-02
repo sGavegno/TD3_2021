@@ -140,7 +140,7 @@ ciclo2:
     
     xor eax, eax
     
-    xchg bx,bx
+    ;xchg bx,bx
     jmp CS_SEL:kernel_init
     
     .guard:
