@@ -3,9 +3,12 @@
 ;-------------------------------VARIABLES EXTERNAS---------------------------------------
 EXTERN CONTADOR_TIMER
 EXTERN puntero_tabla_digito
+EXTERN BUFFER_TECLADO
+
 EXTERN buffer_Push
 EXTERN buffer_Pop
 EXTERN buffer_Clear
+EXTERN cargar_tabla
 
 ;------------------------------VARIABLES GLOBALES-----------------------------------------
 GLOBAL L_Handler_Timer
@@ -162,63 +165,63 @@ Handler_Teclado:
 ;
 T_1:
     push 0x01
-    push dword puntero_tabla_digito
+    push dword BUFFER_TECLADO
     call buffer_Push
     add esp,8
     jmp Teclado_fin
 
 T_2:
     push 0x02
-    push dword puntero_tabla_digito
+    push dword BUFFER_TECLADO
     call buffer_Push
     add esp,8
     jmp Teclado_fin
 
 T_3:
     push 0x03
-    push dword puntero_tabla_digito
+    push dword BUFFER_TECLADO
     call buffer_Push
     add esp,8
     jmp Teclado_fin
 
 T_4:
     push 0x04
-    push dword puntero_tabla_digito
+    push dword BUFFER_TECLADO
     call buffer_Push
     add esp,8
     jmp Teclado_fin
 
 T_5:
     push 0x05
-    push dword puntero_tabla_digito
+    push dword BUFFER_TECLADO
     call buffer_Push
     add esp,8
     jmp Teclado_fin
 
 T_6:
     push 0x06
-    push dword puntero_tabla_digito
+    push dword BUFFER_TECLADO
     call buffer_Push
     add esp,8
     jmp Teclado_fin
 
 T_7:
     push 0x07
-    push dword puntero_tabla_digito
+    push dword BUFFER_TECLADO
     call buffer_Push
     add esp,8
     jmp Teclado_fin
 
 T_8:
     push 0x08
-    push dword puntero_tabla_digito
+    push dword BUFFER_TECLADO
     call buffer_Push
     add esp,8
     jmp Teclado_fin
 
 T_9:
     push 0x09
-    push dword puntero_tabla_digito
+    push dword BUFFER_TECLADO
     call buffer_Push
     add esp,8
     jmp Teclado_fin
@@ -226,16 +229,27 @@ T_9:
 T_0:
 xchg bx,bx	
     push 0x00
-    push dword puntero_tabla_digito
+    push dword BUFFER_TECLADO
     call buffer_Push
     add esp,8
     jmp Teclado_fin
 
 T_ENTER:
-xchg bx,bx	
+	
+    push dword BUFFER_TECLADO
     push dword puntero_tabla_digito
-    call buffer_Pop
+    call cargar_tabla
+    add esp,8
+
+    xchg bx,bx
+    
+    ;eliminar el borrado del bufer
+    push dword BUFFER_TECLADO
+    call buffer_Clear
     add esp,4
+
+    xchg bx,bx
+
     jmp Teclado_fin
 
 Teclado_fin:

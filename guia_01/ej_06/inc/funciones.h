@@ -18,10 +18,18 @@ typedef struct buff
     byte In;                            //puntero a entrada
     byte Out;                           //puntero a salida
     byte Cant;                          //Cantidad de elementos guardados
+    byte offset;
 }buff;
 
+typedef struct t_datos
+{
+    byte tabla_datos[LONG_BUFFER];      //buffer
+}t_datos;
+
 void buffer_Push(buff*, byte);
-void buffer_Pop(buff*);
+byte buffer_Pop(buff*);
 void buffer_Clear(buff*);
+
+void cargar_tabla(t_datos* ,buff*);
 
 
