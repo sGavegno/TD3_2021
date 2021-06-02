@@ -1,55 +1,74 @@
 .PHONY: clean
+
+BINPATH = ./bin/
+DOCPATH = ./doc/
+INCPATH = ./inc/
+LIBPATH = ./lib/
+SRCPATH = ./src/
+SUPPATH = ./sup/
+
 AC = nasm
 CC = gcc
 LD = ld
+
 AFLAGS = -f elf32
 LDFLAGS = -z max-page-size=0x1000 --oformat=binary -m elf_i386
 LFLAGS = -z max-page-size=0x1000 -m elf_i386
 ODFLAGS = -CprsSx --prefix-addresses
+CFLAGS = -c -m32 -fno-stack-protector -fno-asynchronous-unwind-tables -Wall -fno-PIC
+
 LDSCRIPT = linker.ld
 RESET = reset_vector
 ROM_NAME = mi_rom
-OBJS = reset.o init32.o main.o sys_tables.o handler.o
+OBJS = $(BINPATH)reset.o $(BINPATH)init32.o $(BINPATH)main.o $(BINPATH)sys_tables.o $(BINPATH)handler.o $(BINPATH)sys_datos.o $(BINPATH)funciones.o
 
-all: $(ROM_NAME).bin $(ROM_NAME).elf
+all: $(BINPATH)$(ROM_NAME).bin $(BINPATH)$(ROM_NAME).elf
 	@echo	''
 	@echo	'-----> Generando listado de hexadecimales y ELFs'
-	hexdump -C $(ROM_NAME).bin > $(ROM_NAME)_hexdump.txt
-	objdump $(ODFLAGS) $(ROM_NAME).elf > $(ROM_NAME)_objdump.txt
-	readelf -a $(ROM_NAME).elf > $(ROM_NAME)_readelf.txt
+	hexdump -C $(BINPATH)$(ROM_NAME).bin > $(DOCPATH)$(ROM_NAME)_hexdump.txt
+	objdump $(ODFLAGS) $(BINPATH)$(ROM_NAME).elf > $(DOCPATH)$(ROM_NAME)_objdump.txt
+	readelf -a $(BINPATH)$(ROM_NAME).elf > $(DOCPATH)$(ROM_NAME)_readelf.txt
 	@echo	''
 
-$(ROM_NAME).bin: $(OBJS)
+$(BINPATH)$(ROM_NAME).bin: $(OBJS)
 	@echo	'-----> Linkeando en formato binario'
 	$(LD) $(LDFLAGS) -o $@ $(OBJS) -T $(LDSCRIPT) -e $(RESET)
 
-$(ROM_NAME).elf: $(OBJS)
+$(BINPATH)$(ROM_NAME).elf: $(OBJS)
 	@echo	'-----> Linkeando en formato ELF'
 	$(LD) -z max-page-size=0x1000 -m elf_i386 -T $(LDSCRIPT) -Map=$(ROM_NAME) -e $(RESET) $(OBJS) -o $@
 
-init16.bin: init16.asm sys_tables.o
+$(BINPATH)init16.bin: $(SRCPATH)init16.asm 
 	@echo	'-----> Compilando init16.asm'
-	$(AC) -f bin $< -o $@ -l init16.lst
+	$(AC) -f bin $< -o $@ -l $(DOCPATH)init16.lst
 
-reset.o: reset.asm
+$(BINPATH)reset.o: $(SRCPATH)reset.asm
 	@echo	'-----> Compilando reset.asm'
-	$(AC) $(AFLAGS) $< -o $@ -l reset.lst
+	$(AC) $(AFLAGS) $< -o $@ -l $(DOCPATH)reset.lst
 
-init32.o: init32.asm init16.bin
+$(BINPATH)init32.o: $(SRCPATH)init32.asm $(BINPATH)init16.bin
 	@echo	'-----> Compilando init32.asm'
-	$(AC) $(AFLAGS) $< -o $@ -l init32.lst
+	$(AC) $(AFLAGS) $< -o $@ -l $(DOCPATH)init32.lst
 
-main.o: main.asm
+$(BINPATH)main.o: $(SRCPATH)main.asm
 	@echo	'-----> Compilando main.asm'
-	$(AC) $(AFLAGS) $< -o $@ -l main.lst
+	$(AC) $(AFLAGS) $< -o $@ -l $(DOCPATH)main.lst
 
-sys_tables.o: sys_tables.asm
+$(BINPATH)sys_tables.o: $(SRCPATH)sys_tables.asm
 	@echo	'-----> Compilando sys_tables.asm'
-	$(AC) $(AFLAGS) $< -o $@ -l sys_tables.lst
+	$(AC) $(AFLAGS) $< -o $@ -l $(DOCPATH)sys_tables.lst
 
-handler.o: handler.asm
+$(BINPATH)handler.o: $(SRCPATH)handler.asm
 	@echo	'-----> Compilando handler.asm'
-	$(AC) $(AFLAGS) $< -o $@ -l handler.lst
+	$(AC) $(AFLAGS) $< -o $@ -l $(DOCPATH)handler.lst
+
+$(BINPATH)sys_datos.o: $(SRCPATH)sys_datos.asm
+	@echo	'-----> Compilando sys_datos.asm'
+	$(AC) $(AFLAGS) $< -o $@ -l $(DOCPATH)sys_datos.lst
+
+$(BINPATH)funciones.o: $(SRCPATH)funciones.c
+	@echo	'-----> Compilando funciones.asm'
+	$(CC) $(CFLAGS) $< -o $@
 
 bochs:
 	@echo '-------> Llamando a bochs'
@@ -62,5 +81,5 @@ git:
 
 clean:
 	@echo limpiando carpeta..
-	rm *.bin *.elf *.o *.lst *.map *.ini 
+	rm $(BINPATH)*.bin $(BINPATH)*.elf $(BINPATH)*.o $(DOCPATH)*.lst *.map *.ini
 	

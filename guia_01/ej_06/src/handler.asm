@@ -2,7 +2,10 @@
 
 ;-------------------------------VARIABLES EXTERNAS---------------------------------------
 EXTERN CONTADOR_TIMER
-
+EXTERN puntero_tabla_digito
+EXTERN buffer_Push
+EXTERN buffer_Pop
+EXTERN buffer_Clear
 
 ;------------------------------VARIABLES GLOBALES-----------------------------------------
 GLOBAL L_Handler_Timer
@@ -63,6 +66,8 @@ L_Handler_XM equ (Handler_XM - OFFSET_HANDLER)
 %define TECLA_9     0x0A
 %define TECLA_0     0x0B
 
+%define TECLA_ENTER 0x1C
+
 %define TECLA_A     0x1E
 %define TECLA_B     0x30
 %define TECLA_C     0x2E
@@ -97,10 +102,12 @@ USE32
 ;-----------------------------------HANDLER INTERUPCIONES--------------------------------------------
 Handler_Timer:
     PUSHAD                              ;Salvo los registros de uso general.
-    
-    xchg bx,bx	
+    ;xchg bx,bx	
 
-    add CONTADOR_TIMER
+    xor eax,eax
+    mov dword eax, [CONTADOR_TIMER]
+    inc eax
+    mov dword [CONTADOR_TIMER], eax
 
 Timer_fin:
     MOV al, 0x20                        ;Envío End of Interrupt al PIC.
@@ -112,45 +119,124 @@ Timer_fin:
 Handler_Teclado:
     PUSHAD                              ;Salvo los registros de uso general.
     
-    xchg bx,bx	
+    ;xchg bx,bx	
 
     IN al, 0x60                         ;Leer tecla del buffer de teclado
     mov bl, al
     AND al, al
     JS Teclado_fin                      ;Si se suelta al tecla no hago nada
 
-    cmp bl, TECLA_U
-    je T_U 
+;Detecto los numeros
+    cmp bl, TECLA_1
+    je T_1 
 
-    cmp bl, TECLA_I
-    je T_I 
+    cmp bl, TECLA_2
+    je T_2 
 
-    cmp bl, TECLA_S
-    je T_S
+    cmp bl, TECLA_3
+    je T_3 
 
-    cmp bl, TECLA_A
-    je T_A 
+    cmp bl, TECLA_4
+    je T_4 
 
+    cmp bl, TECLA_5
+    je T_5 
+
+    cmp bl, TECLA_6
+    je T_6 
+
+    cmp bl, TECLA_7
+    je T_7 
+
+    cmp bl, TECLA_8
+    je T_8 
+
+    cmp bl, TECLA_9
+    je T_9 
+
+    cmp bl, TECLA_0
+    je T_0 
+
+    cmp bl, TECLA_ENTER
+    je T_ENTER 
+;
+T_1:
+    push 0x01
+    push dword puntero_tabla_digito
+    call buffer_Push
+    add esp,8
     jmp Teclado_fin
 
-	T_U:                                ;#UD: Opcode Fetch		
-        UD2							
-        jmp Teclado_fin
+T_2:
+    push 0x02
+    push dword puntero_tabla_digito
+    call buffer_Push
+    add esp,8
+    jmp Teclado_fin
 
-	T_I: 					            ;#DE: division error, debe ser #DF: Doble falta
-        mov edx, 0        		 
-		mov eax, 0x10			
-		mov esi, 0
-		div esi
-        jmp Teclado_fin
-                
-	T_S: 							    ;#SS: Falta en el Stack Segment	
+T_3:
+    push 0x03
+    push dword puntero_tabla_digito
+    call buffer_Push
+    add esp,8
+    jmp Teclado_fin
 
-        jmp Teclado_fin
+T_4:
+    push 0x04
+    push dword puntero_tabla_digito
+    call buffer_Push
+    add esp,8
+    jmp Teclado_fin
 
-	T_A: 							    ;#AC: Aligment check
+T_5:
+    push 0x05
+    push dword puntero_tabla_digito
+    call buffer_Push
+    add esp,8
+    jmp Teclado_fin
 
-        jmp Teclado_fin
+T_6:
+    push 0x06
+    push dword puntero_tabla_digito
+    call buffer_Push
+    add esp,8
+    jmp Teclado_fin
+
+T_7:
+    push 0x07
+    push dword puntero_tabla_digito
+    call buffer_Push
+    add esp,8
+    jmp Teclado_fin
+
+T_8:
+    push 0x08
+    push dword puntero_tabla_digito
+    call buffer_Push
+    add esp,8
+    jmp Teclado_fin
+
+T_9:
+    push 0x09
+    push dword puntero_tabla_digito
+    call buffer_Push
+    add esp,8
+    jmp Teclado_fin
+
+T_0:
+xchg bx,bx	
+    push 0x00
+    push dword puntero_tabla_digito
+    call buffer_Push
+    add esp,8
+    jmp Teclado_fin
+
+T_ENTER:
+xchg bx,bx	
+    push dword puntero_tabla_digito
+    call buffer_Pop
+    add esp,4
+    jmp Teclado_fin
 
 Teclado_fin:
     MOV al, 0x20                        ;Envío End of Interrupt al PIC.

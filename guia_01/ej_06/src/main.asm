@@ -5,13 +5,13 @@ EXTERN  DS_SEL
 EXTERN  CS_SEL
 
 ;------------------------------VARIABLES GLOBALES--------------------------------------------------
-GLOBAL main32_size
-GLOBAL main32_init
+GLOBAL kernel_size
+GLOBAL kernel_init
 
 ;-------------------------------------SECTION-------------------------------------------
-section .main32
+section .kernel
 
-main32_init:
+kernel_init:
     
     ;call CS_SEL:func
 
@@ -22,7 +22,7 @@ main32_init:
         jmp .guard
 
 
-main32_end:
+kernel_end:
 
 section .rutinas
 

@@ -24,7 +24,7 @@ EXTERN __KERNEL_LMA
 EXTERN __KERNEL_VMA
 EXTERN __KERNEL_VMA_END
 
-EXTERN main32_init
+EXTERN kernel_init
 
 ;------------------------------VARIABLES GLOBALES--------------------------------------------------
 GLOBAL init32
@@ -33,7 +33,7 @@ GLOBAL init32
 section .init
 init32:
 
-    INCBIN "init16.bin"
+    INCBIN "./bin/init16.bin"
 
     ;xchg bx,bx
 
@@ -141,7 +141,7 @@ ciclo2:
     xor eax, eax
     
     xchg bx,bx
-    jmp CS_SEL:main32_init
+    jmp CS_SEL:kernel_init
     
     .guard:
         hlt
