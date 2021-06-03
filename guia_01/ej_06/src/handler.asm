@@ -112,6 +112,11 @@ Handler_Timer:
     inc eax
     mov dword [CONTADOR_TIMER], eax
 
+    and eax, 0x01                       ;me quedo con el bit menos significativo
+    jpo Timer_fin                       ;si el contador es impar no hace nada
+                                        ;si es par, entonces pasaron 100ms
+    mov eax, 0x25                       ;esta linea esta para testear que entre a la funcion
+
 Timer_fin:
     MOV al, 0x20                        ;Envío End of Interrupt al PIC.
     OUT 0x20, al
