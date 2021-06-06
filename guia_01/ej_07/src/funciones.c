@@ -54,7 +54,6 @@ __attribute__(( section(".funciones"))) void buffer_Clear(buff* buff_p)
     buff_p->Cant = 0;      
 }
 
-
 __attribute__(( section(".funciones"))) void cargar_tabla(t_datos* table_p, buff* buff_p)
 {
 	static char indice = 1;
@@ -68,8 +67,8 @@ __attribute__(( section(".funciones"))) void cargar_tabla(t_datos* table_p, buff
 		dato = buffer_Pop(buff_p);	
 		if( dato != 0xFF)
 		{
-			numero = numero + dato;
-			numero = numero *10;
+			numero = numero*10 + dato;
+			//numero = numero *10;
 		}
 	}
 //cargo la tabla de datos
@@ -78,7 +77,7 @@ __attribute__(( section(".funciones"))) void cargar_tabla(t_datos* table_p, buff
 		for(i = 0; i < LONG_BUFFER; i++)
 		{	
 
-			table_p->buffer[(indice * LONG_BUFFER) - i] = numero % 10;
+			table_p->buffer[(indice * LONG_BUFFER) -1 - i] = numero % 10;
 			numero = numero / 10;
 
 		}
@@ -86,3 +85,54 @@ __attribute__(( section(".funciones"))) void cargar_tabla(t_datos* table_p, buff
 	}
 }
 
+__attribute__(( section(".funciones"))) void calcular_Promedio(t_datos* table_p, promedio* prom_p)
+{
+	word offset = 0;
+	word i, j = 0;
+	word var = 1;
+	word sumProm, prom, numero = 0;
+	word div = 0;
+
+	for(j=0; j < LONG_TABLA; j++)
+	{
+		for(i = 0; i < LONG_BUFFER; i++)
+		{	
+			numero = numero + var * table_p->buffer[i];
+			var = var * 10;
+		}
+		if(numero > 0)
+		{
+			sumProm = sumProm + numero;
+			div++;
+		}
+		numero = 0;
+		var = 1;
+	}
+
+	if(div > 0)
+	{
+		prom = sumProm / div;
+	}	
+
+	if(prom > 0)
+	{
+		for(i = 0; i < LONG_BUFFER; i++)
+		{
+			prom_p->buffer[LONG_BUFFER -1 - i] = prom % 10;
+			prom = prom/10;
+		}
+	}
+}
+
+__attribute__(( section(".funciones"))) void escribir_Pantalla(buff_video* buffV_p, promedio* prom_p, word fila, word columna)
+{
+	word offset = 0;
+
+	if((fila < 25) & (columna < 80))
+	{
+		for(offset = 0; offset < LONG_BUFFER; offset++)
+		{
+			buffV_p->buffer[((columna + offset) * 2) + (fila * 160)] = prom_p->buffer[offset];
+		}
+	}
+}
