@@ -10,6 +10,8 @@ EXTERN tarea_promedio
 GLOBAL kernel_size
 GLOBAL kernel_init
 
+GLOBAL BUFFER_VIDEO
+
 ;-------------------------------------SECTION-------------------------------------------
 section .kernel
 
@@ -18,6 +20,8 @@ BUFFER_VIDEO     EQU 0x000B8000
 kernel_init:
     
     xchg bx,bx
+
+    ;call borrar_pantalla
 
     .halted:
 

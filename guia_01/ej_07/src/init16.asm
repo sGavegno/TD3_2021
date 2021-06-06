@@ -51,7 +51,7 @@ inicio:
     ;Paso a Modo Protejido 
     cli                                 ;Desabilito interupciones
 
-    ;%include "./inc/init_pci.inc"         ;Inicialización de bus PCI y video
+    %include "./inc/init_pci.inc"       ;Inicialización de bus PCI y video
     
     o32 lgdt[cs:gdtr_16]                ;cargo gdt provisoria
 

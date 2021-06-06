@@ -4,7 +4,7 @@
 EXTERN  CS_SEL
 
 EXTERN CONTADOR_TIMER
-EXTERN puntero_tabla_digito
+EXTERN PUNTERO_TABLA_DIGITO
 EXTERN BUFFER_TECLADO
 
 EXTERN buffer_Push
@@ -13,6 +13,8 @@ EXTERN buffer_Clear
 EXTERN cargar_tabla
 
 EXTERN FLAG_TAREA_1
+
+EXTERN CANTIDAD_TECLAS
 
 EXTERN tarea_promedio
 
@@ -185,6 +187,7 @@ T_1:
     push dword BUFFER_TECLADO
     call buffer_Push
     add esp,8
+
     jmp Teclado_fin
 
 T_2:
@@ -192,6 +195,7 @@ T_2:
     push dword BUFFER_TECLADO
     call buffer_Push
     add esp,8
+
     jmp Teclado_fin
 
 T_3:
@@ -199,6 +203,7 @@ T_3:
     push dword BUFFER_TECLADO
     call buffer_Push
     add esp,8
+
     jmp Teclado_fin
 
 T_4:
@@ -206,6 +211,7 @@ T_4:
     push dword BUFFER_TECLADO
     call buffer_Push
     add esp,8
+
     jmp Teclado_fin
 
 T_5:
@@ -213,6 +219,7 @@ T_5:
     push dword BUFFER_TECLADO
     call buffer_Push
     add esp,8
+
     jmp Teclado_fin
 
 T_6:
@@ -220,6 +227,7 @@ T_6:
     push dword BUFFER_TECLADO
     call buffer_Push
     add esp,8
+
     jmp Teclado_fin
 
 T_7:
@@ -227,6 +235,7 @@ T_7:
     push dword BUFFER_TECLADO
     call buffer_Push
     add esp,8
+
     jmp Teclado_fin
 
 T_8:
@@ -234,6 +243,7 @@ T_8:
     push dword BUFFER_TECLADO
     call buffer_Push
     add esp,8
+
     jmp Teclado_fin
 
 T_9:
@@ -241,6 +251,7 @@ T_9:
     push dword BUFFER_TECLADO
     call buffer_Push
     add esp,8
+
     jmp Teclado_fin
 
 T_0:	
@@ -248,19 +259,15 @@ T_0:
     push dword BUFFER_TECLADO
     call buffer_Push
     add esp,8
-    ;xchg bx,bx
+
     jmp Teclado_fin
 
 T_ENTER:
 	
-    ;xchg bx,bx
-
     push dword BUFFER_TECLADO
-    push dword puntero_tabla_digito
+    push dword PUNTERO_TABLA_DIGITO
     call cargar_tabla
     add esp,8
-
-    ;xchg bx,bx  
 
     jmp Teclado_fin
 

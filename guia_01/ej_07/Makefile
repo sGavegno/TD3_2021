@@ -80,7 +80,7 @@ bochs:
 
 git:
 	git add .		
-	git commit -m "texto"
+	git commit -m "$(arg)"
 	git push -u origin master
 
 clean:

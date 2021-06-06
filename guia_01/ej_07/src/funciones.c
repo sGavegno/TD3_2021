@@ -59,7 +59,7 @@ __attribute__(( section(".funciones"))) void cargar_tabla(t_datos* table_p, buff
 	static char indice = 1;
 	word i=0;
 	byte dato = 0xFF;
-	word numero = 0;
+	dword numero = 0;
 
 //saco el numero del buffer y lo ordeno
 	for(i = 0; i < LONG_BUFFER; i++)
@@ -68,7 +68,6 @@ __attribute__(( section(".funciones"))) void cargar_tabla(t_datos* table_p, buff
 		if( dato != 0xFF)
 		{
 			numero = numero*10 + dato;
-			//numero = numero *10;
 		}
 	}
 //cargo la tabla de datos
@@ -88,31 +87,28 @@ __attribute__(( section(".funciones"))) void cargar_tabla(t_datos* table_p, buff
 __attribute__(( section(".funciones"))) void calcular_Promedio(t_datos* table_p, promedio* prom_p)
 {
 	word offset = 0;
-	word i, j = 0;
-	word var = 1;
-	word sumProm, prom, numero = 0;
-	word div = 0;
+	word i = 0, j = 0;
+	dword sumProm = 0;
+	dword prom = 0;
+	dword numero = 0;
+	word div = 1;
+
 
 	for(j=0; j < LONG_TABLA; j++)
 	{
 		for(i = 0; i < LONG_BUFFER; i++)
 		{	
-			numero = numero + var * table_p->buffer[i];
-			var = var * 10;
+			numero = numero*10 + table_p->buffer[(LONG_BUFFER*j) + i];	
 		}
 		if(numero > 0)
 		{
 			sumProm = sumProm + numero;
+			prom = sumProm / div;
+//			asm("xchg %bx,%bx");
 			div++;
 		}
 		numero = 0;
-		var = 1;
 	}
-
-	if(div > 0)
-	{
-		prom = sumProm / div;
-	}	
 
 	if(prom > 0)
 	{
@@ -127,12 +123,24 @@ __attribute__(( section(".funciones"))) void calcular_Promedio(t_datos* table_p,
 __attribute__(( section(".funciones"))) void escribir_Pantalla(buff_video* buffV_p, promedio* prom_p, word fila, word columna)
 {
 	word offset = 0;
+	byte string[] = "Sebastian Gavegno";
+	word cant = 0;
+	cant = sizeof(string);
 
 	if((fila < 25) & (columna < 80))
 	{
 		for(offset = 0; offset < LONG_BUFFER; offset++)
 		{
-			buffV_p->buffer[((columna + offset) * 2) + (fila * 160)] = prom_p->buffer[offset];
+			buffV_p->buffer[((columna + offset) * 2) + (fila * 160)] = 48 + prom_p->buffer[offset];	// 48 es el 0 ascii
+			//cargo atributos
+			buffV_p->buffer[((columna + offset) * 2 + 1) + (fila * 160)] = 0x07;	//Atributo blanco sobre negro
 		}
 	}
+
+	for(offset = 0; offset < cant; offset++)
+	{
+		buffV_p->buffer[((0 + offset) * 2) + (24 * 160)] = string[offset];	
+		//cargo atributos
+		buffV_p->buffer[((0 + offset) * 2 + 1) + (24 * 160)] = 0x07;	//Atributo blanco sobre negro
+	}	
 }

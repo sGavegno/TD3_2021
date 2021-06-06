@@ -34,8 +34,10 @@ EXTERN __TABLES_DIGITOS_VMA_END
 
 EXTERN kernel_init
 
+EXTERN BUFFER_VIDEO
+
 EXTERN PROMEDIO_TABLA_DIGITOS
-EXTERN punteroPantalla
+EXTERN PUNTERO_PANTALLA
 ;------------------------------VARIABLES GLOBALES--------------------------------------------------
 GLOBAL init32
 
@@ -44,8 +46,6 @@ section .init
 init32:
 
     INCBIN "./bin/init16.bin"
-
-    ;xchg bx,bx
 
     ;Copio el codigo a la VMA   
     mov esi, __SYS_TABLES_LMA               ;Puntero al inicio de la LMA
@@ -102,8 +102,8 @@ init32:
 
     mov eax, 0        ;Inicializar valor.
     mov [PROMEDIO_TABLA_DIGITOS], eax
-    mov eax, 0xB8000
-    mov [punteroPantalla],eax
+    mov eax, BUFFER_VIDEO
+    mov [PUNTERO_PANTALLA],eax
 
 
 ; Inicializar controlador de teclado.
@@ -165,7 +165,7 @@ ciclo2:
 
     STI                 ;Habilitar interrupciones
     
-    xor eax, eax
+    ;xor eax, eax
     
     ;xchg bx,bx
     jmp CS_SEL:kernel_init

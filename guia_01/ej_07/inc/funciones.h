@@ -9,9 +9,9 @@
 
 extern long unsigned __DATA_VMA;
 
-typedef unsigned long dword;
-typedef unsigned int word;
-typedef unsigned char byte;
+typedef unsigned long dword;            //32 bits
+typedef unsigned short word;            //16bits
+typedef unsigned char byte;             //8bits
 
 
 /*--------------------------------------------------------------------------------------------*/
@@ -25,7 +25,7 @@ typedef struct buff
 
 typedef struct t_datos
 {
-    byte buffer[LONG_TABLA_DATOS];           //buffer
+    byte buffer[LONG_TABLA_DATOS];      //buffer
 }t_datos;
 
 typedef struct promedio

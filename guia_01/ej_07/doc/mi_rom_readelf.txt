@@ -10,7 +10,7 @@ Encabezado ELF:
   Versión:                           0x1
   Dirección del punto de entrada:               0xfffffff0
   Inicio de encabezados de programa:          52 (bytes en el fichero)
-  Inicio de encabezados de sección:          37276 (bytes en el fichero)
+  Inicio de encabezados de sección:          41404 (bytes en el fichero)
   Opciones:                          0x0
   Size of this header:               52 (bytes)
   Size of program headers:           32 (bytes)
@@ -22,18 +22,18 @@ Encabezado ELF:
 Encabezados de Sección:
   [Nr] Nombre            Tipo            Direc    Desp   Tam    ES Opt En Inf Al
   [ 0]                   NULL            00000000 000000 000000 00      0   0  0
-  [ 1] .init             PROGBITS        ffff0000 001000 000184 00  AX  0   0  1
-  [ 2] .sys_tables       PROGBITS        00000000 002000 00019c 00   A  0   0  1
-  [ 3] .rutinas_handler  PROGBITS        00100000 003000 000189 00   A  0   0  1
-  [ 4] .tables_digito    PROGBITS        00200000 004000 0000a0 00   A  0   0  1
-  [ 5] .data             PROGBITS        00210000 005000 000fe5 00  WA  0   0  4
-  [ 6] .kernel           PROGBITS        00202000 006000 000385 00  AX  0   0  1
-  [ 7] .tareas           PROGBITS        00300000 007000 000023 00   A  0   0  1
-  [ 8] .reset            PROGBITS        fffffff0 007ff0 000010 00   A  0   0 16
-  [ 9] .comment          PROGBITS        00000000 008000 00002a 01  MS  0   0  1
-  [10] .symtab           SYMTAB          00000000 00802c 000a60 10     11  94  4
-  [11] .strtab           STRTAB          00000000 008a8c 00069b 00      0   0  1
-  [12] .shstrtab         STRTAB          00000000 009127 000073 00      0   0  1
+  [ 1] .init             PROGBITS        ffff0000 001000 0014a8 00  AX  0   0  1
+  [ 2] .sys_tables       PROGBITS        00000000 003000 00019c 00   A  0   0  1
+  [ 3] .rutinas_handler  PROGBITS        00100000 004000 000189 00   A  0   0  1
+  [ 4] .tables_digito    PROGBITS        00200000 005000 0000a0 00   A  0   0  1
+  [ 5] .data             PROGBITS        00210000 006000 000059 00  WA  0   0  4
+  [ 6] .kernel           PROGBITS        00202000 007000 000484 00  AX  0   0  1
+  [ 7] .tareas           PROGBITS        00300000 008000 00003a 00   A  0   0  1
+  [ 8] .reset            PROGBITS        fffffff0 008ff0 000010 00   A  0   0 16
+  [ 9] .comment          PROGBITS        00000000 009000 00002a 01  MS  0   0  1
+  [10] .symtab           SYMTAB          00000000 00902c 000a70 10     11  93  4
+  [11] .strtab           STRTAB          00000000 009a9c 0006ac 00      0   0  1
+  [12] .shstrtab         STRTAB          00000000 00a148 000073 00      0   0  1
 Key to Flags:
   W (write), A (alloc), X (execute), M (merge), S (strings), I (info),
   L (link order), O (extra OS processing required), G (group), T (TLS),
@@ -44,14 +44,14 @@ No hay grupos de sección en este fichero.
 
 Encabezados de Programa:
   Tipo           Desplaz  DirVirt    DirFísica  TamFich TamMem  Opt Alin
-  LOAD           0x001000 0xffff0000 0xffff0000 0x00184 0x00184 R E 0x1000
-  LOAD           0x002000 0x00000000 0xffff0184 0x0019c 0x0019c R   0x1000
-  LOAD           0x003000 0x00100000 0xffff0320 0x00189 0x00189 R   0x1000
-  LOAD           0x004000 0x00200000 0xffff04a9 0x000a0 0x000a0 R   0x1000
-  LOAD           0x005000 0x00210000 0xffff0549 0x00fe5 0x00fe5 RW  0x1000
-  LOAD           0x006000 0x00202000 0xffff152e 0x00385 0x00385 R E 0x1000
-  LOAD           0x007000 0x00300000 0xffff18b3 0x00023 0x00023 R   0x1000
-  LOAD           0x007ff0 0xfffffff0 0xfffffff0 0x00010 0x00010 R   0x1000
+  LOAD           0x001000 0xffff0000 0xffff0000 0x014a8 0x014a8 R E 0x1000
+  LOAD           0x003000 0x00000000 0xffff14a8 0x0019c 0x0019c R   0x1000
+  LOAD           0x004000 0x00100000 0xffff1644 0x00189 0x00189 R   0x1000
+  LOAD           0x005000 0x00200000 0xffff17cd 0x000a0 0x000a0 R   0x1000
+  LOAD           0x006000 0x00210000 0xffff186d 0x00059 0x00059 RW  0x1000
+  LOAD           0x007000 0x00202000 0xffff18c6 0x00484 0x00484 R E 0x1000
+  LOAD           0x008000 0x00300000 0xffff1d4a 0x0003a 0x0003a R   0x1000
+  LOAD           0x008ff0 0xfffffff0 0xfffffff0 0x00010 0x00010 R   0x1000
   GNU_STACK      0x000000 0x00000000 0x00000000 0x00000 0x00000 RWE 0x10
 
  mapeo de Sección a Segmento:
@@ -72,7 +72,7 @@ No hay reubicaciones en este fichero.
 
 The decoding of unwind sections for machine type Intel 80386 is not currently supported.
 
-Symbol table '.symtab' contains 166 entries:
+Symbol table '.symtab' contains 167 entries:
    Num:    Valor  Tam  Tipo    Unión  Vis      Nombre Ind
      0: 00000000     0 NOTYPE  LOCAL  DEFAULT  UND 
      1: ffff0000     0 SECTION LOCAL  DEFAULT    1 
@@ -85,12 +85,12 @@ Symbol table '.symtab' contains 166 entries:
      8: fffffff0     0 SECTION LOCAL  DEFAULT    8 
      9: 00000000     0 SECTION LOCAL  DEFAULT    9 
     10: 00000000     0 FILE    LOCAL  DEFAULT  ABS src/init32.asm
-    11: ffff0132     0 NOTYPE  LOCAL  DEFAULT    1 ciclo1
-    12: ffff0141     0 NOTYPE  LOCAL  DEFAULT    1 ciclo2
-    13: ffff0181     0 NOTYPE  LOCAL  DEFAULT    1 ciclo2.guard
+    11: ffff1456     0 NOTYPE  LOCAL  DEFAULT    1 ciclo1
+    12: ffff1465     0 NOTYPE  LOCAL  DEFAULT    1 ciclo2
+    13: ffff14a5     0 NOTYPE  LOCAL  DEFAULT    1 ciclo2.guard
     14: 00000000     0 FILE    LOCAL  DEFAULT  ABS funciones.c
-    15: 00210fe0     4 OBJECT  LOCAL  DEFAULT    5 i.1550
-    16: 00210fe4     1 OBJECT  LOCAL  DEFAULT    5 indice.1558
+    15: 00210054     4 OBJECT  LOCAL  DEFAULT    5 i.1550
+    16: 00210058     1 OBJECT  LOCAL  DEFAULT    5 indice.1558
     17: 00000000     0 FILE    LOCAL  DEFAULT  ABS src/sys_tables.asm
     18: 00000000     0 NOTYPE  LOCAL  DEFAULT    2 GDT_32
     19: 00000000     0 NOTYPE  LOCAL  DEFAULT  ABS NULL_SEL
@@ -159,86 +159,87 @@ Symbol table '.symtab' contains 166 entries:
     82: 00100186     0 NOTYPE  LOCAL  DEFAULT    3 Handler_XM
     83: 00000000     0 FILE    LOCAL  DEFAULT  ABS src/sys_datos.asm
     84: 00000000     0 FILE    LOCAL  DEFAULT  ABS src/main.asm
-    85: 000b8000     0 NOTYPE  LOCAL  DEFAULT  ABS BUFFER_VIDEO
-    86: 00202003     0 NOTYPE  LOCAL  DEFAULT    6 kernel_init.halted
-    87: 0020200d     0 NOTYPE  LOCAL  DEFAULT    6 kernel_init.guard
-    88: 00202010     0 NOTYPE  LOCAL  DEFAULT    6 kernel_end
-    89: 00202010     0 NOTYPE  LOCAL  DEFAULT    6 borrar_pantalla
-    90: 0020201e     0 NOTYPE  LOCAL  DEFAULT    6 ciclo_borrar_pantalla
-    91: 00000000     0 FILE    LOCAL  DEFAULT  ABS src/tareas.asm
-    92: 00300022     0 NOTYPE  LOCAL  DEFAULT    7 tarea_end
-    93: 00000000     0 FILE    LOCAL  DEFAULT  ABS src/reset.asm
-    94: 00100189     0 NOTYPE  GLOBAL DEFAULT    3 __HANDLER_VMA_END
+    85: 00202003     0 NOTYPE  LOCAL  DEFAULT    6 kernel_init.halted
+    86: 0020200d     0 NOTYPE  LOCAL  DEFAULT    6 kernel_init.guard
+    87: 00202010     0 NOTYPE  LOCAL  DEFAULT    6 kernel_end
+    88: 00202010     0 NOTYPE  LOCAL  DEFAULT    6 borrar_pantalla
+    89: 0020201e     0 NOTYPE  LOCAL  DEFAULT    6 ciclo_borrar_pantalla
+    90: 00000000     0 FILE    LOCAL  DEFAULT  ABS src/tareas.asm
+    91: 00300039     0 NOTYPE  LOCAL  DEFAULT    7 tarea_end
+    92: 00000000     0 FILE    LOCAL  DEFAULT  ABS src/reset.asm
+    93: 00100189     0 NOTYPE  GLOBAL DEFAULT    3 __HANDLER_VMA_END
+    94: 00210041     0 NOTYPE  GLOBAL DEFAULT    5 PUNTERO_PANTALLA
     95: 00000196     0 NOTYPE  GLOBAL DEFAULT    2 _idtr32
-    96: ffff0184     0 NOTYPE  GLOBAL DEFAULT    1 __INIT_VMA_END
+    96: ffff14a8     0 NOTYPE  GLOBAL DEFAULT    1 __INIT_VMA_END
     97: 0000015f     0 NOTYPE  GLOBAL DEFAULT    3 L_Handler_OF
     98: 00000159     0 NOTYPE  GLOBAL DEFAULT    3 L_Handler_NMI
     99: 0000019c     0 NOTYPE  GLOBAL DEFAULT    2 __SYS_TABLES_VMA_END
-   100: ffff0184     0 NOTYPE  GLOBAL DEFAULT    1 __INIT_size
-   101: 0020214a   209 FUNC    GLOBAL DEFAULT    6 cargar_tabla
-   102: 00300023     0 NOTYPE  GLOBAL DEFAULT    7 __TAREA_1_VMA_END
+   100: ffff14a8     0 NOTYPE  GLOBAL DEFAULT    1 __INIT_size
+   101: 0020214a   225 FUNC    GLOBAL DEFAULT    6 cargar_tabla
+   102: 0030003a     0 NOTYPE  GLOBAL DEFAULT    7 __TAREA_1_VMA_END
    103: 00000168     0 NOTYPE  GLOBAL DEFAULT    3 L_Handler_NM
    104: 00000010     0 NOTYPE  GLOBAL DEFAULT  ABS DS_SEL
    105: 002020fc    78 FUNC    GLOBAL DEFAULT    6 buffer_Clear
-   106: 00202385     0 NOTYPE  GLOBAL DEFAULT    6 __KERNEL_VMA_END
-   107: ffff04a9     0 NOTYPE  GLOBAL DEFAULT  ABS __TABLES_DIGITOS_LMA
+   106: 00202484     0 NOTYPE  GLOBAL DEFAULT    6 __KERNEL_VMA_END
+   107: ffff17cd     0 NOTYPE  GLOBAL DEFAULT  ABS __TABLES_DIGITOS_LMA
    108: 00000171     0 NOTYPE  GLOBAL DEFAULT    3 L_Handler_NP
    109: 00202091   107 FUNC    GLOBAL DEFAULT    6 buffer_Pop
-   110: ffff0549     0 NOTYPE  GLOBAL DEFAULT  ABS __DATOS_LMA
-   111: 00202385     0 NOTYPE  GLOBAL DEFAULT    6 __KERNEL_size
+   110: ffff186d     0 NOTYPE  GLOBAL DEFAULT  ABS __DATOS_LMA
+   111: 00202484     0 NOTYPE  GLOBAL DEFAULT    6 __KERNEL_size
    112: 00000180     0 NOTYPE  GLOBAL DEFAULT    3 L_Handler_AC
    113: 00210000     0 NOTYPE  GLOBAL DEFAULT  ABS __DATOS_VMA
    114: 002000a0     0 NOTYPE  GLOBAL DEFAULT    4 __TABLES_DIGITOS_VMA_END
-   115: 00200000     0 NOTYPE  GLOBAL DEFAULT    4 puntero_tabla_digito
-   116: ffff18b3     0 NOTYPE  GLOBAL DEFAULT  ABS __TAREA_1_LMA
-   117: 00000000     0 NOTYPE  GLOBAL DEFAULT  ABS __SYS_TABLES_VMA
-   118: 0000017a     0 NOTYPE  GLOBAL DEFAULT    3 L_Handler_PF
-   119: ffff0320     0 NOTYPE  GLOBAL DEFAULT  ABS __HANDLER_LMA
-   120: 0000015c     0 NOTYPE  GLOBAL DEFAULT    3 L_Handler_BP
-   121: 00202000     0 NOTYPE  GLOBAL DEFAULT  ABS __KERNEL_VMA
-   122: 00000018     0 NOTYPE  GLOBAL DEFAULT    2 _gdtr32
-   123: fffffff0     0 NOTYPE  GLOBAL DEFAULT    8 reset_vector
-   124: ffff0000     0 NOTYPE  GLOBAL DEFAULT    1 init32
-   125: 00210002     0 NOTYPE  GLOBAL DEFAULT    5 FLAG_TAREA_1
-   126: 00001000     0 NOTYPE  GLOBAL DEFAULT  ABS __STACK_SIZE
-   127: 00202000     0 NOTYPE  GLOBAL DEFAULT    6 kernel_init
-   128: 0000016e     0 NOTYPE  GLOBAL DEFAULT    3 L_Handler_TS
-   129: ffff0000     0 NOTYPE  GLOBAL DEFAULT  ABS __INIT_VMA
-   130: ffff0000     0 NOTYPE  GLOBAL DEFAULT  ABS __INIT_LMA
-   131: 00100189     0 NOTYPE  GLOBAL DEFAULT    3 __HANDLER_size
-   132: 00000162     0 NOTYPE  GLOBAL DEFAULT    3 L_Handler_BR
-   133: 002000a0     0 NOTYPE  GLOBAL DEFAULT    4 __TABLES_DIGITOS_size
-   134: 00210fe5     0 NOTYPE  GLOBAL DEFAULT    5 __DATOS_size
-   135: 00210fe5     0 NOTYPE  GLOBAL DEFAULT    5 __DATOS_VMA_END
-   136: 00000186     0 NOTYPE  GLOBAL DEFAULT    3 L_Handler_XM
-   137: 00000008     0 NOTYPE  GLOBAL DEFAULT  ABS CS_SEL
-   138: 00000177     0 NOTYPE  GLOBAL DEFAULT    3 L_Handler_GP
-   139: 0020221b   259 FUNC    GLOBAL DEFAULT    6 calcular_Promedio
-   140: 00100000     0 NOTYPE  GLOBAL DEFAULT  ABS __HANDLER_VMA
-   141: 2fff4000     0 NOTYPE  GLOBAL DEFAULT  ABS __STACK_START
-   142: 00000165     0 NOTYPE  GLOBAL DEFAULT    3 L_Handler_UD
-   143: 00202027   106 FUNC    GLOBAL DEFAULT    6 buffer_Push
-   144: 00200000     0 NOTYPE  GLOBAL DEFAULT  ABS __TABLES_DIGITOS_VMA
-   145: 00210010     0 NOTYPE  GLOBAL DEFAULT    5 BUFFER_TECLADO
-   146: 0000017d     0 NOTYPE  GLOBAL DEFAULT    3 L_Handler_MF
-   147: 00210040     0 NOTYPE  GLOBAL DEFAULT    5 punteroPantalla
-   148: 00000183     0 NOTYPE  GLOBAL DEFAULT    3 L_Handler_MC
-   149: 0020231e   103 FUNC    GLOBAL DEFAULT    6 escribir_Pantalla
-   150: 00210000     0 NOTYPE  GLOBAL DEFAULT    5 CONTADOR_TIMER
-   151: 00300023     0 NOTYPE  GLOBAL DEFAULT    7 __TAREA_1_size
-   152: 00000156     0 NOTYPE  GLOBAL DEFAULT    3 L_Handler_DE
-   153: 00000000     0 NOTYPE  GLOBAL DEFAULT    3 L_Handler_Timer
-   154: 00210030     0 NOTYPE  GLOBAL DEFAULT    5 PROMEDIO_TABLA_DIGITOS
-   155: 00300000     0 NOTYPE  GLOBAL DEFAULT    7 tarea_promedio
-   156: ffff152e     0 NOTYPE  GLOBAL DEFAULT  ABS __KERNEL_LMA
-   157: 00300000     0 NOTYPE  GLOBAL DEFAULT  ABS __TAREA_1_VMA
-   158: ffff0184     0 NOTYPE  GLOBAL DEFAULT  ABS __SYS_TABLES_LMA
-   159: 0000019c     0 NOTYPE  GLOBAL DEFAULT    2 __SYS_TABLES_size
-   160: 0000016b     0 NOTYPE  GLOBAL DEFAULT    3 L_Handler_DF
-   161: ffff0000     0 NOTYPE  GLOBAL DEFAULT  ABS __INIT_ROM
-   162: fffffff0     0 NOTYPE  GLOBAL DEFAULT  ABS __RESET
-   163: 00000174     0 NOTYPE  GLOBAL DEFAULT    3 L_Handler_SS
-   164: 2fff8000     0 NOTYPE  GLOBAL DEFAULT  ABS __STACK_END
-   165: 00000029     0 NOTYPE  GLOBAL DEFAULT    3 L_Handler_Teclado
+   115: ffff1d4a     0 NOTYPE  GLOBAL DEFAULT  ABS __TAREA_1_LMA
+   116: 00000000     0 NOTYPE  GLOBAL DEFAULT  ABS __SYS_TABLES_VMA
+   117: 0000017a     0 NOTYPE  GLOBAL DEFAULT    3 L_Handler_PF
+   118: ffff1644     0 NOTYPE  GLOBAL DEFAULT  ABS __HANDLER_LMA
+   119: 0000015c     0 NOTYPE  GLOBAL DEFAULT    3 L_Handler_BP
+   120: 00202000     0 NOTYPE  GLOBAL DEFAULT  ABS __KERNEL_VMA
+   121: 00000018     0 NOTYPE  GLOBAL DEFAULT    2 _gdtr32
+   122: fffffff0     0 NOTYPE  GLOBAL DEFAULT    8 reset_vector
+   123: ffff0000     0 NOTYPE  GLOBAL DEFAULT    1 init32
+   124: 00210002     0 NOTYPE  GLOBAL DEFAULT    5 FLAG_TAREA_1
+   125: 00001000     0 NOTYPE  GLOBAL DEFAULT  ABS __STACK_SIZE
+   126: 00202000     0 NOTYPE  GLOBAL DEFAULT    6 kernel_init
+   127: 0000016e     0 NOTYPE  GLOBAL DEFAULT    3 L_Handler_TS
+   128: ffff0000     0 NOTYPE  GLOBAL DEFAULT  ABS __INIT_VMA
+   129: 00210003     0 NOTYPE  GLOBAL DEFAULT    5 CANTIDAD_TECLAS
+   130: 00200000     0 NOTYPE  GLOBAL DEFAULT    4 PUNTERO_TABLA_DIGITO
+   131: ffff0000     0 NOTYPE  GLOBAL DEFAULT  ABS __INIT_LMA
+   132: 00100189     0 NOTYPE  GLOBAL DEFAULT    3 __HANDLER_size
+   133: 00000162     0 NOTYPE  GLOBAL DEFAULT    3 L_Handler_BR
+   134: 002000a0     0 NOTYPE  GLOBAL DEFAULT    4 __TABLES_DIGITOS_size
+   135: 00210059     0 NOTYPE  GLOBAL DEFAULT    5 __DATOS_size
+   136: 00210059     0 NOTYPE  GLOBAL DEFAULT    5 __DATOS_VMA_END
+   137: 00000186     0 NOTYPE  GLOBAL DEFAULT    3 L_Handler_XM
+   138: 00000008     0 NOTYPE  GLOBAL DEFAULT  ABS CS_SEL
+   139: 00000177     0 NOTYPE  GLOBAL DEFAULT    3 L_Handler_GP
+   140: 0020222b   303 FUNC    GLOBAL DEFAULT    6 calcular_Promedio
+   141: 00100000     0 NOTYPE  GLOBAL DEFAULT  ABS __HANDLER_VMA
+   142: 2fff4000     0 NOTYPE  GLOBAL DEFAULT  ABS __STACK_START
+   143: 00000165     0 NOTYPE  GLOBAL DEFAULT    3 L_Handler_UD
+   144: 00202027   106 FUNC    GLOBAL DEFAULT    6 buffer_Push
+   145: 00200000     0 NOTYPE  GLOBAL DEFAULT  ABS __TABLES_DIGITOS_VMA
+   146: 000b8000     0 NOTYPE  GLOBAL DEFAULT  ABS BUFFER_VIDEO
+   147: 00210011     0 NOTYPE  GLOBAL DEFAULT    5 BUFFER_TECLADO
+   148: 0000017d     0 NOTYPE  GLOBAL DEFAULT    3 L_Handler_MF
+   149: 00000183     0 NOTYPE  GLOBAL DEFAULT    3 L_Handler_MC
+   150: 0020235a   298 FUNC    GLOBAL DEFAULT    6 escribir_Pantalla
+   151: 00210000     0 NOTYPE  GLOBAL DEFAULT    5 CONTADOR_TIMER
+   152: 0030003a     0 NOTYPE  GLOBAL DEFAULT    7 __TAREA_1_size
+   153: 00000156     0 NOTYPE  GLOBAL DEFAULT    3 L_Handler_DE
+   154: 00000000     0 NOTYPE  GLOBAL DEFAULT    3 L_Handler_Timer
+   155: 00210031     0 NOTYPE  GLOBAL DEFAULT    5 PROMEDIO_TABLA_DIGITOS
+   156: 00300000     0 NOTYPE  GLOBAL DEFAULT    7 tarea_promedio
+   157: ffff18c6     0 NOTYPE  GLOBAL DEFAULT  ABS __KERNEL_LMA
+   158: 00300000     0 NOTYPE  GLOBAL DEFAULT  ABS __TAREA_1_VMA
+   159: ffff14a8     0 NOTYPE  GLOBAL DEFAULT  ABS __SYS_TABLES_LMA
+   160: 0000019c     0 NOTYPE  GLOBAL DEFAULT    2 __SYS_TABLES_size
+   161: 0000016b     0 NOTYPE  GLOBAL DEFAULT    3 L_Handler_DF
+   162: ffff0000     0 NOTYPE  GLOBAL DEFAULT  ABS __INIT_ROM
+   163: fffffff0     0 NOTYPE  GLOBAL DEFAULT  ABS __RESET
+   164: 00000174     0 NOTYPE  GLOBAL DEFAULT    3 L_Handler_SS
+   165: 2fff8000     0 NOTYPE  GLOBAL DEFAULT  ABS __STACK_END
+   166: 00000029     0 NOTYPE  GLOBAL DEFAULT    3 L_Handler_Teclado
 
 No se encontró información de versión en este fichero.
