@@ -78,20 +78,18 @@ __attribute__(( section(".funciones"))) void cargar_tabla(t_datos* table_p, buff
 		}
 	}
 //cargo la tabla de datos
-	if(indice <= LONG_TABLA)
+	if(indice <= CANT_TABLA)
 	{
-		for(i = 0; i < LONG_BUFFER; i++)
+		for(i = 0; i < LONG_TABLA; i++)
 		{	
-
-			table_p->buffer[(indice * LONG_BUFFER) -1 - i] = numero % 10;
-			numero = numero / 10;
-
+			table_p->buffer[(indice * LONG_TABLA) -1 - i] = numero % 100;
+			numero = numero / 100;
 		}
 		indice++;
 	}
 }
 
-__attribute__(( section(".funciones"))) void calcular_Promedio(t_datos* table_p, promedio* prom_p)
+__attribute__(( section(".text_tarea1"))) void calcular_Promedio(t_datos* table_p, promedio* prom_p)
 {
 	word offset = 0;
 	word i = 0, j = 0;
@@ -101,11 +99,12 @@ __attribute__(( section(".funciones"))) void calcular_Promedio(t_datos* table_p,
 	word div = 1;
 
 
-	for(j=0; j < LONG_TABLA; j++)
+	for(j=0; j < CANT_TABLA; j++)
 	{
-		for(i = 0; i < LONG_BUFFER; i++)
+		for(i = 0; i < LONG_TABLA; i++)
 		{	
-			numero = numero*10 + table_p->buffer[(LONG_BUFFER*j) + i];	
+			// 00 00 00 01 23 45 67 89 
+			numero = numero*100 + table_p->buffer[(LONG_TABLA*j) + i];	
 		}
 		if(numero > 0)
 		{
@@ -119,10 +118,10 @@ __attribute__(( section(".funciones"))) void calcular_Promedio(t_datos* table_p,
 
 	if(prom > 0)
 	{
-		for(i = 0; i < LONG_BUFFER; i++)
+		for(i = 0; i < LONG_TABLA; i++)
 		{
-			prom_p->buffer[LONG_BUFFER -1 - i] = prom % 10;
-			prom = prom/10;
+			prom_p->buffer[LONG_TABLA -1 - i] = prom % 100;
+			prom = prom/100;
 		}
 	}
 }
@@ -130,10 +129,31 @@ __attribute__(( section(".funciones"))) void calcular_Promedio(t_datos* table_p,
 __attribute__(( section(".funciones"))) void escribir_Pantalla(buff_video* buffV_p, promedio* prom_p, word fila, word columna)
 {
 	word offset = 0;
+	byte numero[16];
+	byte varaux = 0;
 	byte string[] = "Sebastian Gavegno";
 	word cant = 0;
 	cant = sizeof(string);
 
+	for(offset = 0; offset < 8; offset++)
+	{
+		varaux = prom_p->buffer[offset];
+		// ejemplo 00 00 00 01 23 45 67 89 
+		numero[offset*2]= varaux/10;
+		numero[(offset*2)+1]= varaux%10;
+	}
+
+	if((fila < 25) & (columna < 80))
+	{
+		for(offset = 0; offset < LONG_BUFFER; offset++)
+		{
+			buffV_p->buffer[((columna + offset) * 2) + (fila * 160)] = 48 + numero[offset];	// 48 es el 0 ascii
+			//cargo atributos
+			buffV_p->buffer[((columna + offset) * 2 + 1) + (fila * 160)] = 0x07;	//Atributo blanco sobre negro
+		}
+	}
+
+/*
 	if((fila < 25) & (columna < 80))
 	{
 		for(offset = 0; offset < LONG_BUFFER; offset++)
@@ -143,7 +163,7 @@ __attribute__(( section(".funciones"))) void escribir_Pantalla(buff_video* buffV
 			buffV_p->buffer[((columna + offset) * 2 + 1) + (fila * 160)] = 0x07;	//Atributo blanco sobre negro
 		}
 	}
-
+*/
 	for(offset = 0; offset < cant; offset++)
 	{
 		buffV_p->buffer[((0 + offset) * 2) + (24 * 160)] = string[offset];	

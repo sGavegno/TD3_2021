@@ -121,7 +121,7 @@ Handler_Timer:
     inc eax
     mov dword [CONTADOR_TIMER], eax
 
-    cmp eax, 0x3E8                      ;0x3E8 = 1000 en decimal
+    cmp eax, 0x1F4                      ;0x1F4 = 500 en decimal
     jne Timer_fin
 
     xor eax, eax                        ;reseteo contador
@@ -129,7 +129,6 @@ Handler_Timer:
     
     ;activar un flag para ejecutar la tarea cada 500ms
     mov byte [FLAG_TAREA_1], 0x01
-    ;call CS_SEL:tarea_promedio
 
 Timer_fin:
     MOV al, 0x20                        ;Envío End of Interrupt al PIC.

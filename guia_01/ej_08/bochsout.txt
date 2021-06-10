@@ -19,7 +19,7 @@
 00000000000i[      ]   Sound support: no
 00000000000i[      ]   USB support: UHCI OHCI
 00000000000i[      ]   VGA extension support: vbe
-00000000000i[MEM0  ] allocated memory at 0x7fb82839a010. after alignment, vector=0x7fb82839b000
+00000000000i[MEM0  ] allocated memory at 0x7fdf48de0010. after alignment, vector=0x7fdf48de1000
 00000000000i[MEM0  ] 1024,00MB
 00000000000i[MEM0  ] mem block size = 0x00020000, blocks=8192
 00000000000i[MEM0  ] rom at 0xffff0000/65536 ('./bin/mi_rom.bin')
@@ -29,7 +29,7 @@
 00000000000i[DEV   ] PIIX3 PCI-to-ISA bridge present at device 1, function 0
 00000000000i[PLUGIN] init_dev of 'cmos' plugin device by virtual method
 00000000000i[CMOS  ] Using local time for initial clock
-00000000000i[CMOS  ] Setting initial clock to: Tue Jun  8 15:38:30 2021 (time0=1623191910)
+00000000000i[CMOS  ] Setting initial clock to: Thu Jun 10 15:27:11 2021 (time0=1623364031)
 00000000000i[PLUGIN] init_dev of 'dma' plugin device by virtual method
 00000000000i[DMA   ] channel 4 used by cascade
 00000000000i[PLUGIN] init_dev of 'pic' plugin device by virtual method
@@ -147,26 +147,26 @@
 00000000007i[CPU0  ] [7] Stopped on MAGIC BREAKPOINT
 00000000498i[PIDE  ] new BM-DMA address: 0x4000
 00000000665i[UHCI  ] new base address: 0x4020
-00000416400i[CPU0  ] [416400] Stopped on MAGIC BREAKPOINT
-00000416400i[XGUI  ] charmap update. Font is 9 x 16
-42728950008i[CPU0  ] CPU is in protected mode (halted)
-42728950008i[CPU0  ] CS.mode = 32 bit
-42728950008i[CPU0  ] SS.mode = 32 bit
-42728950008i[CPU0  ] EFER   = 0x00000000
-42728950008i[CPU0  ] | EAX=00000012  EBX=0000001f  ECX=00000f22  EDX=00000f23
-42728950008i[CPU0  ] | ESP=2fff8000  EBP=2fff8000  ESI=ffff1da0  EDI=2fff8000
-42728950008i[CPU0  ] | IOPL=0 id vip vif ac vm rf nt of df IF tf SF zf AF PF CF
-42728950008i[CPU0  ] | SEG sltr(index|ti|rpl)     base    limit G D
-42728950008i[CPU0  ] |  CS:0008( 0001| 0|  0) 00000000 ffffffff 1 1
-42728950008i[CPU0  ] |  DS:0010( 0002| 0|  0) 00000000 ffffffff 1 1
-42728950008i[CPU0  ] |  SS:0010( 0002| 0|  0) 00000000 ffffffff 1 1
-42728950008i[CPU0  ] |  ES:0010( 0002| 0|  0) 00000000 ffffffff 1 1
-42728950008i[CPU0  ] |  FS:0010( 0002| 0|  0) 00000000 ffffffff 1 1
-42728950008i[CPU0  ] |  GS:0010( 0002| 0|  0) 00000000 ffffffff 1 1
-42728950008i[CPU0  ] | EIP=0020200b (0020200b)
-42728950008i[CPU0  ] | CR0=0x60000011 CR2=0x00000000
-42728950008i[CPU0  ] | CR3=0x00000000 CR4=0x00000000
-42728950008d[PCI   ] Exit
-42728950008i[CMOS  ] Last time is 1623192764 (Tue Jun  8 15:52:44 2021)
-42728950008i[XGUI  ] Exit
-42728950008i[SIM   ] quit_sim called with exit code 0
+00000449313i[CPU0  ] [449313] Stopped on MAGIC BREAKPOINT
+00000449313i[XGUI  ] charmap update. Font is 9 x 16
+39091898516i[CPU0  ] CPU is in protected mode (halted)
+39091898516i[CPU0  ] CS.mode = 32 bit
+39091898516i[CPU0  ] SS.mode = 32 bit
+39091898516i[CPU0  ] EFER   = 0x00000000
+39091898516i[CPU0  ] | EAX=00000012  EBX=0000001f  ECX=00000f22  EDX=00000f23
+39091898516i[CPU0  ] | ESP=2fff8000  EBP=2fff8000  ESI=ffff5e69  EDI=2fff8000
+39091898516i[CPU0  ] | IOPL=0 id vip vif ac vm rf nt of df IF tf SF zf AF PF CF
+39091898516i[CPU0  ] | SEG sltr(index|ti|rpl)     base    limit G D
+39091898516i[CPU0  ] |  CS:0008( 0001| 0|  0) 00000000 ffffffff 1 1
+39091898516i[CPU0  ] |  DS:0010( 0002| 0|  0) 00000000 ffffffff 1 1
+39091898516i[CPU0  ] |  SS:0010( 0002| 0|  0) 00000000 ffffffff 1 1
+39091898516i[CPU0  ] |  ES:0010( 0002| 0|  0) 00000000 ffffffff 1 1
+39091898516i[CPU0  ] |  FS:0010( 0002| 0|  0) 00000000 ffffffff 1 1
+39091898516i[CPU0  ] |  GS:0010( 0002| 0|  0) 00000000 ffffffff 1 1
+39091898516i[CPU0  ] | EIP=0022000b (0022000b)
+39091898516i[CPU0  ] | CR0=0x60000011 CR2=0x00000000
+39091898516i[CPU0  ] | CR3=0x00000000 CR4=0x00000000
+39091898516d[PCI   ] Exit
+39091898516i[CMOS  ] Last time is 1623364812 (Thu Jun 10 15:40:12 2021)
+39091898516i[XGUI  ] Exit
+39091898516i[SIM   ] quit_sim called with exit code 0
