@@ -9,6 +9,10 @@ EXTERN __SYS_TABLES_LMA
 EXTERN __SYS_TABLES_VMA
 EXTERN __SYS_TABLES_VMA_END
 
+EXTERN __SYS_TABLES_PAG_LMA
+EXTERN __SYS_TABLES_PAG_VMA
+EXTERN __SYS_TABLES_PAG_VMA_END
+
 EXTERN __DATOS_LMA
 EXTERN __DATOS_VMA
 EXTERN __DATOS_VMA_END
@@ -51,12 +55,63 @@ EXTERN PUNTERO_PANTALLA
 GLOBAL init32
 
 ;-------------------------------------SECTION-------------------------------------------
+
+INICIO_TABLAS_PAGINACION EQU 0x00010000            
+INICIO_DIR_PAGINAS       EQU INICIO_TABLAS_PAGINACION
+INICIO_TABLA_PAGINAS     EQU INICIO_DIR_PAGINAS + 0x1000
+
 section .init
 init32:
 
     INCBIN "./bin/init16.bin"
 
+xchg bx,bx
+
     ;Copio el codigo a la VMA   
+    call copiar_codigo
+
+    lgdt[_gdtr32]                           ;Cargo nueva GDT 
+    lidt[_idtr32]                           ;Cargo IDT 
+
+    ;inicializo la pila
+    mov ax, DS_SEL 
+    mov ss, ax
+    mov esp, __STACK_KERNEL_VMA_END
+    mov ebp, esp
+
+    ;limpio la pila
+    xor eax, eax
+    mov edi, __STACK_KERNEL_VMA
+    mov ecx, __STACK_KERNEL_VMA_END
+    sub ecx, __STACK_KERNEL_VMA
+    rep stosb
+
+    ;Inicializar valor.
+    mov eax, 0        
+    mov [PROMEDIO_TABLA_DIGITOS], eax
+    mov eax, BUFFER_VIDEO
+    mov [PUNTERO_PANTALLA],eax
+
+
+; Inicializar controlador de teclado.
+    call init_TECLADO
+
+; Inicializar timer para que interrumpa cada 54.9 milisegundos.
+    call init_TIMER
+
+; Inicializar ambos PIC usando ICW (Initialization Control Words).
+    call init_PIC
+    
+    ;xchg bx,bx
+    jmp CS_SEL:kernel_init
+    
+    .guard:
+        hlt
+        jmp .guard
+
+
+copiar_codigo:
+
     mov esi, __SYS_TABLES_LMA               ;Puntero al inicio de la LMA
     mov edi, __SYS_TABLES_VMA               ;Puntero a VMA
     mov ecx, __SYS_TABLES_VMA_END    
@@ -111,31 +166,17 @@ init32:
     sub ecx, __STAK_TAREA1_VMA              ;Tamaño a copiar
     rep movsb 
 
+    mov esi, __SYS_TABLES_PAG_LMA           ;Puntero al inicio de la LMA
+    mov edi, __SYS_TABLES_PAG_VMA           ;Puntero a VMA
+    mov ecx, __SYS_TABLES_PAG_VMA_END    
+    sub ecx, __SYS_TABLES_PAG_VMA           ;Tamaño a copiar
+    rep movsb 
 
-    lgdt[_gdtr32]                           ;Cargo nueva GDT 
-    lidt[_idtr32]                           ;Cargo IDT 
-
-    ;inicializo la pila
-    mov ax, DS_SEL 
-    mov ss, ax
-    mov esp, __STACK_KERNEL_VMA_END
-    mov ebp, esp
-
-    ;limpio la pila
-    xor eax, eax
-    mov edi, __STACK_KERNEL_VMA
-    mov ecx, __STACK_KERNEL_VMA_END
-    sub ecx, __STACK_KERNEL_VMA
-    rep stosb
-
-    ;Inicializar valor.
-    mov eax, 0        
-    mov [PROMEDIO_TABLA_DIGITOS], eax
-    mov eax, BUFFER_VIDEO
-    mov [PUNTERO_PANTALLA],eax
+    RET
 
 
-; Inicializar controlador de teclado.
+init_TECLADO:
+
     MOV al, 0xFF         ;Enviar comando de reset al controlador
     OUT 0x64, al         ;de teclado
     MOV ecx, 256         ;Esperar que rearranque el controlador.
@@ -154,14 +195,18 @@ ciclo2:
     LOOPZ  ciclo2
     IN al, 0x60          ;Vaciar el buffer de teclado.
 
-; Inicializar timer para que interrumpa cada 54.9 milisegundos.
+    RET
+
+init_TIMER:
     MOV AL,00110100b    ;Canal cero, byte bajo y luego byte alto.
     OUT 0x43,AL
     MOV AL,0            ;Dividir 1193181 Hz por 65536. Eso da 18,2 Hz aprox.
     OUT 0x40,AL         ;Programar byte bajo del timer de 16 bits.
     OUT 0x40,AL         ;Programar byte alto del timer de 16 bits.
 
-; Inicializar ambos PIC usando ICW (Initialization Control Words).
+    RET
+
+init_PIC:
 ; ICW1 = Indicarle a los PIC que estamos inicializándolo.
     MOV al, 0x11        ;Palabra de inicialización (bit 4=1) indicando que 
                         ;se necesita ICW4 (bit 0=1)
@@ -193,12 +238,5 @@ ciclo2:
     OUT 0xA1, al         ;Enviar máscara al segundo PIC.
 
     STI                 ;Habilitar interrupciones
-    
-    ;xor eax, eax
-    
-    ;xchg bx,bx
-    jmp CS_SEL:kernel_init
-    
-    .guard:
-        hlt
-        jmp .guard
+
+    RET

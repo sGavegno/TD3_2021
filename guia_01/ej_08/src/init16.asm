@@ -77,3 +77,9 @@ modo_prot:
     mov es, ax
     mov fs, ax
     mov gs, ax
+    ;inicializo la pila
+    
+    mov ss, ax
+    mov eax, 0xFFFFFFEF
+    mov esp, eax
+    mov ebp, esp

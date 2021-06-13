@@ -2,6 +2,7 @@ ENTRY (reset)
 
     __INIT_ROM              = 0xFFFF0000;
     __RESET                 = 0xFFFFFFF0;
+    __STACK_16              = 0xFFFFFFEF;
 
    /*-----------------VMA-----------------*/
     __SYS_TABLES_VMA        = 0x00000000;
