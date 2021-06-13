@@ -68,7 +68,9 @@ init32:
 xchg bx,bx
 
     ;Copio el codigo a la VMA   
-    call copiar_codigo
+    jmp copiar_codigo
+
+fin_copia_codigo:
 
     lgdt[_gdtr32]                           ;Cargo nueva GDT 
     lidt[_idtr32]                           ;Cargo IDT 
@@ -102,6 +104,11 @@ xchg bx,bx
 ; Inicializar ambos PIC usando ICW (Initialization Control Words).
     call init_PIC
     
+;Habilitacion de paginacion
+    call habilitar_paginacion
+
+
+
     ;xchg bx,bx
     jmp CS_SEL:kernel_init
     
@@ -172,8 +179,7 @@ copiar_codigo:
     sub ecx, __SYS_TABLES_PAG_VMA           ;Tamaño a copiar
     rep movsb 
 
-    RET
-
+    jmp fin_copia_codigo
 
 init_TECLADO:
 
@@ -182,18 +188,18 @@ init_TECLADO:
     MOV ecx, 256         ;Esperar que rearranque el controlador.
     LOOP $
     MOV ecx, 0x10000
-ciclo1:
-    IN al, 0x60          ;Esperar que termine el reset del controlador.
-    TEST al, 1
-    LOOPZ ciclo1
-    MOV al, 0xF4         ;Habilitar el teclado.
-    OUT 0x64, al
-    MOV ecx, 0x10000
-ciclo2:
-    IN al, 0x60          ;Esperar que termine el comando.
-    TEST al, 1
-    LOOPZ  ciclo2
-    IN al, 0x60          ;Vaciar el buffer de teclado.
+    ciclo1:
+        IN al, 0x60          ;Esperar que termine el reset del controlador.
+        TEST al, 1
+        LOOPZ ciclo1
+        MOV al, 0xF4         ;Habilitar el teclado.
+        OUT 0x64, al
+        MOV ecx, 0x10000
+    ciclo2:
+        IN al, 0x60          ;Esperar que termine el comando.
+        TEST al, 1
+        LOOPZ  ciclo2
+        IN al, 0x60          ;Vaciar el buffer de teclado.
 
     RET
 
@@ -240,3 +246,52 @@ init_PIC:
     STI                 ;Habilitar interrupciones
 
     RET
+
+
+habilitar_paginacion:
+
+    mov edi,INICIO_TABLAS_PAGINACION   ;Apuntar al inicio de la 1ra tabla.
+    mov ecx,0x0400 * 2                 ;Cantidad de entradas del directorio(1024) y una tabla(1024)
+    xor eax,eax                        ;Poner a cero esas entradas.
+    rep stosd
+
+    ;cargar directorio 0x000 
+    mov dword [INICIO_DIR_PAGINAS],0x00011003              
+    ;cargar directorio 0x0BF
+    mov dword [INICIO_DIR_PAGINAS + 0x2FC], 0x000D0003         
+    ;cargar tabla 0x000
+    mov dword [INICIO_TABLA_PAGINAS], 0x00000003 
+    ;cargar tabla 0x010
+    mov dword [INICIO_TABLA_PAGINAS+ 0x010*4], 0x00010003
+    ;cargar tabla 0x0B8
+    mov dword [INICIO_TABLA_PAGINAS+ 0x0B8*4], 0x000B8003
+    ;cargar tabla 0x100
+    mov dword [INICIO_TABLA_PAGINAS+ 0x100*4], 0x00100003
+    ;cargar tabla 0x200
+    mov dword [INICIO_TABLA_PAGINAS+ 0x200*4], 0x00200003 
+    ;cargar tabla 0x210
+    mov dword [INICIO_TABLA_PAGINAS+ 0x210*4], 0x00210003
+    ;cargar tabla 0x220
+    mov dword [INICIO_TABLA_PAGINAS+ 0x220*4], 0x00220003
+    ;cargar tabla 0x310
+    mov dword [INICIO_TABLA_PAGINAS+ 0x310*4], 0x00310003
+    ;cargar tabla 0x320
+    mov dword [INICIO_TABLA_PAGINAS+ 0x320*4], 0x00320003
+    ;cargar tabla 0x330
+    mov dword [INICIO_TABLA_PAGINAS+ 0x330*4], 0x00330003
+    ;cargar tabla 0x340
+    mov dword [INICIO_TABLA_PAGINAS+ 0x340*4], 0x00340003
+    ;cargar tabla 0x2F8
+    mov dword [INICIO_TABLA_PAGINAS+ 0x2F8*4], 0x2FFF8003
+    ;cargar tabla 0x2FF
+    mov dword [INICIO_TABLA_PAGINAS+ 0x2FF*4], 0x2FFFF003
+
+    mov eax,INICIO_TABLAS_PAGINACION
+    mov cr3,eax                ;Apuntar a directorio de paginas.
+    mov eax,cr4                ;Activar el bit Page Size Enable (bit 4
+    or al,0x10                 ;de CR4) para habilitar las paginas grandes.
+    mov cr4,eax
+    mov eax,cr0                ;Activar paginacion encendiendo el
+    or eax,0x80000000          ;bit 31 de CR0.
+    mov cr0,eax
+
