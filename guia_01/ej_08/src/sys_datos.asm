@@ -20,7 +20,7 @@ USE32
 
 section .tables_digito
 
-PUNTERO_TABLA_DIGITO resb 16*10   ;mi tabla puede cargar hasta 10 numeros de 64bits
+PUNTERO_TABLA_DIGITO resb 8*10   ;mi tabla puede cargar hasta 10 numeros de 64bits
 
 ;-------------------------------VARIABLES inicializadas---------------------------------------
 section .datos                      

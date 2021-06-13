@@ -121,7 +121,7 @@ Handler_Timer:
     inc eax
     mov dword [CONTADOR_TIMER], eax
 
-    cmp eax, 0x1F4                      ;0x1F4 = 500 en decimal
+    cmp eax, 0xA                      ;0xA = 10 en decimal (interumpe cada 54.9 milisegundos * 10 = 549ms)
     jne Timer_fin
 
     xor eax, eax                        ;reseteo contador
@@ -147,13 +147,20 @@ Handler_Teclado:
     AND al, al
     JS Teclado_fin                      ;Si se suelta al tecla no hago nada
 
+	;xchg bx,bx
+    xor eax, eax
+    mov byte eax, [BUFFER_TECLADO + 18] ;cantidad de datos en el buffer
+    cmp eax, 0x10                       ;Tabla completa
+    jne detectar_numeros
 
-;xchg bx,bx	
-;    xor eax, eax
-;    mov byte eax, [BUFFER_TECLADO + 19] ;cantidad de datos en el buffer
-;    cmp eax, 0x10                       ;Tabla completa
-;    je T_ENTER
+    push dword BUFFER_TECLADO
+    push dword PUNTERO_TABLA_DIGITO
+    call cargar_tabla
+    add esp,8
 
+    jmp Teclado_fin
+
+detectar_numeros:
 ;Detecto los numeros
     cmp bl, TECLA_1
     je T_1 

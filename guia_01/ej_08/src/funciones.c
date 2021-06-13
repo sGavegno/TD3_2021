@@ -1,7 +1,6 @@
 
 #include "../inc/funciones.h"
 
-
 __attribute__(( section(".funciones"))) void buffer_Push(buff* buff_p,byte Dato)
 {
 	if(Dato >= 0x00 & Dato <= 0X15 )
@@ -16,13 +15,15 @@ __attribute__(( section(".funciones"))) void buffer_Push(buff* buff_p,byte Dato)
 				buff_p->In = 0;
 			}
 		}
-		else
-		{
+	}
+
+	if(buff_p->Cant == BUFF_SIZE)
+	{
 			//funcion para cargar tabla
 			/*
-				flag_simular_enter
+				flag_simular_enter = 1
+				out 0x60, 1C
 			*/
-		}
 	}
 }
 
@@ -63,107 +64,143 @@ __attribute__(( section(".funciones"))) void buffer_Clear(buff* buff_p)
 
 __attribute__(( section(".funciones"))) void cargar_tabla(t_datos* table_p, buff* buff_p)
 {
-	static char indice = 1;
+	static char indice = 0;
 	word i=0;
 	byte dato = 0xFF;
-	dword numero = 0;
+	qword numero = 0;
+	dword numero_L = 0;
+	dword numero_H = 0;	
+	byte cant = 0;
 
+	cant = buff_p->Cant;
 //saco el numero del buffer y lo ordeno
-	for(i = 0; i < LONG_BUFFER; i++)
+	for(i = 0; i < cant; i++)
 	{
 		dato = buffer_Pop(buff_p);	
 		if( dato != 0xFF)
 		{
 			numero = numero*10 + dato;
+
+			if(i < LONG_BUFFER/2)
+			{
+				numero_L = numero_L*10 + dato;
+			}
+			else
+			{
+				numero_H = numero_H*10 + dato;				
+			}
 		}
 	}
 //cargo la tabla de datos
 	if(indice <= CANT_TABLA)
 	{
-		for(i = 0; i < LONG_TABLA; i++)
-		{	
-			table_p->buffer[(indice * LONG_TABLA) -1 - i] = numero % 100;
-			numero = numero / 100;
-		}
+		table_p->tabla[indice] = numero;
+//		table_p->tabla[indice] = (numero_H << 32) | numero_L;
 		indice++;
 	}
 }
 
 __attribute__(( section(".text_tarea1"))) void calcular_Promedio(t_datos* table_p, promedio* prom_p)
 {
-	word offset = 0;
-	word i = 0, j = 0;
-	dword sumProm = 0;
-	dword prom = 0;
-	dword numero = 0;
-	word div = 1;
+	word i = 0;
+	word div = 0;
 
+	prom_p->aux = 0;
+	prom_p->Suma = 0;
+	prom_p->prom = 0;
 
-	for(j=0; j < CANT_TABLA; j++)
+	for(i=0; i < CANT_TABLA; i++)
 	{
-		for(i = 0; i < LONG_TABLA; i++)
-		{	
-			// 00 00 00 01 23 45 67 89 
-			numero = numero*100 + table_p->buffer[(LONG_TABLA*j) + i];	
-		}
-		if(numero > 0)
+		prom_p->aux = table_p->tabla[i];
+
+		if(prom_p->aux > 0)
 		{
-			sumProm = sumProm + numero;
-			prom = sumProm / div;
-//			asm("xchg %bx,%bx");
+			prom_p->Suma = prom_p->Suma + prom_p->aux;
 			div++;
+			prom_p->aux = 0;
 		}
-		numero = 0;
 	}
-
-	if(prom > 0)
+	if(div > 0)
 	{
-		for(i = 0; i < LONG_TABLA; i++)
-		{
-			prom_p->buffer[LONG_TABLA -1 - i] = prom % 100;
-			prom = prom/100;
-		}
+		prom_p->prom = division_64(prom_p->Suma, div);
 	}
 }
+
+__attribute__(( section(".text_tarea1")))qword division_64(qword sumaprom, word div)
+{
+    static byte i=0;
+    static qword resultado64,aux;         //sumaprom/div  
+    resultado64=0;
+    aux=0;    
+    for(i=0;i<64;i++)
+    {
+        
+        aux=aux | ( ( sumaprom>>(64-1-i) ) & ( 0x01 ) );
+        if(aux>=div)
+        {
+        resultado64=resultado64|0x1;            
+        aux=aux-div;
+        }
+        resultado64=resultado64<<1;
+        aux=aux<<1;
+    }
+    resultado64=resultado64>>1;
+    return resultado64;
+}
+
+
 
 __attribute__(( section(".funciones"))) void escribir_Pantalla(buff_video* buffV_p, promedio* prom_p, word fila, word columna)
 {
 	word offset = 0;
+	qword aux = 0;
+	dword aux_L = 0;
+	dword aux_H = 0;
 	byte numero[16];
 	byte varaux = 0;
 	byte string[] = "Sebastian Gavegno";
 	word cant = 0;
 	cant = sizeof(string);
 
-	for(offset = 0; offset < 8; offset++)
+	aux = prom_p->prom;
+	aux_L = prom_p->prom;
+	aux_H = (prom_p->prom) >> 32;
+	for(offset = 0; offset < 16; offset++)
 	{
-		varaux = prom_p->buffer[offset];
-		// ejemplo 00 00 00 01 23 45 67 89 
-		numero[offset*2]= varaux/10;
-		numero[(offset*2)+1]= varaux%10;
+		if(offset < 8)
+		{
+			//numero[offset] = aux_L % 10;
+			varaux = aux_L % 16;
+			aux_L = aux_L / 16;
+			if(varaux>=10)
+    		{
+    			varaux=varaux+7;
+    		}
+			numero[offset] = varaux;
+		}
+		else
+		{	
+			//numero[offset] = aux_H%10;
+			varaux = aux_H % 16;			
+			aux_H = aux_H / 16;	
+			if(varaux>=10)
+    		{
+    			varaux=varaux+7;
+    		}
+			numero[offset] = varaux;	
+		}
 	}
 
 	if((fila < 25) & (columna < 80))
 	{
 		for(offset = 0; offset < LONG_BUFFER; offset++)
 		{
-			buffV_p->buffer[((columna + offset) * 2) + (fila * 160)] = 48 + numero[offset];	// 48 es el 0 ascii
+			buffV_p->buffer[((columna + offset) * 2) + (fila * 160)] = 48 + numero[LONG_BUFFER-1 - offset];	// 48 es el 0 ascii
 			//cargo atributos
 			buffV_p->buffer[((columna + offset) * 2 + 1) + (fila * 160)] = 0x07;	//Atributo blanco sobre negro
 		}
 	}
 
-/*
-	if((fila < 25) & (columna < 80))
-	{
-		for(offset = 0; offset < LONG_BUFFER; offset++)
-		{
-			buffV_p->buffer[((columna + offset) * 2) + (fila * 160)] = 48 + prom_p->buffer[offset];	// 48 es el 0 ascii
-			//cargo atributos
-			buffV_p->buffer[((columna + offset) * 2 + 1) + (fila * 160)] = 0x07;	//Atributo blanco sobre negro
-		}
-	}
-*/
 	for(offset = 0; offset < cant; offset++)
 	{
 		buffV_p->buffer[((0 + offset) * 2) + (24 * 160)] = string[offset];	

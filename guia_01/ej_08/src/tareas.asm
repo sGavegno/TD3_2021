@@ -28,7 +28,7 @@ section .datos_tarea1
 
 section .rodata_tarea1
 
-PROMEDIO_TABLA_DIGITOS  resb 16
+PROMEDIO_TABLA_DIGITOS  resb 40
 
 section .stak_tarea1
 

@@ -44,7 +44,7 @@ inicio:
     test eax,0x0    ;verificar que el uP no este en falla
     jne fault_end
 
-    xchg bx,bx
+;    xchg bx,bx
 
     xor eax,eax
 

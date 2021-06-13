@@ -10,6 +10,7 @@
 
 extern long unsigned __DATA_VMA;
 
+typedef unsigned long long qword;       //64 bits
 typedef unsigned long dword;            //32 bits
 typedef unsigned short word;            //16bits
 typedef unsigned char byte;             //8bits
@@ -26,12 +27,14 @@ typedef struct buff
 
 typedef struct t_datos
 {
-    byte buffer[LONG_TABLA_DATOS];      //buffer
+    qword tabla[CANT_TABLA];
 }t_datos;
 
 typedef struct promedio
 {
-    byte buffer[LONG_BUFFER];           //buffer
+    qword prom;
+    qword Suma;
+    qword aux;
 }promedio;
 
 typedef struct buff_video
@@ -46,6 +49,8 @@ void buffer_Clear(buff*);
 void cargar_tabla(t_datos* ,buff*);
 
 void calcular_Promedio(t_datos*, promedio*);
+
+qword division_64(qword sumaprom, word div);
 
 void escribir_Pantalla(buff_video*, promedio*,word, word);
 
