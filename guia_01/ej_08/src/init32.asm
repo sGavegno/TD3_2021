@@ -51,6 +51,7 @@ EXTERN BUFFER_VIDEO
 
 EXTERN PROMEDIO_TABLA_DIGITOS
 EXTERN PUNTERO_PANTALLA
+
 ;------------------------------VARIABLES GLOBALES--------------------------------------------------
 GLOBAL init32
 
@@ -94,6 +95,8 @@ fin_copia_codigo:
     mov eax, BUFFER_VIDEO
     mov [PUNTERO_PANTALLA],eax
 
+    call activar_gate_a20
+
 
 ; Inicializar controlador de teclado.
     call init_TECLADO
@@ -103,12 +106,10 @@ fin_copia_codigo:
 
 ; Inicializar ambos PIC usando ICW (Initialization Control Words).
     call init_PIC
-    
+
 ;Habilitacion de paginacion
     call habilitar_paginacion
-
-
-
+       
     ;xchg bx,bx
     jmp CS_SEL:kernel_init
     
@@ -206,7 +207,7 @@ init_TECLADO:
 init_TIMER:
     MOV AL,00110100b    ;Canal cero, byte bajo y luego byte alto.
     OUT 0x43,AL
-    MOV AL,0            ;Dividir 1193181 Hz por 65536. Eso da 18,2 Hz aprox.
+    MOV AL,11931        ;Dividir 1193181 Hz por 11931. Eso da 100 Hz aprox. 10ms
     OUT 0x40,AL         ;Programar byte bajo del timer de 16 bits.
     OUT 0x40,AL         ;Programar byte alto del timer de 16 bits.
 
@@ -250,48 +251,69 @@ init_PIC:
 
 habilitar_paginacion:
 
+    cli
+
     mov edi,INICIO_TABLAS_PAGINACION   ;Apuntar al inicio de la 1ra tabla.
     mov ecx,0x0400 * 2                 ;Cantidad de entradas del directorio(1024) y una tabla(1024)
     xor eax,eax                        ;Poner a cero esas entradas.
     rep stosd
 
     ;cargar directorio 0x000 
-    mov dword [INICIO_DIR_PAGINAS],0x00011003              
-    ;cargar directorio 0x0BF
-    mov dword [INICIO_DIR_PAGINAS + 0x2FC], 0x000D0003         
+    mov dword [INICIO_DIR_PAGINAS], 0x00011003
+    ;cargar directorio 0x003
+    mov dword [INICIO_DIR_PAGINAS + 0x0C], 0x00014003                  
+    ;cargar directorio 0x07F
+    mov dword [INICIO_DIR_PAGINAS + 0x1FC], 0x000900003         
     ;cargar tabla 0x000
     mov dword [INICIO_TABLA_PAGINAS], 0x00000003 
     ;cargar tabla 0x010
-    mov dword [INICIO_TABLA_PAGINAS+ 0x010*4], 0x00010003
-    ;cargar tabla 0x0B8
-    mov dword [INICIO_TABLA_PAGINAS+ 0x0B8*4], 0x000B8003
+    mov dword [INICIO_TABLA_PAGINAS + 0x040], 0x00010003
+    ;cargar tabla 0x280     VIDEO
+    mov dword [0x00014000 + 0xA00], 0x00E80003
     ;cargar tabla 0x100
-    mov dword [INICIO_TABLA_PAGINAS+ 0x100*4], 0x00100003
+    mov dword [INICIO_TABLA_PAGINAS + 0x400], 0x00100003
     ;cargar tabla 0x200
-    mov dword [INICIO_TABLA_PAGINAS+ 0x200*4], 0x00200003 
+    mov dword [INICIO_TABLA_PAGINAS + 0x800], 0x00200003 
     ;cargar tabla 0x210
-    mov dword [INICIO_TABLA_PAGINAS+ 0x210*4], 0x00210003
+    mov dword [INICIO_TABLA_PAGINAS + 0x840], 0x00210003
     ;cargar tabla 0x220
-    mov dword [INICIO_TABLA_PAGINAS+ 0x220*4], 0x00220003
+    mov dword [INICIO_TABLA_PAGINAS + 0x880], 0x00220003
     ;cargar tabla 0x310
-    mov dword [INICIO_TABLA_PAGINAS+ 0x310*4], 0x00310003
+    mov dword [INICIO_TABLA_PAGINAS + 0xC40], 0x00310003
     ;cargar tabla 0x320
-    mov dword [INICIO_TABLA_PAGINAS+ 0x320*4], 0x00320003
+    mov dword [INICIO_TABLA_PAGINAS + 0xC80], 0x00320003
     ;cargar tabla 0x330
-    mov dword [INICIO_TABLA_PAGINAS+ 0x330*4], 0x00330003
+    mov dword [INICIO_TABLA_PAGINAS + 0xCC0], 0x00330003
     ;cargar tabla 0x340
-    mov dword [INICIO_TABLA_PAGINAS+ 0x340*4], 0x00340003
-    ;cargar tabla 0x2F8
-    mov dword [INICIO_TABLA_PAGINAS+ 0x2F8*4], 0x2FFF8003
-    ;cargar tabla 0x2FF
-    mov dword [INICIO_TABLA_PAGINAS+ 0x2FF*4], 0x2FFFF003
+    mov dword [INICIO_TABLA_PAGINAS + 0xD00], 0x00340003
+    ;cargar tabla 0x3F8
+    mov dword [0x00090000 + 0xFE0], 0x1FFF8003
+    ;cargar tabla 0x3FF
+    mov dword [0x00090000 + 0xFFC], 0x1FFFF003
 
-    mov eax,INICIO_TABLAS_PAGINACION
+    mov eax,INICIO_TABLAS_PAGINACION 
     mov cr3,eax                ;Apuntar a directorio de paginas.
-    mov eax,cr4                ;Activar el bit Page Size Enable (bit 4
-    or al,0x10                 ;de CR4) para habilitar las paginas grandes.
-    mov cr4,eax
-    mov eax,cr0                ;Activar paginacion encendiendo el
-    or eax,0x80000000          ;bit 31 de CR0.
-    mov cr0,eax
+ 
+xchg bx,bx
 
+    mov eax,cr0                 ;Activar paginacion encendiendo el
+    or eax, 1 << 31             ;bit 31 CR0.
+    mov cr0,eax 
+    
+    ret
+
+activar_gate_a20:
+     call empty_8042            ;Esperar hasta que se pueda acceder al 8042.
+     mov al,0xD1                ;Comando de escritura al controlador.
+     out 0x64,al
+     call empty_8042            ;Esperar hasta que se pueda acceder al 8042.
+     mov al,0xDF                ;Encender bit Gate A20.
+     out 0x64,al
+     call empty_8042            ;Esperar hasta que se pueda acceder al 8042.
+     ret
+
+empty_8042:
+     in al,0x64
+     test al,2
+     jnz empty_8042
+     ret

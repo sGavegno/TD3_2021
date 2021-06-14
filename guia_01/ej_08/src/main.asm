@@ -15,7 +15,7 @@ GLOBAL BUFFER_VIDEO
 ;-------------------------------------SECTION-------------------------------------------
 section .kernel
 
-BUFFER_VIDEO     EQU 0x000B8000
+BUFFER_VIDEO     EQU 0x00E80000
 
 kernel_init:
     

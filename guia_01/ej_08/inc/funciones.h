@@ -54,4 +54,3 @@ qword division_64(qword sumaprom, word div);
 
 void escribir_Pantalla(buff_video*, promedio*,word, word);
 
-

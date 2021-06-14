@@ -2,12 +2,11 @@ ENTRY (reset)
 
     __INIT_ROM              = 0xFFFF0000;
     __RESET                 = 0xFFFFFFF0;
-    __STACK_16              = 0xFFFFFFEF;
 
    /*-----------------VMA-----------------*/
     __SYS_TABLES_VMA        = 0x00000000;
     __SYS_TABLES_PAG_VMA    = 0x00010000;
-    __VIDEO_VMA             = 0x000B8000;
+    __VIDEO_VMA             = 0x00E80000;
     __HANDLER_VMA           = 0x00100000;
     __DATOS_VMA             = 0x00200000;
     __TABLES_DIGITOS_VMA    = 0x00210000;
@@ -17,11 +16,11 @@ ENTRY (reset)
     __DATA_TAREA1_VMA       = 0x00330000;
     __RODATA_TAREA1_VMA     = 0x00340000;
 
-    __STACK_KERNEL_VMA      = 0x2FFF4000;               /* stak de 16k */
-    __STACK_KERNEL_END_VMA  = 0x2FFF8000;
+    __STACK_KERNEL_VMA      = 0x1FFF4000;               /* stak de 16k */
+    __STACK_KERNEL_END_VMA  = 0x1FFF8000;
     
-    __STAK_TAREA1_VMA       = 0x2FFFB000;               /* stak de 16k */
-    __STAK_TAREA1_END_VMA   = 0x2FFFF000;
+    __STAK_TAREA1_VMA       = 0x1FFFB000;               /* stak de 16k */
+    __STAK_TAREA1_END_VMA   = 0x1FFFF000;
     
     __INIT_VMA              = 0xFFFF0000;
 

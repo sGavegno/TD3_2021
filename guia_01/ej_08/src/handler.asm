@@ -121,7 +121,7 @@ Handler_Timer:
     inc eax
     mov dword [CONTADOR_TIMER], eax
 
-    cmp eax, 0xA                      ;0xA = 10 en decimal (interumpe cada 54.9 milisegundos * 10 = 549ms)
+    cmp eax, 0x32                      ;0xA = 10 en decimal (interumpe cada 10 milisegundos * 50 = 500ms)
     jne Timer_fin
 
     xor eax, eax                        ;reseteo contador
