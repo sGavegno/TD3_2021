@@ -300,6 +300,14 @@ habilitar_paginacion:
     mov dword [0x00410000 + 0xFC0], 0xFFFF0003
     mov dword [0x00410000 + 0xFC4], 0xFFFF1003
 
+
+    push 0x03
+    push
+    push
+    push INICIO_TABLAS_PAGINACION         
+    call carga_paginacion
+    add esp,16
+
     mov eax,INICIO_TABLAS_PAGINACION 
     mov cr3,eax                ;Apuntar a directorio de paginas.
  
