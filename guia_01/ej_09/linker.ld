@@ -3,29 +3,46 @@ ENTRY (reset)
     __INIT_ROM              = 0xFFFF0000;
     __RESET                 = 0xFFFFFFF0;
 
-   /*-----------------VMA-----------------*/
-    __SYS_TABLES_VMA        = 0x00000000;
-    __SYS_TABLES_PAG_VMA    = 0x00010000;
-    __VIDEO_VMA             = 0x000B8000;
-    __HANDLER_VMA           = 0x00100000;
-    __DATOS_VMA             = 0x00200000;
-    __TABLES_DIGITOS_VMA    = 0x00210000;
-    __KERNEL_VMA            = 0x00220000;
-    __TEXT_TAREA1_VMA       = 0x00310000;
-    __BSS_TAREA1_VMA        = 0x00320000;
-    __DATA_TAREA1_VMA       = 0x00330000;
-    __RODATA_TAREA1_VMA     = 0x00340000;
+   /*--------------Direccion Fisica-----------------*/
+    __SYS_TABLES_VMA_FIS        = 0x00000000;
+    __SYS_TABLES_PAG_VMA_FIS    = 0x00010000;
+    __VIDEO_VMA_FIS             = 0x000B8000;
+    __HANDLER_VMA_FIS           = 0x00100000;
+    __DATOS_VMA_FIS             = 0x00200000;
+    __TABLES_DIGITOS_VMA_FIS    = 0x00210000;
+    __KERNEL_VMA_FIS            = 0x00220000;
+    __TEXT_TAREA1_VMA_FIS       = 0x00310000;
+    __BSS_TAREA1_VMA_FIS        = 0x00320000;
+    __DATA_TAREA1_VMA_FIS       = 0x00330000;
+    __RODATA_TAREA1_VMA_FIS     = 0x00340000;
 
-    __STACK_KERNEL_VMA      = 0x1FFF8000;               /* stak de 4k */
-    __STACK_KERNEL_END_VMA  = 0x1FFF8FFF;
+    __STACK_KERNEL_VMA_FIS      = 0x1FFF8000;               /* stak de 4k */
+    __STACK_KERNEL_END_VMA_FIS  = 0x1FFF8FFF;
     
-    __STAK_TAREA1_VMA       = 0x1FFFF000;               /* stak de 4k */
-    __STAK_TAREA1_END_VMA   = 0x1FFFFFFF;
+    __STAK_TAREA1_VMA_FIS       = 0x1FFFF000;               /* stak de 4k */
+    __STAK_TAREA1_END_VMA_FIS   = 0x1FFFFFFF;
     
     __INIT_VMA              = 0xFFFF0000;
 
-    /*-----------------LMA-----------------*/
-    __INIT_LMA              = 0xFFFF0000;
+    /*--------------Dirección Lineal-----------------*/
+    __SYS_TABLES_VMA_LIN            = 0x00000000;
+    __SYS_TABLES_PAG_VMA_LIN        = 0x00010000;
+    __VIDEO_VMA_LIN                 = 0x00E80000;
+    __HANDLER_VMA_LIN               = 0x00100000;
+    __DATOS_VMA_LIN                 = 0x01200000;
+    __TABLES_DIGITOS_VMA_LIN        = 0x01210000;
+    __KERNEL_VMA_LIN                = 0x01220000;
+    __TEXT_TAREA1_VMA_LIN           = 0x01310000;
+    __BSS_TAREA1_VMA_LIN            = 0x01320000;
+    __DATA_TAREA1_VMA_LIN           = 0x01330000;
+    __RODATA_TAREA1_VMA_LIN         = 0x01340000;
+
+    __STACK_KERNEL_VMA_LIN          = 0x1FFF8000;               /* stak de 4k */
+    __STACK_KERNEL_VMA_LIN_END      = 0x1FFF8FFF;
+    
+    __STAK_TAREA1_VMA_LIN           = 0x0078F000;               /* stak de 4k */
+    __STAK_TAREA1_VMA_LIN_END       = 0x0078FFFF;
+    
 
 
 MEMORY
@@ -47,7 +64,7 @@ SECTIONS
         } > rom
         __INIT_VMA_END = .;
 
-    .sys_tables __SYS_TABLES_VMA :
+    .sys_tables __SYS_TABLES_VMA_LIN :
             AT ( LOADADDR(.init) + SIZEOF(.init))
         {
             __SYS_TABLES_LMA = LOADADDR(.sys_tables);
@@ -56,7 +73,7 @@ SECTIONS
         } > ram
         __SYS_TABLES_VMA_END = .;
 
-    .sys_tables_paginacion __SYS_TABLES_PAG_VMA :
+    .sys_tables_paginacion __SYS_TABLES_PAG_VMA_LIN :
             AT ( LOADADDR(.sys_tables) + SIZEOF(.sys_tables))
         {
             __SYS_TABLES_PAG_LMA = LOADADDR(.sys_tables_paginacion);
@@ -65,7 +82,7 @@ SECTIONS
         } > ram
         __SYS_TABLES_PAG_VMA_END = .;
 
-    .video __VIDEO_VMA :
+    .video __VIDEO_VMA_LIN :
         AT ( LOADADDR(.sys_tables_paginacion) + SIZEOF(.sys_tables_paginacion) )
         { 
             __VIDEO_LMA = LOADADDR(.video);
@@ -74,7 +91,7 @@ SECTIONS
         } > ram
         __VIDEO_VMA_END = .;
 
-    .rutinas_handler __HANDLER_VMA :
+    .rutinas_handler __HANDLER_VMA_LIN :
         AT ( LOADADDR(.video) + SIZEOF(.video) )
         { 
             __HANDLER_LMA = LOADADDR(.rutinas_handler);
@@ -83,7 +100,7 @@ SECTIONS
         } > ram
         __HANDLER_VMA_END = .;
 
-    .data __DATOS_VMA :
+    .data __DATOS_VMA_LIN :
         AT ( LOADADDR(.rutinas_handler) + SIZEOF(.rutinas_handler))
         {
             __DATOS_LMA = LOADADDR(.data);
@@ -96,7 +113,7 @@ SECTIONS
         } > ram
         __DATOS_VMA_END = .;
 
-    .tables_digito __TABLES_DIGITOS_VMA :
+    .tables_digito __TABLES_DIGITOS_VMA_LIN :
             AT ( LOADADDR(.data) + SIZEOF(.data))
         {
             __TABLES_DIGITOS_LMA = LOADADDR(.tables_digito);
@@ -105,7 +122,7 @@ SECTIONS
         } > ram
         __TABLES_DIGITOS_VMA_END = .;
 
-    .kernel __KERNEL_VMA :
+    .kernel __KERNEL_VMA_LIN :
         AT ( LOADADDR(.tables_digito) + SIZEOF(.tables_digito) )
         { 
             __KERNEL_LMA = LOADADDR(.kernel);            
@@ -114,7 +131,7 @@ SECTIONS
         } > ram
         __KERNEL_VMA_END = .;
 
-    .text_tarea1 __TEXT_TAREA1_VMA :
+    .text_tarea1 __TEXT_TAREA1_VMA_LIN :
         AT ( LOADADDR(.kernel) + SIZEOF(.kernel) )
         {
             __TEXT_TAREA1_LMA = LOADADDR(.text_tarea1);
@@ -122,7 +139,7 @@ SECTIONS
         } > ram
         __TEXT_TAREA1_VMA_END = .;
 
-    .bss_tarea1 __BSS_TAREA1_VMA :
+    .bss_tarea1 __BSS_TAREA1_VMA_LIN :
         AT ( LOADADDR(.text_tarea1) + SIZEOF(.text_tarea1) )
         {
             __BSS_TAREA1_LMA = LOADADDR(.bss_tarea1);
@@ -130,7 +147,7 @@ SECTIONS
         } > ram
         __BSS_TAREA1_VMA_END = .;
 
-    .datos_tarea1 __DATA_TAREA1_VMA :
+    .datos_tarea1 __DATA_TAREA1_VMA_LIN :
         AT ( LOADADDR(.bss_tarea1) + SIZEOF(.bss_tarea1) )
         {
             __DATA_TAREA1_LMA = LOADADDR(.datos_tarea1);
@@ -138,7 +155,7 @@ SECTIONS
         } > ram
         __DATA_TAREA1_VMA_END = .;
 
-    .rodata_tarea1 __RODATA_TAREA1_VMA :
+    .rodata_tarea1 __RODATA_TAREA1_VMA_LIN :
         AT ( LOADADDR(.datos_tarea1) + SIZEOF(.datos_tarea1) )
         {
             __RODATA_TAREA1_LMA = LOADADDR(.rodata_tarea1);
@@ -146,7 +163,7 @@ SECTIONS
         } > ram
         __RODATA_TAREA1_VMA_END = .;
 
-    .stak_kernel __STACK_KERNEL_VMA :
+    .stak_kernel __STACK_KERNEL_VMA_LIN :
         AT ( LOADADDR(.rodata_tarea1) + SIZEOF(.rodata_tarea1) )
         {
             __STACK_KERNEL_LMA = LOADADDR(.rodata_tarea1);
@@ -154,7 +171,7 @@ SECTIONS
         } > ram
         __STACK_KERNEL_VMA_END = .;
 
-    .stak_tarea1 __STAK_TAREA1_VMA :
+    .stak_tarea1 __STAK_TAREA1_VMA_LIN :
         AT ( LOADADDR(.stak_kernel) + SIZEOF(.stak_kernel) )
         {
             __STAK_TAREA1_LMA = LOADADDR(.rodata_tarea1);

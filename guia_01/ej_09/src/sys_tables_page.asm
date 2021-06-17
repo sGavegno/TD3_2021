@@ -2,37 +2,24 @@
 
 ;Pagina de 4 KB supervisor R/W
 ;CR3 = 0x00010000
-;Seccion        Direccion lineal    indice dir      indice tabla    offset tabla    
-;tabla sis      0x00000 000         0x000           0x000           0x000                            
-;tabla pag      0x00010 000         0x000           0x010           0x000               
-;video          0x000B8 000         0x000           0x0B8           0x000
-;ISR            0x00100 000         0x000           0x100           0x000
-;Datos          0x00200 000         0x000           0x200           0x000
-;tabla digito   0x00210 000         0x000           0x210           0x000
-;kernel         0x00220 000         0x000           0x220           0x000
-;TEXT tarea1    0x00310 000         0x000           0x310           0x000
-;BSS tarea1     0x00320 000         0x000           0x320           0x000
-;DATA tarea1    0x00330 000         0x000           0x330           0x000
-;RODATA tarea1  0x00340 000         0x000           0x340           0x000
-;pila kernel    0x1FFF8 000         0x0BF           0x2F8           0x000
-;pila tarea1    0x1FFFF 000         0x0BF           0x2FF           0x000
-;ROM            0xFFFF0 000         0x3FF           0x3F0           0x000
-;
-;Seccion        Direccion FD        Contenido direc    Dir FT       Cont tabla    
-;tabla sis      0x00010000          0x00011 003        0x00011000   0x00000 003                            
-;tabla pag      0x00010000          0x00011 003        0x00011040   0x00010 003                 
-;video          0x00010000          0x00011 003        0x000112E0   0x000B8 003        
-;ISR            0x00010000          0x00011 003        0x00011400   0x00100 003        
-;Datos          0x00010000          0x00011 003        0x00011800   0x00200 003       
-;tabla digito   0x00010000          0x00011 003        0x00011840   0x00210 003        
-;kernel         0x00010000          0x00011 003        0x00011880   0x00220 003        
-;TEXT tarea1    0x00010000          0x00011 003        0x00011C40   0x00310 003        
-;BSS tarea1     0x00010000          0x00011 003        0x00011C80   0x00320 003        
-;DATA tarea1    0x00010000          0x00011 003        0x00011CC0   0x00330 003        
-;RODATA tarea1  0x00010000          0x00011 003        0x00011D00   0x00340 003        
-;pila kernel    0x000102FC          0x000D0 003        0x000D0FE0   0x2FFF8 003        
-;pila tarea1    0x000102FC          0x000D0 003        0x000D0FFC   0x2FFFF 003        
-;ROM            0x00010FFC          0x00410 0          0x00410FFC   
+
+;Sección                            Dirección fisica inicial         Dirección lineal inicial
+;Tablas de sistema                  0x00000000                       0x00000000
+;Tablas de Paginación               0x00010000                       0x00010000
+;Video                              0x000B8000                       0x00E80000
+;ISRs                               0x00100000                       0x00100000
+;Datos                              0x00200000                       0x01200000
+;Tabla de Dígitos                   0x00210000                       0x01210000
+;Kernel                             0x00220000                       0x01220000
+;TEXT Tarea1                        0x00310000                       0x01310000
+;BSS Tarea 1                        0x00320000                       0x01320000
+;Data Tarea 1                       0x00330000                       0x01330000
+;RODATA Tarea 1                     0x00340000                       0x01340000
+;Pila Kernel                        0x1FFF8000                       0x2FFF8000
+;PIla Tarea 1                       0x1FFFF000                       0x0078F000
+;Secuencia inicialización ROM       0xFFFF0000                       0xFFFF0000    
+;Vector de reset                    0xFFFFFFF0                       0xFFFFFFF0
+                  
 
 section .sys_tables_paginacion
 

@@ -6,45 +6,74 @@ EXTERN _gdtr32
 EXTERN _idtr32
 
 EXTERN __SYS_TABLES_LMA
-EXTERN __SYS_TABLES_VMA
+EXTERN __SYS_TABLES_VMA_LIN
+EXTERN __SYS_TABLES_VMA_FIS
 EXTERN __SYS_TABLES_VMA_END
 
 EXTERN __SYS_TABLES_PAG_LMA
-EXTERN __SYS_TABLES_PAG_VMA
+EXTERN __SYS_TABLES_PAG_VMA_LIN
+EXTERN __SYS_TABLES_PAG_VMA_FIS
 EXTERN __SYS_TABLES_PAG_VMA_END
 
+EXTERN __VIDEO_LMA
+EXTERN __VIDEO_VMA_LIN
+EXTERN __VIDEO_VMA_FIS
+EXTERN __VIDEO_VMA_END
+
 EXTERN __DATOS_LMA
-EXTERN __DATOS_VMA
+EXTERN __DATOS_VMA_LIN
+EXTERN __DATOS_VMA_FIS
 EXTERN __DATOS_VMA_END
 
 EXTERN __HANDLER_LMA
-EXTERN __HANDLER_VMA
+EXTERN __HANDLER_VMA_LIN
+EXTERN __HANDLER_VMA_FIS
 EXTERN __HANDLER_VMA_END
  
 EXTERN __KERNEL_LMA
-EXTERN __KERNEL_VMA
+EXTERN __KERNEL_VMA_LIN
+EXTERN __KERNEL_VMA_FIS
 EXTERN __KERNEL_VMA_END
 
 EXTERN __TEXT_TAREA1_LMA
-EXTERN __TEXT_TAREA1_VMA
+EXTERN __TEXT_TAREA1_VMA_LIN
+EXTERN __TEXT_TAREA1_VMA_FIS
 EXTERN __TEXT_TAREA1_VMA_END
 
 EXTERN __TABLES_DIGITOS_LMA
-EXTERN __TABLES_DIGITOS_VMA
+EXTERN __TABLES_DIGITOS_VMA_LIN
+EXTERN __TABLES_DIGITOS_VMA_FIS
 EXTERN __TABLES_DIGITOS_VMA_END
 
 EXTERN __DATA_TAREA1_LMA
-EXTERN __DATA_TAREA1_VMA
+EXTERN __DATA_TAREA1_VMA_LIN
+EXTERN __DATA_TAREA1_VMA_FIS
 EXTERN __DATA_TAREA1_VMA_END
 
+EXTERN __BSS_TAREA1_LMA
+EXTERN __BSS_TAREA1_VMA_LIN
+EXTERN __BSS_TAREA1_VMA_FIS
+EXTERN __BSS_TAREA1_VMA_END
+
+EXTERN __RODATA_TAREA1_LMA
+EXTERN __RODATA_TAREA1_VMA_LIN
+EXTERN __RODATA_TAREA1_VMA_FIS
+EXTERN __RODATA_TAREA1_VMA_END
+
 EXTERN __STACK_KERNEL_LMA
-EXTERN __STACK_KERNEL_VMA
-EXTERN __STACK_KERNEL_VMA_END
-EXTERN __STACK_KERNEL_END_VMA
+EXTERN __STACK_KERNEL_VMA_LIN
+EXTERN __STACK_KERNEL_VMA_LIN_END
+EXTERN __STACK_KERNEL_VMA_FIS
+EXTERN __STACK_KERNEL_END_VMA_FIS
+
 
 EXTERN __STAK_TAREA1_LMA
-EXTERN __STAK_TAREA1_VMA
-EXTERN __STAK_TAREA1_VMA_END
+EXTERN __STAK_TAREA1_VMA_LIN
+EXTERN __STAK_TAREA1_VMA_LIN_END
+EXTERN __STAK_TAREA1_VMA_FIS
+EXTERN __STAK_TAREA1_VMA_END_FIS
+
+                 
 
 EXTERN kernel_init
 
@@ -53,6 +82,7 @@ EXTERN BUFFER_VIDEO
 EXTERN PROMEDIO_TABLA_DIGITOS
 EXTERN PUNTERO_PANTALLA
 
+EXTERN carga_paginacion
 ;------------------------------VARIABLES GLOBALES--------------------------------------------------
 GLOBAL init32
 
@@ -80,14 +110,14 @@ fin_copia_codigo:
     ;inicializo la pila
     mov ax, DS_SEL 
     mov ss, ax
-    mov esp, __STACK_KERNEL_END_VMA
+    mov esp, __STACK_KERNEL_END_VMA_FIS
     mov ebp, esp
 
     ;limpio la pila
     xor eax, eax
-    mov edi, __STACK_KERNEL_VMA
-    mov ecx, __STACK_KERNEL_END_VMA
-    sub ecx, __STACK_KERNEL_VMA
+    mov edi, __STACK_KERNEL_VMA_FIS
+    mov ecx, __STACK_KERNEL_VMA_LIN_END
+    sub ecx, __STACK_KERNEL_VMA_LIN
     rep stosb
 
     ;Inicializar valor.
@@ -120,64 +150,83 @@ fin_copia_codigo:
 copiar_codigo:
 
     mov esi, __SYS_TABLES_LMA               ;Puntero al inicio de la LMA
-    mov edi, __SYS_TABLES_VMA               ;Puntero a VMA
+    mov edi, __SYS_TABLES_VMA_FIS               ;Puntero a VMA
     mov ecx, __SYS_TABLES_VMA_END    
-    sub ecx, __SYS_TABLES_VMA               ;Tamaño a copiar
+    sub ecx, __SYS_TABLES_VMA_LIN               ;Tamaño a copiar
+    rep movsb     
+
+    mov esi, __SYS_TABLES_PAG_LMA           ;Puntero al inicio de la LMA
+    mov edi, __SYS_TABLES_PAG_VMA_FIS           ;Puntero a VMA
+    mov ecx, __SYS_TABLES_PAG_VMA_END    
+    sub ecx, __SYS_TABLES_PAG_VMA_LIN           ;Tamaño a copiar
+    rep movsb 
+
+    mov esi, __VIDEO_LMA                    ;Puntero al inicio de la LMA
+    mov edi, __VIDEO_VMA_FIS                    ;Puntero a VMA
+    mov ecx, __VIDEO_VMA_END    
+    sub ecx, __VIDEO_VMA_LIN                    ;Tamaño a copiar
     rep movsb     
 
     mov esi, __HANDLER_LMA                  ;Puntero al inicio de la LMA
-    mov edi, __HANDLER_VMA                  ;Puntero a VMA
+    mov edi, __HANDLER_VMA_FIS                  ;Puntero a VMA
     mov ecx, __HANDLER_VMA_END
-    sub ecx, __HANDLER_VMA                  ;Tamaño a copiar
-    rep movsb 
-
-    mov esi, __TABLES_DIGITOS_LMA           ;Puntero al inicio de la LMA
-    mov edi, __TABLES_DIGITOS_VMA           ;Puntero a VMA
-    mov ecx, __TABLES_DIGITOS_VMA_END    
-    sub ecx, __TABLES_DIGITOS_VMA           ;Tamaño a copiar
+    sub ecx, __HANDLER_VMA_LIN                  ;Tamaño a copiar
     rep movsb 
 
     mov esi, __DATOS_LMA                    ;Puntero al inicio de la LMA
-    mov edi, __DATOS_VMA                    ;Puntero a VMA
+    mov edi, __DATOS_VMA_FIS                    ;Puntero a VMA
     mov ecx, __DATOS_VMA_END    
-    sub ecx, __DATOS_VMA                    ;Tamaño a copiar
+    sub ecx, __DATOS_VMA_LIN                    ;Tamaño a copiar
     rep movsb     
 
+    mov esi, __TABLES_DIGITOS_LMA           ;Puntero al inicio de la LMA
+    mov edi, __TABLES_DIGITOS_VMA_FIS           ;Puntero a VMA
+    mov ecx, __TABLES_DIGITOS_VMA_END    
+    sub ecx, __TABLES_DIGITOS_VMA_LIN           ;Tamaño a copiar
+    rep movsb 
+
     mov esi, __KERNEL_LMA                   ;Puntero al inicio de la LMA
-    mov edi, __KERNEL_VMA                   ;Puntero a VMA
+    mov edi, __KERNEL_VMA_FIS                   ;Puntero a VMA
     mov ecx, __KERNEL_VMA_END    
-    sub ecx, __KERNEL_VMA                   ;Tamaño a copiar
+    sub ecx, __KERNEL_VMA_LIN                   ;Tamaño a copiar
     rep movsb
 
     mov esi, __TEXT_TAREA1_LMA              ;Puntero al inicio de la LMA
-    mov edi, __TEXT_TAREA1_VMA              ;Puntero a VMA
+    mov edi, __TEXT_TAREA1_VMA_FIS              ;Puntero a VMA
     mov ecx, __TEXT_TAREA1_VMA_END    
-    sub ecx, __TEXT_TAREA1_VMA              ;Tamaño a copiar
+    sub ecx, __TEXT_TAREA1_VMA_LIN              ;Tamaño a copiar
+    rep movsb 
+
+    mov esi, __BSS_TAREA1_LMA              ;Puntero al inicio de la LMA
+    mov edi, __BSS_TAREA1_VMA_FIS              ;Puntero a VMA
+    mov ecx, __BSS_TAREA1_VMA_END    
+    sub ecx, __BSS_TAREA1_VMA_LIN              ;Tamaño a copiar
     rep movsb 
 
     mov esi, __DATA_TAREA1_LMA              ;Puntero al inicio de la LMA
-    mov edi, __DATA_TAREA1_VMA              ;Puntero a VMA
+    mov edi, __DATA_TAREA1_VMA_FIS              ;Puntero a VMA
     mov ecx, __DATA_TAREA1_VMA_END    
-    sub ecx, __DATA_TAREA1_VMA              ;Tamaño a copiar
+    sub ecx, __DATA_TAREA1_VMA_LIN              ;Tamaño a copiar
     rep movsb 
     
+    mov esi, __RODATA_TAREA1_LMA              ;Puntero al inicio de la LMA
+    mov edi, __RODATA_TAREA1_VMA_FIS              ;Puntero a VMA
+    mov ecx, __RODATA_TAREA1_VMA_END    
+    sub ecx, __RODATA_TAREA1_VMA_LIN             ;Tamaño a copiar
+    rep movsb 
+
     mov esi, __STACK_KERNEL_LMA             ;Puntero al inicio de la LMA
-    mov edi, __STACK_KERNEL_VMA             ;Puntero a VMA
-    mov ecx, __STACK_KERNEL_VMA_END    
-    sub ecx, __STACK_KERNEL_VMA             ;Tamaño a copiar
+    mov edi, __STACK_KERNEL_VMA_FIS             ;Puntero a VMA
+    mov ecx, __STACK_KERNEL_VMA_LIN_END    
+    sub ecx, __STACK_KERNEL_VMA_LIN             ;Tamaño a copiar
     rep movsb 
 
     mov esi, __STAK_TAREA1_LMA              ;Puntero al inicio de la LMA
-    mov edi, __STAK_TAREA1_VMA              ;Puntero a VMA
-    mov ecx, __STAK_TAREA1_VMA_END    
-    sub ecx, __STAK_TAREA1_VMA              ;Tamaño a copiar
+    mov edi, __STAK_TAREA1_VMA_FIS              ;Puntero a VMA
+    mov ecx, __STAK_TAREA1_VMA_LIN_END    
+    sub ecx, __STAK_TAREA1_VMA_LIN              ;Tamaño a copiar
     rep movsb 
 
-    mov esi, __SYS_TABLES_PAG_LMA           ;Puntero al inicio de la LMA
-    mov edi, __SYS_TABLES_PAG_VMA           ;Puntero a VMA
-    mov ecx, __SYS_TABLES_PAG_VMA_END    
-    sub ecx, __SYS_TABLES_PAG_VMA           ;Tamaño a copiar
-    rep movsb 
 
     jmp fin_copia_codigo
 
@@ -257,53 +306,121 @@ habilitar_paginacion:
     xor eax,eax                        ;Poner a cero esas entradas.
     rep stosd
 
-    ;cargar directorio 0x000 
-    mov dword [INICIO_DIR_PAGINAS], 0x00011003
-    
-    ;cargar directorio 0x003 video
-    ;mov dword [INICIO_DIR_PAGINAS + 0x0C], 0x00014003  
-    
-    ;cargar directorio 0x07F
-    mov dword [INICIO_DIR_PAGINAS + 0x1FC], 0x00090003  
-
-    ;cargar directorio 0x3FF ROM
-    mov dword [INICIO_DIR_PAGINAS + 0xFFC], 0x00410003                           
-
-    ;cargar tabla 0x000
-    mov dword [INICIO_TABLA_PAGINAS], 0x00000003 
-    ;cargar tabla 0x010
-    mov dword [INICIO_TABLA_PAGINAS + 0x040], 0x00010003
-    ;cargar tabla 0x280     VIDEO
-    mov dword [INICIO_TABLA_PAGINAS + 0x2E0], 0x000B8003
-    ;cargar tabla 0x100
-    mov dword [INICIO_TABLA_PAGINAS + 0x400], 0x00100003
-    ;cargar tabla 0x200
-    mov dword [INICIO_TABLA_PAGINAS + 0x800], 0x00200003 
-    ;cargar tabla 0x210
-    mov dword [INICIO_TABLA_PAGINAS + 0x840], 0x00210003
-    ;cargar tabla 0x220
-    mov dword [INICIO_TABLA_PAGINAS + 0x880], 0x00220003
-    ;cargar tabla 0x310
-    mov dword [INICIO_TABLA_PAGINAS + 0xC40], 0x00310003
-    ;cargar tabla 0x320
-    mov dword [INICIO_TABLA_PAGINAS + 0xC80], 0x00320003
-    ;cargar tabla 0x330
-    mov dword [INICIO_TABLA_PAGINAS + 0xCC0], 0x00330003
-    ;cargar tabla 0x340
-    mov dword [INICIO_TABLA_PAGINAS + 0xD00], 0x00340003
-    ;cargar tabla 0x3F8
-    mov dword [0x00090000 + 0xFE0], 0x1FFF8003
-    ;cargar tabla 0x3FF
-    mov dword [0x00090000 + 0xFFC], 0x1FFFF003
-
-    ;cargar tabla 0x3F0 ROM
-    mov dword [0x00410000 + 0xFC0], 0xFFFF0003
-    mov dword [0x00410000 + 0xFC4], 0xFFFF1003
-
-
+;Tablas de sistema
     push 0x03
-    push
-    push
+    push __SYS_TABLES_VMA_FIS
+    push __SYS_TABLES_VMA_LIN
+    push INICIO_TABLAS_PAGINACION         
+    call carga_paginacion
+    add esp,16
+
+;Tablas de Paginación
+    push 0x03
+    push __SYS_TABLES_PAG_VMA_FIS
+    push __SYS_TABLES_PAG_VMA_LIN
+    push INICIO_TABLAS_PAGINACION         
+    call carga_paginacion
+    add esp,16
+        
+;Video 
+    push 0x03
+    push __VIDEO_VMA_FIS
+    push __VIDEO_VMA_LIN
+    push INICIO_TABLAS_PAGINACION         
+    call carga_paginacion
+    add esp,16
+            
+;ISRs
+    push 0x03
+    push __HANDLER_VMA_FIS
+    push __HANDLER_VMA_LIN
+    push INICIO_TABLAS_PAGINACION         
+    call carga_paginacion
+    add esp,16
+           
+;Datos
+    push 0x03
+    push __DATOS_VMA_FIS
+    push __DATOS_VMA_LIN
+    push INICIO_TABLAS_PAGINACION         
+    call carga_paginacion
+    add esp,16
+            
+;Tabla de Dígitos
+    push 0x03
+    push __TABLES_DIGITOS_VMA_FIS
+    push __TABLES_DIGITOS_VMA_LIN
+    push INICIO_TABLAS_PAGINACION         
+    call carga_paginacion
+    add esp,16
+    
+;Kernel
+    push 0x03
+    push __KERNEL_VMA_FIS
+    push __KERNEL_VMA_LIN
+    push INICIO_TABLAS_PAGINACION         
+    call carga_paginacion
+    add esp,16 
+            
+;TEXT Tarea1
+    push 0x03
+    push __TEXT_TAREA1_VMA_FIS
+    push __TEXT_TAREA1_VMA_LIN
+    push INICIO_TABLAS_PAGINACION         
+    call carga_paginacion
+    add esp,16
+       
+;BSS Tarea 1
+    push 0x03
+    push __BSS_TAREA1_VMA_FIS
+    push __BSS_TAREA1_VMA_LIN
+    push INICIO_TABLAS_PAGINACION         
+    call carga_paginacion
+    add esp,16
+        
+;Data Tarea 1
+    push 0x03
+    push __DATA_TAREA1_VMA_FIS
+    push __DATA_TAREA1_VMA_LIN
+    push INICIO_TABLAS_PAGINACION         
+    call carga_paginacion
+    add esp,16
+       
+;RODATA Tarea 1
+    push 0x03
+    push __RODATA_TAREA1_VMA_FIS
+    push __RODATA_TAREA1_VMA_LIN
+    push INICIO_TABLAS_PAGINACION         
+    call carga_paginacion
+    add esp,16
+     
+;Pila Kernel
+    push 0x03
+    push __STACK_KERNEL_VMA_FIS
+    push __STACK_KERNEL_VMA_LIN
+    push INICIO_TABLAS_PAGINACION         
+    call carga_paginacion
+    add esp,16
+                    
+;Pila Tarea 1
+    push 0x03
+    push __STAK_TAREA1_VMA_FIS
+    push __STAK_TAREA1_VMA_LIN
+    push INICIO_TABLAS_PAGINACION         
+    call carga_paginacion
+    add esp,16
+   
+;ROM
+    push 0x03
+    push 0xFFFF0000
+    push 0xFFFF0000
+    push INICIO_TABLAS_PAGINACION         
+    call carga_paginacion
+    add esp,16
+    
+    push 0x03
+    push 0xFFFF1000
+    push 0xFFFF1000
     push INICIO_TABLAS_PAGINACION         
     call carga_paginacion
     add esp,16
