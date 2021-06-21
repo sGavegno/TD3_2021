@@ -1260,7 +1260,7 @@ Contenido de la sección .tables_digito:
 Contenido de la sección .kernel:
  1220000 6687dbe8 0d000000 9ab80231 010800f4  f..........1....
  1220010 ebf6f4eb fdbe0000 e800b9d0 07000066  ...............f
- 1220020 b8200766 890683c6 02e2f8c3 f30f1efb  . .f............
+ 1220020 b8201f66 890683c6 02e2f8c3 f30f1efb  . .f............
  1220030 5589e583 ec048b45 0c8845fc 807dfc15  U......E..E..}..
  1220040 77518b45 080fb640 123c0f77 468b4508  wQ.E...@.<.wF.E.
  1220050 0fb64010 0fb6c08b 55080fb6 4dfc880c  ..@.....U...M...
@@ -1320,12 +1320,12 @@ Contenido de la sección .kernel:
  12203b0 0201d0c1 e00401d8 8d140083 c1308b45  .............0.E
  12203c0 08880c10 0fb755b0 0fb745f6 01d001c0  ......U...E.....
  12203d0 8d48010f b755b489 d0c1e002 01d0c1e0  .H...U..........
- 12203e0 058d1401 8b4508c6 0410070f b745f683  .....E.......E..
+ 12203e0 058d1401 8b4508c6 04101f0f b745f683  .....E.......E..
  12203f0 c0016689 45f66683 7df60f76 8e66c745  ..f.E.f.}..v.f.E
  1220400 f60000eb 3a0fb745 f60fb755 f681c280  ....:..E...U....
  1220410 0700008d 0c120fb6 5405bc8b 45088814  ........T...E...
  1220420 080fb745 f601c08d 90010f00 008b4508  ...E..........E.
- 1220430 c6041007 0fb745f6 83c00166 8945f60f  ......E....f.E..
+ 1220430 c604101f 0fb745f6 83c00166 8945f60f  ......E....f.E..
  1220440 b745f666 3b45de72 bc909083 c44c5b5d  .E.f;E.r.....L[]
  1220450 c3                                   .               
 Contenido de la sección .text_tarea1:
@@ -4987,7 +4987,7 @@ Desensamblado de la sección .kernel:
 01220013 <kernel_init.guard+0x1> jmp    01220012 <kernel_init.guard>
 01220015 <borrar_pantalla> mov    $0xe80000,%esi
 0122001a <borrar_pantalla+0x5> mov    $0x7d0,%ecx
-0122001f <borrar_pantalla+0xa> mov    $0x720,%ax
+0122001f <borrar_pantalla+0xa> mov    $0x1f20,%ax
 01220023 <ciclo_borrar_pantalla> mov    %ax,(%esi)
 01220026 <ciclo_borrar_pantalla+0x3> add    $0x2,%esi
 01220029 <ciclo_borrar_pantalla+0x6> loop   01220023 <ciclo_borrar_pantalla>
@@ -5280,7 +5280,7 @@ Desensamblado de la sección .kernel:
 012203de <escribir_Pantalla+0x179> shl    $0x5,%eax
 012203e1 <escribir_Pantalla+0x17c> lea    (%ecx,%eax,1),%edx
 012203e4 <escribir_Pantalla+0x17f> mov    0x8(%ebp),%eax
-012203e7 <escribir_Pantalla+0x182> movb   $0x7,(%eax,%edx,1)
+012203e7 <escribir_Pantalla+0x182> movb   $0x1f,(%eax,%edx,1)
 012203eb <escribir_Pantalla+0x186> movzwl -0xa(%ebp),%eax
 012203ef <escribir_Pantalla+0x18a> add    $0x1,%eax
 012203f2 <escribir_Pantalla+0x18d> mov    %ax,-0xa(%ebp)
@@ -5299,7 +5299,7 @@ Desensamblado de la sección .kernel:
 01220425 <escribir_Pantalla+0x1c0> add    %eax,%eax
 01220427 <escribir_Pantalla+0x1c2> lea    0xf01(%eax),%edx
 0122042d <escribir_Pantalla+0x1c8> mov    0x8(%ebp),%eax
-01220430 <escribir_Pantalla+0x1cb> movb   $0x7,(%eax,%edx,1)
+01220430 <escribir_Pantalla+0x1cb> movb   $0x1f,(%eax,%edx,1)
 01220434 <escribir_Pantalla+0x1cf> movzwl -0xa(%ebp),%eax
 01220438 <escribir_Pantalla+0x1d3> add    $0x1,%eax
 0122043b <escribir_Pantalla+0x1d6> mov    %ax,-0xa(%ebp)

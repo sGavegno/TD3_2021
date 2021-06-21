@@ -37,7 +37,7 @@ kernel_end:
 borrar_pantalla:
         MOV esi, __VIDEO_VMA_LIN         ;Puntero al buffer de video.
         MOV ecx, 25*80                   ;Cantidad de caracteres a borrar.
-        MOV ax, 0x0720                   ;Caracter y atributo de espacio.
+        MOV ax, 0x1F20                   ;Caracter y atributo de espacio.
 ciclo_borrar_pantalla:
         MOV [esi], ax                    ;Espacio en blanco sobre negro.
         ADD esi, 2                       ;Apuntar al siguiente carácter.
