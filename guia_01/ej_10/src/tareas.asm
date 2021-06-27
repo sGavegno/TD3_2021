@@ -51,13 +51,18 @@ tarea_promedio:
     call calcular_Promedio
     add esp,8
  
- ;xchg bx,bx
+;xchg bx,bx
     push 64 
     push 0     
     push dword PROMEDIO_TABLA_DIGITOS     
     push dword __VIDEO_VMA_LIN
     call escribir_Pantalla
     add esp, 16
+
+;Leer Direccion del promedio
+
+    mov dword eax, [PROMEDIO_TABLA_DIGITOS]      ;guardo promedio en eax
+    mov dword ebx, [eax]                         ;leo contenido de la direcion que guarda eax
 
 tarea_end:
 retf

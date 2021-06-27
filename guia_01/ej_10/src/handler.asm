@@ -18,6 +18,9 @@ EXTERN CANTIDAD_TECLAS
 
 EXTERN tarea_promedio
 
+EXTERN carga_paginacion
+EXTERN PROMEDIO_TABLA_DIGITOS
+EXTERN INICIO_TABLAS_PAGINACION
 ;------------------------------VARIABLES GLOBALES-----------------------------------------
 GLOBAL L_Handler_Timer
 GLOBAL L_Handler_Teclado
@@ -343,7 +346,18 @@ Handler_GP:
     IRET
 
 Handler_PF:
+xchg bx,bx
     mov dl,0x0E
+
+;Paginación
+
+    push 0x03
+    push 0x0A000000
+    push dword [PROMEDIO_TABLA_DIGITOS]
+    push INICIO_TABLAS_PAGINACION         
+    call carga_paginacion
+    add esp,16
+
     IRET
 
 Handler_MF:

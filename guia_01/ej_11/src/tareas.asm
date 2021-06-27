@@ -21,6 +21,7 @@ GLOBAL PROMEDIO_TABLA_DIGITOS
 USE32
 ;-------------------------------------SECTION-------------------------------------------
 
+;-------------------------------------TAREA 1-------------------------------------------
 section .bss_tarea1
 
 FLAG_TAREA_1 db 0
@@ -61,4 +62,72 @@ tarea_promedio:
 
 tarea_end:
 retf
+
+;-------------------------------------TAREA 2-------------------------------------------
+section .bss_tarea2
+
+FLAG_TAREA_2 db 0
+
+section .datos_tarea2
+
+
+section .rodata_tarea2
+
+section .stak_tarea2
+
+inicio_stak_tarea2  resb 0x1000                ;stak de 4k
+
+section .text_tarea2
+
+tarea_2:
+
+
+
+tarea_2_end
+
+;-------------------------------------TAREA 3-------------------------------------------
+section .bss_tarea3
+
+FLAG_TAREA_3 db 0
+
+section .datos_tarea3
+
+
+section .rodata_tarea3
+
+section .stak_tarea3
+
+inicio_stak_tarea3  resb 0x1000                ;stak de 4k
+
+section .text_tarea3
+
+tarea_3:
+
+
+
+tarea_3_end
+
+
+;-------------------------------------TAREA 4-------------------------------------------
+section .bss_tarea4
+
+FLAG_TAREA_4 db 0
+
+section .datos_tarea4
+
+section .rodata_tarea4
+
+section .stak_tarea4
+
+inicio_stak_tarea4  resb 0x1000                ;stak de 4k
+
+section .text_tarea4
+
+tarea_4:
+
+    .halted:
+        hlt
+        jmp .halted
+
+tarea_4_end
 

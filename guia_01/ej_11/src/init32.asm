@@ -25,6 +25,11 @@ EXTERN __DATOS_VMA_LIN
 EXTERN __DATOS_VMA_FIS
 EXTERN __DATOS_VMA_END
 
+EXTERN __TABLES_DIGITOS_LMA
+EXTERN __TABLES_DIGITOS_VMA_LIN
+EXTERN __TABLES_DIGITOS_VMA_FIS
+EXTERN __TABLES_DIGITOS_VMA_END
+
 EXTERN __HANDLER_LMA
 EXTERN __HANDLER_VMA_LIN
 EXTERN __HANDLER_VMA_FIS
@@ -39,11 +44,6 @@ EXTERN __TEXT_TAREA1_LMA
 EXTERN __TEXT_TAREA1_VMA_LIN
 EXTERN __TEXT_TAREA1_VMA_FIS
 EXTERN __TEXT_TAREA1_VMA_END
-
-EXTERN __TABLES_DIGITOS_LMA
-EXTERN __TABLES_DIGITOS_VMA_LIN
-EXTERN __TABLES_DIGITOS_VMA_FIS
-EXTERN __TABLES_DIGITOS_VMA_END
 
 EXTERN __DATA_TAREA1_LMA
 EXTERN __DATA_TAREA1_VMA_LIN
@@ -60,12 +60,71 @@ EXTERN __RODATA_TAREA1_VMA_LIN
 EXTERN __RODATA_TAREA1_VMA_FIS
 EXTERN __RODATA_TAREA1_VMA_END
 
+EXTERN __TEXT_TAREA2_LMA
+EXTERN __TEXT_TAREA2_VMA_LIN
+EXTERN __TEXT_TAREA2_VMA_FIS
+EXTERN __TEXT_TAREA2_VMA_END
+
+EXTERN __DATA_TAREA2_LMA
+EXTERN __DATA_TAREA2_VMA_LIN
+EXTERN __DATA_TAREA2_VMA_FIS
+EXTERN __DATA_TAREA2_VMA_END
+
+EXTERN __BSS_TAREA2_LMA
+EXTERN __BSS_TAREA2_VMA_LIN
+EXTERN __BSS_TAREA2_VMA_FIS
+EXTERN __BSS_TAREA2_VMA_END
+
+EXTERN __RODATA_TAREA2_LMA
+EXTERN __RODATA_TAREA2_VMA_LIN
+EXTERN __RODATA_TAREA2_VMA_FIS
+EXTERN __RODATA_TAREA2_VMA_END
+
+EXTERN __TEXT_TAREA3_LMA
+EXTERN __TEXT_TAREA3_VMA_LIN
+EXTERN __TEXT_TAREA3_VMA_FIS
+EXTERN __TEXT_TAREA3_VMA_END
+
+EXTERN __DATA_TAREA3_LMA
+EXTERN __DATA_TAREA3_VMA_LIN
+EXTERN __DATA_TAREA3_VMA_FIS
+EXTERN __DATA_TAREA3_VMA_END
+
+EXTERN __BSS_TAREA3_LMA
+EXTERN __BSS_TAREA3_VMA_LIN
+EXTERN __BSS_TAREA3_VMA_FIS
+EXTERN __BSS_TAREA3_VMA_END
+
+EXTERN __RODATA_TAREA3_LMA
+EXTERN __RODATA_TAREA3_VMA_LIN
+EXTERN __RODATA_TAREA3_VMA_FIS
+EXTERN __RODATA_TAREA3_VMA_END
+
+EXTERN __TEXT_TAREA4_LMA
+EXTERN __TEXT_TAREA4_VMA_LIN
+EXTERN __TEXT_TAREA4_VMA_FIS
+EXTERN __TEXT_TAREA4_VMA_END
+
+EXTERN __DATA_TAREA4_LMA
+EXTERN __DATA_TAREA4_VMA_LIN
+EXTERN __DATA_TAREA4_VMA_FIS
+EXTERN __DATA_TAREA4_VMA_END
+
+EXTERN __BSS_TAREA4_LMA
+EXTERN __BSS_TAREA4_VMA_LIN
+EXTERN __BSS_TAREA4_VMA_FIS
+EXTERN __BSS_TAREA4_VMA_END
+
+EXTERN __RODATA_TAREA4_LMA
+EXTERN __RODATA_TAREA4_VMA_LIN
+EXTERN __RODATA_TAREA4_VMA_FIS
+EXTERN __RODATA_TAREA4_VMA_END
+
 EXTERN __STACK_KERNEL_LMA
 EXTERN __STACK_KERNEL_VMA_LIN
 EXTERN __STACK_KERNEL_VMA_LIN_END
 EXTERN __STACK_KERNEL_VMA_FIS
 EXTERN __STACK_KERNEL_END_VMA_FIS
-
 
 EXTERN __STAK_TAREA1_LMA
 EXTERN __STAK_TAREA1_VMA_LIN
@@ -73,7 +132,24 @@ EXTERN __STAK_TAREA1_VMA_LIN_END
 EXTERN __STAK_TAREA1_VMA_FIS
 EXTERN __STAK_TAREA1_VMA_END_FIS
 
-                 
+EXTERN __STAK_TAREA2_LMA
+EXTERN __STAK_TAREA2_VMA_LIN
+EXTERN __STAK_TAREA2_VMA_LIN_END
+EXTERN __STAK_TAREA2_VMA_FIS
+EXTERN __STAK_TAREA2_VMA_END_FIS
+
+EXTERN __STAK_TAREA3_LMA
+EXTERN __STAK_TAREA3_VMA_LIN
+EXTERN __STAK_TAREA3_VMA_LIN_END
+EXTERN __STAK_TAREA3_VMA_FIS
+EXTERN __STAK_TAREA3_VMA_END_FIS
+
+EXTERN __STAK_TAREA4_LMA
+EXTERN __STAK_TAREA4_VMA_LIN
+EXTERN __STAK_TAREA4_VMA_LIN_END
+EXTERN __STAK_TAREA4_VMA_FIS
+EXTERN __STAK_TAREA4_VMA_END_FIS
+
 
 EXTERN kernel_init
 
@@ -211,7 +287,79 @@ copiar_codigo:
     mov edi, __RODATA_TAREA1_VMA_FIS              ;Puntero a VMA
     mov ecx, __RODATA_TAREA1_VMA_END    
     sub ecx, __RODATA_TAREA1_VMA_LIN             ;Tamaño a copiar
+    rep movsb
+
+    mov esi, __TEXT_TAREA2_LMA              ;Puntero al inicio de la LMA
+    mov edi, __TEXT_TAREA2_VMA_FIS              ;Puntero a VMA
+    mov ecx, __TEXT_TAREA2_VMA_END    
+    sub ecx, __TEXT_TAREA2_VMA_LIN              ;Tamaño a copiar
     rep movsb 
+
+    mov esi, __BSS_TAREA2_LMA              ;Puntero al inicio de la LMA
+    mov edi, __BSS_TAREA2_VMA_FIS              ;Puntero a VMA
+    mov ecx, __BSS_TAREA2_VMA_END    
+    sub ecx, __BSS_TAREA2_VMA_LIN              ;Tamaño a copiar
+    rep movsb 
+
+    mov esi, __DATA_TAREA2_LMA              ;Puntero al inicio de la LMA
+    mov edi, __DATA_TAREA2_VMA_FIS              ;Puntero a VMA
+    mov ecx, __DATA_TAREA2_VMA_END    
+    sub ecx, __DATA_TAREA2_VMA_LIN              ;Tamaño a copiar
+    rep movsb 
+    
+    mov esi, __RODATA_TAREA2_LMA              ;Puntero al inicio de la LMA
+    mov edi, __RODATA_TAREA2_VMA_FIS              ;Puntero a VMA
+    mov ecx, __RODATA_TAREA2_VMA_END    
+    sub ecx, __RODATA_TAREA2_VMA_LIN             ;Tamaño a copiar
+    rep movsb     
+
+    mov esi, __TEXT_TAREA3_LMA              ;Puntero al inicio de la LMA
+    mov edi, __TEXT_TAREA3_VMA_FIS              ;Puntero a VMA
+    mov ecx, __TEXT_TAREA3_VMA_END    
+    sub ecx, __TEXT_TAREA3_VMA_LIN              ;Tamaño a copiar
+    rep movsb 
+
+    mov esi, __BSS_TAREA3_LMA              ;Puntero al inicio de la LMA
+    mov edi, __BSS_TAREA3_VMA_FIS              ;Puntero a VMA
+    mov ecx, __BSS_TAREA3_VMA_END    
+    sub ecx, __BSS_TAREA3_VMA_LIN              ;Tamaño a copiar
+    rep movsb 
+
+    mov esi, __DATA_TAREA3_LMA              ;Puntero al inicio de la LMA
+    mov edi, __DATA_TAREA3_VMA_FIS              ;Puntero a VMA
+    mov ecx, __DATA_TAREA3_VMA_END    
+    sub ecx, __DATA_TAREA3_VMA_LIN              ;Tamaño a copiar
+    rep movsb 
+    
+    mov esi, __RODATA_TAREA3_LMA              ;Puntero al inicio de la LMA
+    mov edi, __RODATA_TAREA3_VMA_FIS              ;Puntero a VMA
+    mov ecx, __RODATA_TAREA3_VMA_END    
+    sub ecx, __RODATA_TAREA3_VMA_LIN             ;Tamaño a copiar
+    rep movsb
+
+    mov esi, __TEXT_TAREA4_LMA              ;Puntero al inicio de la LMA
+    mov edi, __TEXT_TAREA4_VMA_FIS              ;Puntero a VMA
+    mov ecx, __TEXT_TAREA4_VMA_END    
+    sub ecx, __TEXT_TAREA4_VMA_LIN              ;Tamaño a copiar
+    rep movsb 
+
+    mov esi, __BSS_TAREA4_LMA              ;Puntero al inicio de la LMA
+    mov edi, __BSS_TAREA4_VMA_FIS              ;Puntero a VMA
+    mov ecx, __BSS_TAREA4_VMA_END    
+    sub ecx, __BSS_TAREA4_VMA_LIN              ;Tamaño a copiar
+    rep movsb 
+
+    mov esi, __DATA_TAREA4_LMA              ;Puntero al inicio de la LMA
+    mov edi, __DATA_TAREA4_VMA_FIS              ;Puntero a VMA
+    mov ecx, __DATA_TAREA4_VMA_END    
+    sub ecx, __DATA_TAREA4_VMA_LIN              ;Tamaño a copiar
+    rep movsb 
+    
+    mov esi, __RODATA_TAREA4_LMA              ;Puntero al inicio de la LMA
+    mov edi, __RODATA_TAREA4_VMA_FIS              ;Puntero a VMA
+    mov ecx, __RODATA_TAREA4_VMA_END    
+    sub ecx, __RODATA_TAREA4_VMA_LIN             ;Tamaño a copiar
+    rep movsb
 
     mov esi, __STACK_KERNEL_LMA             ;Puntero al inicio de la LMA
     mov edi, __STACK_KERNEL_VMA_FIS             ;Puntero a VMA
@@ -360,7 +508,7 @@ habilitar_paginacion:
     call carga_paginacion
     add esp,16 
             
-;TEXT Tarea1
+;TEXT Tarea 1
     push 0x03
     push __TEXT_TAREA1_VMA_FIS
     push __TEXT_TAREA1_VMA_LIN
@@ -391,7 +539,103 @@ habilitar_paginacion:
     push INICIO_TABLAS_PAGINACION         
     call carga_paginacion
     add esp,16
-     
+
+;TEXT Tarea 2
+    push 0x03
+    push __TEXT_TAREA2_VMA_FIS
+    push __TEXT_TAREA2_VMA_LIN
+    push INICIO_TABLAS_PAGINACION         
+    call carga_paginacion
+    add esp,16
+       
+;BSS Tarea 2
+    push 0x03
+    push __BSS_TAREA2_VMA_FIS
+    push __BSS_TAREA2_VMA_LIN
+    push INICIO_TABLAS_PAGINACION         
+    call carga_paginacion
+    add esp,16
+        
+;Data Tarea 2
+    push 0x03
+    push __DATA_TAREA2_VMA_FIS
+    push __DATA_TAREA2_VMA_LIN
+    push INICIO_TABLAS_PAGINACION         
+    call carga_paginacion
+    add esp,16
+       
+;RODATA Tarea 2
+    push 0x03
+    push __RODATA_TAREA2_VMA_FIS
+    push __RODATA_TAREA2_VMA_LIN
+    push INICIO_TABLAS_PAGINACION         
+    call carga_paginacion
+    add esp,16    
+
+;TEXT Tarea 3
+    push 0x03
+    push __TEXT_TAREA3_VMA_FIS
+    push __TEXT_TAREA3_VMA_LIN
+    push INICIO_TABLAS_PAGINACION         
+    call carga_paginacion
+    add esp,16
+       
+;BSS Tarea 3
+    push 0x03
+    push __BSS_TAREA3_VMA_FIS
+    push __BSS_TAREA3_VMA_LIN
+    push INICIO_TABLAS_PAGINACION         
+    call carga_paginacion
+    add esp,16
+        
+;Data Tarea 3
+    push 0x03
+    push __DATA_TAREA3_VMA_FIS
+    push __DATA_TAREA3_VMA_LIN
+    push INICIO_TABLAS_PAGINACION         
+    call carga_paginacion
+    add esp,16
+       
+;RODATA Tarea 3
+    push 0x03
+    push __RODATA_TAREA3_VMA_FIS
+    push __RODATA_TAREA3_VMA_LIN
+    push INICIO_TABLAS_PAGINACION         
+    call carga_paginacion
+    add esp,16
+
+;TEXT Tarea 4
+    push 0x03
+    push __TEXT_TAREA4_VMA_FIS
+    push __TEXT_TAREA4_VMA_LIN
+    push INICIO_TABLAS_PAGINACION         
+    call carga_paginacion
+    add esp,16
+       
+;BSS Tarea 4
+    push 0x03
+    push __BSS_TAREA4_VMA_FIS
+    push __BSS_TAREA4_VMA_LIN
+    push INICIO_TABLAS_PAGINACION         
+    call carga_paginacion
+    add esp,16
+        
+;Data Tarea 4
+    push 0x03
+    push __DATA_TAREA4_VMA_FIS
+    push __DATA_TAREA4_VMA_LIN
+    push INICIO_TABLAS_PAGINACION         
+    call carga_paginacion
+    add esp,16
+       
+;RODATA Tarea 4
+    push 0x03
+    push __RODATA_TAREA4_VMA_FIS
+    push __RODATA_TAREA4_VMA_LIN
+    push INICIO_TABLAS_PAGINACION         
+    call carga_paginacion
+    add esp,16
+
 ;Pila Kernel
     push 0x03
     push __STACK_KERNEL_VMA_FIS
@@ -407,7 +651,31 @@ habilitar_paginacion:
     push INICIO_TABLAS_PAGINACION         
     call carga_paginacion
     add esp,16
-   
+
+;Pila Tarea 2
+    push 0x03
+    push __STAK_TAREA2_VMA_FIS
+    push __STAK_TAREA2_VMA_LIN
+    push INICIO_TABLAS_PAGINACION         
+    call carga_paginacion
+    add esp,16 
+
+;Pila Tarea 3
+    push 0x03
+    push __STAK_TAREA3_VMA_FIS
+    push __STAK_TAREA3_VMA_LIN
+    push INICIO_TABLAS_PAGINACION         
+    call carga_paginacion
+    add esp,16
+
+;Pila Tarea 4
+    push 0x03
+    push __STAK_TAREA4_VMA_FIS
+    push __STAK_TAREA4_VMA_LIN
+    push INICIO_TABLAS_PAGINACION         
+    call carga_paginacion
+    add esp,16
+
 ;ROM
     push 0x03
     push 0xFFFF0000

@@ -84,7 +84,7 @@ EXTERN PROMEDIO_TABLA_DIGITOS
 EXTERN carga_paginacion
 ;------------------------------VARIABLES GLOBALES--------------------------------------------------
 GLOBAL init32
-
+GLOBAL INICIO_TABLAS_PAGINACION
 ;-------------------------------------SECTION-------------------------------------------
 
 INICIO_TABLAS_PAGINACION EQU 0x00010000            
