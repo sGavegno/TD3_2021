@@ -13,10 +13,16 @@ EXTERN buffer_Clear
 EXTERN cargar_tabla
 
 EXTERN FLAG_TAREA_1
+EXTERN FLAG_TAREA_2
+EXTERN FLAG_TAREA_3
 
 EXTERN CANTIDAD_TECLAS
 
 EXTERN tarea_promedio
+
+EXTERN contador_1
+EXTERN contador_2
+EXTERN contador_3
 
 ;------------------------------VARIABLES GLOBALES-----------------------------------------
 GLOBAL L_Handler_Timer
@@ -106,29 +112,51 @@ L_Handler_XM equ (Handler_XM - OFFSET_HANDLER)
 %define TECLA_Y     0x15
 %define TECLA_Z     0x2C
 
+%define Timer_T1     50
+%define Timer_T2     10
+%define Timer_T3     20
+
 ;-------------------------------------SECTION-----------------------------------------------------
 SECTION .handler
 
 USE32
 
 ;-----------------------------------HANDLER INTERUPCIONES--------------------------------------------
-Handler_Timer:
+;---Scheduler
+Handler_Timer:                          
     PUSHAD                              ;Salvo los registros de uso general.
     ;xchg bx,bx	
 
-    xor eax,eax
-    mov dword eax, [CONTADOR_TIMER]
-    inc eax
-    mov dword [CONTADOR_TIMER], eax
+    inc byte [contador_1]       
+    inc byte [contador_2]       
+    inc byte [contador_3]
 
-    cmp eax, 0x32                      ;0xA = 10 en decimal (interumpe cada 10 milisegundos * 50 = 500ms)
-    jne Timer_fin
+    cmp byte [contador_1], Timer_T1
+    je Time_500ms
 
-    xor eax, eax                        ;reseteo contador
-    mov dword [CONTADOR_TIMER], eax
-    
-    ;activar un flag para ejecutar la tarea cada 500ms
+    cmp byte [contador_2], Timer_T2
+    je Time_100ms
+
+    cmp byte [contador_3], Timer_T3
+    je Time_200ms
+
+    jmp Timer_fin
+
+Time_100ms:
+    mov byte [contador_2],0x00
+
+    mov byte [FLAG_TAREA_2], 0x01
+
+Time_200ms:
+    mov byte [contador_3],0x00
+
+    mov byte [FLAG_TAREA_3], 0x01
+
+Time_500ms:
+    mov byte [contador_1],0x00
+
     mov byte [FLAG_TAREA_1], 0x01
+
 
 Timer_fin:
     MOV al, 0x20                        ;Envío End of Interrupt al PIC.
@@ -296,51 +324,51 @@ Handler_Teclado_END:
 ;-----------------------------------HANDLER EXCEPCIONES--------------------------------------------
 Handler_DE:
     mov dl,0xFF
-    IRET
+    hlt
 
 Handler_NMI:
     mov dl,0x02
-    IRET
+    hlt
 
 Handler_BP:
     mov dl,0x03
-    IRET
+    hlt
 
 Handler_OF:
     mov dl,0x04
-    IRET
+    hlt
 
 Handler_BR:
     mov dl,0x05
-    IRET
+    hlt
 
 Handler_UD:
     mov dl,0x06
-    IRET
+    hlt
 
 Handler_NM:
     mov dl,0x07
-    IRET
+    hlt
 
 Handler_DF:
     mov dl,0x08
-    IRET
+    hlt
 
 Handler_TS:
     mov dl,0x0A
-    IRET
+    hlt
 
 Handler_NP:
     mov dl,0x0B
-    IRET
+    hlt
 
 Handler_SS:
     mov dl,0x0C
-    IRET
+    hlt
 
 Handler_GP:
     mov dl,0x0D
-    IRET
+    hlt
 
 Handler_PF:
     mov dl,0x0E
@@ -348,16 +376,16 @@ Handler_PF:
 
 Handler_MF:
     mov dl,0x10
-    IRET
+    hlt
 
 Handler_AC:
     mov dl,0x11
-    IRET
+    hlt
 
 Handler_MC:
     mov dl,0x12
-    IRET
+    hlt
 
 Handler_XM:
     mov dl,0x13
-    IRET
+    hlt

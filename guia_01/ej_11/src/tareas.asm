@@ -7,14 +7,23 @@ EXTERN calcular_Promedio
 EXTERN PUNTERO_TABLA_DIGITO
 
 EXTERN PUNTERO_PANTALLA
-EXTERN escribir_Pantalla
+EXTERN escribir_Promedio_Pantalla
 
 EXTERN __VIDEO_VMA_LIN
 
+
 ;------------------------------VARIABLES GLOBALES-----------------------------------------
-GLOBAL tarea_promedio
+GLOBAL tarea_1
+
 GLOBAL FLAG_TAREA_1
+GLOBAL FLAG_TAREA_2
+GLOBAL FLAG_TAREA_3
+
 GLOBAL PROMEDIO_TABLA_DIGITOS
+
+GLOBAL contador_1
+GLOBAL contador_2
+GLOBAL contador_3
 ;--------------------------------DEFINE------------------------------------------
 
 
@@ -28,6 +37,7 @@ FLAG_TAREA_1 db 0
 
 section .datos_tarea1
 
+contador_1 dw 0
 
 section .rodata_tarea1
 
@@ -39,10 +49,10 @@ inicio_stak_tarea1  resb 0x1000                ;stak de 4k
 
 section .text_tarea1
 
-tarea_promedio:
+tarea_1:
 
     cmp byte [FLAG_TAREA_1], 0x01    
-    jne tarea_end
+    jne tarea_1_end
 
     mov byte [FLAG_TAREA_1], 0x00
  
@@ -57,10 +67,10 @@ tarea_promedio:
     push 0     
     push dword PROMEDIO_TABLA_DIGITOS     
     push dword __VIDEO_VMA_LIN
-    call escribir_Pantalla
+    call escribir_Promedio_Pantalla
     add esp, 16
 
-tarea_end:
+tarea_1_end:
 retf
 
 ;-------------------------------------TAREA 2-------------------------------------------
@@ -70,6 +80,7 @@ FLAG_TAREA_2 db 0
 
 section .datos_tarea2
 
+contador_2 dw 0
 
 section .rodata_tarea2
 
@@ -81,7 +92,11 @@ section .text_tarea2
 
 tarea_2:
 
+    cmp byte [FLAG_TAREA_2], 0x01    
+    jne tarea_2_end
 
+    mov byte [FLAG_TAREA_2], 0x00
+ 
 
 tarea_2_end
 
@@ -92,6 +107,7 @@ FLAG_TAREA_3 db 0
 
 section .datos_tarea3
 
+contador_3 dw 0
 
 section .rodata_tarea3
 
@@ -103,7 +119,10 @@ section .text_tarea3
 
 tarea_3:
 
+    cmp byte [FLAG_TAREA_3], 0x01    
+    jne tarea_3_end
 
+    mov byte [FLAG_TAREA_3], 0x00
 
 tarea_3_end
 

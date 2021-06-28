@@ -4,7 +4,7 @@ USE32
 EXTERN  DS_SEL
 EXTERN  CS_SEL
 
-EXTERN tarea_promedio
+EXTERN tarea_1
 
 EXTERN __VIDEO_VMA_LIN
 ;------------------------------VARIABLES GLOBALES--------------------------------------------------
@@ -24,7 +24,7 @@ kernel_init:
 
     .halted:
 
-        call CS_SEL:tarea_promedio
+        call CS_SEL:tarea_1
         hlt
         jmp .halted
 
