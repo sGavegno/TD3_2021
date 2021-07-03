@@ -3,6 +3,13 @@
 ;-------------------------------VARIABLES EXTERNAS---------------------------------------
 EXTERN  CS_SEL
 
+EXTERN page_fault_msg
+EXTERN page_fault_msg_2
+EXTERN page_fault_msg_3
+EXTERN page_fault_msg_4
+EXTERN page_fault_msg_5
+EXTERN page_fault_msg_6
+
 EXTERN CONTADOR_TIMER
 EXTERN PUNTERO_TABLA_DIGITO
 EXTERN BUFFER_TECLADO
@@ -23,6 +30,13 @@ EXTERN tarea_promedio
 EXTERN contador_1
 EXTERN contador_2
 EXTERN contador_3
+
+EXTERN carga_paginacion
+
+EXTERN error_code_PF
+EXTERN dir_lineal_page_fault
+EXTERN dir_phy_dinamica
+EXTERN __CR3_kernel
 
 ;------------------------------VARIABLES GLOBALES-----------------------------------------
 GLOBAL L_Handler_Timer
@@ -72,6 +86,7 @@ L_Handler_MC equ (Handler_MC - OFFSET_HANDLER)
 L_Handler_XM equ (Handler_XM - OFFSET_HANDLER)
 
 ;--------------------------------DEFINE------------------------------------------
+;/* -------------DEFINES TECLADO------------- */
 %define TECLA_1     0x02
 %define TECLA_2     0x03
 %define TECLA_3     0x04
@@ -371,7 +386,66 @@ Handler_GP:
     hlt
 
 Handler_PF:
+xchg bx,bx
     mov dl,0x0E
+
+    cli                                     ; Deshabilito interrupciones.
+    pushad                                  ; Guardo registros.
+    mov     ebx, [esp + 32]                 ; Guardo el Error Code. 
+    mov     [error_code_PF], ebx
+    mov     eax, cr2
+    mov     [dir_lineal_page_fault], eax    ; Guardo dir. lineal VMA que falló
+
+    ; -> Analizo el Error Code
+    ; Si es una Pagina no presente (Bit 0 = 0) debe repaginar.
+    and ebx, 0x1F   ; Bits 0 - 5 donde tengo los flags.
+    cmp ebx, 0x00
+    je pag_no_presente
+    cmp ebx, 0x02
+    je write_access
+    jmp end_handler_PF
+
+pag_no_presente:
+write_access:
+
+    ;---------------------------------------------------
+    ; -> -----------Guardo VMA de falla y Dir. Fisica en GPRs
+    ;----------para poder re-paginar con la paginacion apagada-----------------
+    ;---------------------------------------------------
+    ; ->Guardo en edx la VMA de falla del CR2
+    xor   edx, edx
+    mov   edx, [dir_lineal_page_fault] 
+    ; ->Guardo en ecx la Dir. Fisica dinamica
+    xor   ecx, ecx
+    mov   ecx, [dir_phy_dinamica] 
+
+    ;---------------------------------------------------
+    ; -> -----------Apago la paginación-----------------
+    ;---------------------------------------------------
+    xor eax, eax
+    mov eax,cr0                 ;Desactivo paginacion apago el
+    xor eax, 1 << 31            ;bit 31 CR0.
+    mov cr0,eax 
+
+    push 0x03
+    push ecx
+    push edx
+    push __CR3_kernel         
+    call carga_paginacion
+    add esp,16
+
+    ;---------------------------------------------------
+    ; -> -----------Prendo la paginación-----------------
+    ;---------------------------------------------------
+    xor eax, eax
+    mov eax,cr0                 ;Activar paginacion encendiendo el
+    or eax, 1 << 31             ;bit 31 CR0.
+    mov cr0,eax 
+end_handler_PF:
+    popad                       ; Tomo valores de registros guardados.
+    pop eax
+xchg bx,bx
+    sti                         ; Habilito interrupciones.
     IRET
 
 Handler_MF:

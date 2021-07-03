@@ -6,20 +6,30 @@ EXTERN calcular_Promedio
 
 EXTERN PUNTERO_TABLA_DIGITO
 
+EXTERN ejecutar_tarea_1
+EXTERN ejecutar_tarea_2
+EXTERN ejecutar_tarea_3
+
 EXTERN PUNTERO_PANTALLA
-EXTERN escribir_Promedio_Pantalla
+EXTERN escribir_Promedio_VGA
 
 EXTERN __VIDEO_VMA_LIN
 
 
 ;------------------------------VARIABLES GLOBALES-----------------------------------------
 GLOBAL tarea_1
+GLOBAL tarea_2
+GLOBAL tarea_3
 
 GLOBAL FLAG_TAREA_1
 GLOBAL FLAG_TAREA_2
 GLOBAL FLAG_TAREA_3
 
+;------tarea 1-------
 GLOBAL PROMEDIO_TABLA_DIGITOS
+;------tarea 2-------
+GLOBAL SUMA2_TABLA_DIGITOS
+GLOBAL SUMA3_TABLA_DIGITOS
 
 GLOBAL contador_1
 GLOBAL contador_2
@@ -50,26 +60,18 @@ inicio_stak_tarea1  resb 0x1000                ;stak de 4k
 section .text_tarea1
 
 tarea_1:
-
+;xchg bx,bx
     cmp byte [FLAG_TAREA_1], 0x01    
     jne tarea_1_end
 
     mov byte [FLAG_TAREA_1], 0x00
  
-;xchg bx,bx
-    push dword PROMEDIO_TABLA_DIGITOS
-    push dword PUNTERO_TABLA_DIGITO
-    call calcular_Promedio
-    add esp,8
- 
- ;xchg bx,bx
-    push 64 
-    push 0     
-    push dword PROMEDIO_TABLA_DIGITOS     
-    push dword __VIDEO_VMA_LIN
-    call escribir_Promedio_Pantalla
-    add esp, 16
+    call ejecutar_tarea_1
 
+;Leer Direccion del promedio
+
+;    mov dword eax, [PROMEDIO_TABLA_DIGITOS]      ;guardo promedio en eax
+;    mov dword ebx, [eax]                         ;leo contenido de la direcion que guarda eax
 tarea_1_end:
 retf
 
@@ -81,6 +83,8 @@ FLAG_TAREA_2 db 0
 section .datos_tarea2
 
 contador_2 dw 0
+
+SUMA2_TABLA_DIGITOS dq 0
 
 section .rodata_tarea2
 
@@ -96,9 +100,11 @@ tarea_2:
     jne tarea_2_end
 
     mov byte [FLAG_TAREA_2], 0x00
- 
 
-tarea_2_end
+    call ejecutar_tarea_2
+
+tarea_2_end:
+retf
 
 ;-------------------------------------TAREA 3-------------------------------------------
 section .bss_tarea3
@@ -108,6 +114,8 @@ FLAG_TAREA_3 db 0
 section .datos_tarea3
 
 contador_3 dw 0
+
+SUMA3_TABLA_DIGITOS dq 0
 
 section .rodata_tarea3
 
@@ -124,8 +132,10 @@ tarea_3:
 
     mov byte [FLAG_TAREA_3], 0x00
 
-tarea_3_end
+    call ejecutar_tarea_3
 
+tarea_3_end:
+retf
 
 ;-------------------------------------TAREA 4-------------------------------------------
 section .bss_tarea4
@@ -148,5 +158,5 @@ tarea_4:
         hlt
         jmp .halted
 
-tarea_4_end
-
+tarea_4_end:
+retf

@@ -20,7 +20,7 @@ CFLAGS = -c -m32 -fno-stack-protector -fno-asynchronous-unwind-tables -Wall -fno
 LDSCRIPT = linker.ld
 RESET = reset_vector
 ROM_NAME = mi_rom
-OBJS = $(BINPATH)funciones.o $(BINPATH)handler.o $(BINPATH)init32.o $(BINPATH)main.o $(BINPATH)reset.o $(BINPATH)sys_datos.o $(BINPATH)sys_tables_page.o $(BINPATH)sys_tables.o $(BINPATH)tareas.o $(BINPATH)tarea1.o
+OBJS = $(BINPATH)funciones.o $(BINPATH)funciones_ROM.o $(BINPATH)handler.o $(BINPATH)init32.o $(BINPATH)main.o $(BINPATH)reset.o $(BINPATH)sys_datos.o $(BINPATH)sys_tables_page.o $(BINPATH)sys_tables.o $(BINPATH)tareas.o $(BINPATH)tarea1.o $(BINPATH)tarea2.o
 
 all: $(BINPATH)$(ROM_NAME).bin $(BINPATH)$(ROM_NAME).elf
 	@echo	''
@@ -74,6 +74,10 @@ $(BINPATH)tareas.o: $(SRCPATH)tareas.asm
 	@echo	'-----> Compilando tareas.asm'
 	$(AC) $(AFLAGS) $< -o $@ -l $(DOCPATH)tareas.lst
 
+$(BINPATH)funciones_ROM.o: $(SRCPATH)funciones_ROM.c
+	@echo	'-----> Compilando funciones_ROM.asm'
+	$(CC) $(CFLAGS) $< -o $@
+
 $(BINPATH)funciones.o: $(SRCPATH)funciones.c
 	@echo	'-----> Compilando funciones.asm'
 	$(CC) $(CFLAGS) $< -o $@
@@ -82,7 +86,9 @@ $(BINPATH)tarea1.o: $(SRCPATH)tarea1.c
 	@echo	'-----> Compilando tarea1.asm'
 	$(CC) $(CFLAGS) $< -o $@
 
-
+$(BINPATH)tarea2.o: $(SRCPATH)tarea2.c
+	@echo	'-----> Compilando tarea2.asm'
+	$(CC) $(CFLAGS) $< -o $@
 
 
 bochs:
