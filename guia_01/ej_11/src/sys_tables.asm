@@ -297,3 +297,81 @@ _idtr32:                                ;Imagen de IDTR.
         DW IDT_SIZE_32 - 1              
         DD IDT_32                       
 
+
+;------------------------------TSS-------------------------------
+TSS:
+TSS_kernel EQU $ - TSS
+    times 65 dd 0x0000
+TSS_tarea1 EQU $ - TSS
+    times 65 dd 0x0000
+TSS_tarea2 EQU $ - TSS
+    times 65 dd 0x0000
+TSS_tarea3 EQU $ - TSS
+    times 65 dd 0x0000
+TSS_tarea4 EQU $ - TSS
+    times 65 dd 0x0000
+
+    ;+0x00
+    dw 0                    ;Backlink
+    dw 0                    ;reservado
+    ;+0x04
+    dd 0                    ;ESP0
+    ;+0x08
+    dw 0                    ;SS0
+    dw 0                    ;reservado
+    ;+0x0C
+    dd 0                    ;ESP1
+    ;+0x10
+    dw 0                    ;SS1
+    dw 0                    ;reservado
+    ;+0x14
+    dd 0                    ;ESP2
+    ;+0x18
+    dw 0                    ;SS2
+    dw 0                    ;reservado
+    ;+0x1C
+    dd 0                    ;CR3
+    ;+0x20
+    dd 0                    ;EIP
+    ;+0x24
+    dd 0                    ;EFLAGS
+    ;+0x28
+    dd 0                    ;EAX
+    ;+0x2C
+    dd 0                    ;ECX
+    ;+0x30
+    dd 0                    ;EDX
+    ;+0x34
+    dd 0                    ;EBX
+    ;+0x38
+    dd 0                    ;ESP
+    ;+0x3C
+    dd 0                    ;EBP
+    ;+0x40
+    dd 0                    ;ESI
+    ;+0x44
+    dd 0                    ;EDI
+    ;+0x48
+    dw 0                    ;ES
+    dw 0                    ;Reservado
+    ;+0x4C
+    dw 0                    ;CS
+    dw 0                    ;Reservado
+    ;+0x50
+    dw 0                    ;SS
+    dw 0                    ;Reservado
+    ;+0x54
+    dw 0                    ;DS
+    dw 0                    ;Reservado
+    ;+0x58
+    dw 0                    ;FS
+    dw 0                    ;Reservado
+    ;+0x5C
+    dw 0                    ;GS
+    dw 0                    ;Reservado
+    ;+0x60
+    dw 0                    ;LDTR
+    dw 0                    ;Reservado
+    ;+0x64
+    dw 0                    ;Reservado
+    dw 0                    ;Bitmap E/S

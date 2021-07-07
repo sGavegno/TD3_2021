@@ -138,9 +138,14 @@ USE32
 
 ;-----------------------------------HANDLER INTERUPCIONES--------------------------------------------
 ;---Scheduler
-Handler_Timer:                          
+Handler_Timer:   
+    
+    MOV al, 0x20                        ;Envío End of Interrupt al PIC.
+    OUT 0x20, al
+
     PUSHAD                              ;Salvo los registros de uso general.
     ;xchg bx,bx	
+Scheduler:
 
     inc byte [contador_1]       
     inc byte [contador_2]       
@@ -172,13 +177,14 @@ Time_500ms:
 
     mov byte [FLAG_TAREA_1], 0x01
 
+Scheduler_fin:
 
 Timer_fin:
-    MOV al, 0x20                        ;Envío End of Interrupt al PIC.
-    OUT 0x20, al
+
     POPAD                               ;Restauro registros de uso general.
     IRET                                ;Fin de la interrupción.
 
+    jmp Handler_Timer
 
 Handler_Teclado:
     PUSHAD                              ;Salvo los registros de uso general.

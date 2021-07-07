@@ -27,6 +27,11 @@ GLOBAL page_fault_msg_4
 GLOBAL page_fault_msg_5
 GLOBAL page_fault_msg_6
 ;-------------------------------------SECTION-------------------------------------------
+section .stak_kernel
+
+inicio_stak_kernel  resb 0x1000                ;stak de 4k
+
+
 section .data
 
 variables_globales:
@@ -89,6 +94,61 @@ ciclo_borrar_pantalla:
         RET
 
 
-section .stak_kernel
+;Cargar TSS                 Pasar a .C
+init_TSS:
 
-inicio_stak_kernel  resb 0x1000                ;stak de 4k
+;    mov eax, __TSS_tarea1
+    ;backlink
+    mov [eax], dword(0) 
+    ;ESP0
+    mov [eax+0x04], dword(0) 
+    ;SS0
+    mov [eax+0x08], dword(0) 
+    ;ESP1
+    mov [eax+0x0C], dword(0) 
+    ;SS1
+    mov [eax+0x10], dword(0) 
+    ;ESP2
+    mov [eax+0x14], dword(0) 
+    ;SS2
+    mov [eax+0x18], dword(0) 
+    ;CR3
+    mov dword [eax+0x1C], __CR3_tarea1
+    ;EIP
+    mov [eax+0x20], dword(0) 
+    ;EFLAGS
+    mov [eax+0x24], dword(0) 
+    ;EAX
+    mov [eax+0x28], dword(0) 
+    ;ECX
+    mov [eax+0x2C], dword(0) 
+    ;EDX
+    mov [eax+0x30], dword(0) 
+    ;EBX
+    mov [eax+0x34], dword(0) 
+    ;ESP
+    mov [eax+0x38], dword(0) 
+    ;EBP
+    mov [eax+0x3C], dword(0)    
+    ;ESI
+    mov [eax+0x40], dword(0) 
+    ;EDI
+    mov [eax+0x44], dword(0) 
+    ;ES
+    mov [eax+0x48], dword(0) 
+    ;CS
+    mov [eax+0x4C], dword(0) 
+    ;SS
+    mov [eax+0x50], dword(0) 
+    ;DS
+    mov [eax+0x54], dword(0) 
+    ;FS
+    mov [eax+0x58], dword(0) 
+    ;GS
+    mov [eax+0x5C], dword(0) 
+    ;LDTR
+    mov [eax+0x60], dword(0) 
+    ;Bitmap E/S
+    mov [eax + 0x64], dword(0) 
+
+    ret
