@@ -166,6 +166,18 @@ EXTERN carga_paginacion_ROM
 
 EXTERN __CR3_kernel
 EXTERN __CR3_tarea1
+EXTERN __CR3_tarea2
+EXTERN __CR3_tarea3
+EXTERN __CR3_tarea4
+
+EXTERN TSS_kernel
+EXTERN TSS_tarea1
+EXTERN TSS_tarea2
+EXTERN TSS_tarea3
+EXTERN TSS_tarea4
+
+EXTERN  TSS_SEL
+
 ;------------------------------VARIABLES GLOBALES--------------------------------------------------
 GLOBAL init32
 
@@ -219,6 +231,11 @@ fin_copia_codigo:
 ; Inicializar ambos PIC usando ICW (Initialization Control Words).
     call init_PIC
        
+    xchg bx,bx
+
+;Inicializo TSS
+    call init_TSS
+
     jmp CS_SEL:kernel_init
     
     .guard:
@@ -449,7 +466,7 @@ init_PIC:
     MOV al, 11111111b    ;Todas desactivadas.
     OUT 0xA1, al         ;Enviar máscara al segundo PIC.
 
-    STI                 ;Habilitar interrupciones
+    ;STI                 ;Habilitar interrupciones
 
     RET
 
@@ -749,6 +766,74 @@ habilitar_paginacion:
     mov cr0,eax 
     
     ret
+
+init_TSS:
+
+    mov eax, TSS_kernel
+    ;backlink
+    mov [eax], dword(0) 
+    ;ESP0
+    mov [eax+0x04], dword(__STACK_KERNEL_LIN_END) 
+    ;SS0
+    mov [eax+0x08], dword(0x10)                     ;Por que 0x10?
+    ;ESP1
+    mov [eax+0x0C], dword(0) 
+    ;SS1
+    mov [eax+0x10], dword(0) 
+    ;ESP2
+    mov [eax+0x14], dword(0) 
+    ;SS2
+    mov [eax+0x18], dword(0) 
+    ;CR3
+    mov [eax+0x1C], dword(__CR3_kernel)
+    ;EIP
+    mov [eax+0x20], dword(kernel_init) 
+    ;EFLAGS
+    mov [eax+0x24], dword(0x202) 
+    ;EAX
+    mov [eax+0x28], dword(0) 
+    ;ECX
+    mov [eax+0x2C], dword(0) 
+    ;EDX
+    mov [eax+0x30], dword(0) 
+    ;EBX
+    mov [eax+0x34], dword(0) 
+    ;ESP
+    mov [eax+0x38], dword(0) 
+    ;EBP
+    mov [eax+0x3C], dword(0)    
+    ;ESI
+    mov [eax+0x40], dword(0) 
+    ;EDI
+    mov [eax+0x44], dword(0) 
+    ;ES
+    mov [eax+0x48], dword(DS_SEL) 
+    ;CS
+    mov [eax+0x4C], dword(CS_SEL) 
+    ;SS
+    mov [eax+0x50], dword(DS_SEL) 
+    ;DS
+    mov [eax+0x54], dword(DS_SEL) 
+    ;FS
+    mov [eax+0x58], dword(DS_SEL) 
+    ;GS
+    mov [eax+0x5C], dword(DS_SEL) 
+    ;LDTR
+    mov [eax+0x60], dword(0) 
+    ;Bitmap E/S
+    mov [eax + 0x64], dword(0) 
+
+    xchg bx,bx
+
+    mov ax, TSS_SEL
+    ltr ax
+
+    xchg bx,bx
+
+    STI                 ;Habilitar interrupciones
+
+    ret 
+
 
 activar_gate_a20:
      call empty_8042            ;Esperar hasta que se pueda acceder al 8042.

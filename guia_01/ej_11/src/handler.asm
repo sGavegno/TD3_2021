@@ -447,6 +447,9 @@ write_access:
     mov eax,cr0                 ;Activar paginacion encendiendo el
     or eax, 1 << 31             ;bit 31 CR0.
     mov cr0,eax 
+
+;   INVLPG [dir_lineal_page_fault]
+
 end_handler_PF:
     popad                       ; Tomo valores de registros guardados.
     pop eax

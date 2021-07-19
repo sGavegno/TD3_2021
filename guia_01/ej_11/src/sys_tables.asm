@@ -27,9 +27,15 @@ EXTERN L_Handler_XM
 ;------------------------------VARIABLES GLOBALES--------------------------------------------------
 GLOBAL  CS_SEL
 GLOBAL  DS_SEL
+GLOBAL  TSS_SEL
 GLOBAL  _gdtr32
 GLOBAL  _idtr32
 
+GLOBAL TSS_kernel
+GLOBAL TSS_tarea1
+GLOBAL TSS_tarea2
+GLOBAL TSS_tarea3
+GLOBAL TSS_tarea4
 
 ;-------------------------------------SECTION-------------------------------------------
 
@@ -53,7 +59,16 @@ DS_SEL equ $-GDT_32          ;Base 0x00000000 Limite 0xFFFFFFFF
     db  0x92                            ;DPL=00 / bit3=0 seg.dato/bit2=0/bit1=1 (R/W)
     db  0xCF                            ;G=1/D=1 32 bits/Limite(bits 19:16)
     db  0x00                            ;Base del segmento(bits 31-24) 
-    
+
+TSS_SEL equ $-GDT_32          ;Base 0xMODIFICAR Limite 0x00000067
+    dw  0x0067                          ;Limite del segmento(bits 15 -0)
+    dw  0                               ;Base del segmento(bits 15-0)
+    db  0                               ;Base del segmento(bits 23-16)
+    db  10001001b                       ;P=1 / DPL=00 / bit3=1 seg.cod/bit2=0/bit1=1 (R/W)
+                                        ;
+    db  01000000b                       ;G=0/D=1 32 bits/Limite(bits 19:16)
+    db  0                    ;Base del segmento(bits 31-24)    
+
 GDT_SIZE_32 equ $-GDT_32
 
 _gdtr32:
@@ -299,6 +314,7 @@ _idtr32:                                ;Imagen de IDTR.
 
 
 ;------------------------------TSS-------------------------------
+
 TSS:
 TSS_kernel EQU $ - TSS
     times 65 dd 0x0000
@@ -310,68 +326,3 @@ TSS_tarea3 EQU $ - TSS
     times 65 dd 0x0000
 TSS_tarea4 EQU $ - TSS
     times 65 dd 0x0000
-
-    ;+0x00
-    dw 0                    ;Backlink
-    dw 0                    ;reservado
-    ;+0x04
-    dd 0                    ;ESP0
-    ;+0x08
-    dw 0                    ;SS0
-    dw 0                    ;reservado
-    ;+0x0C
-    dd 0                    ;ESP1
-    ;+0x10
-    dw 0                    ;SS1
-    dw 0                    ;reservado
-    ;+0x14
-    dd 0                    ;ESP2
-    ;+0x18
-    dw 0                    ;SS2
-    dw 0                    ;reservado
-    ;+0x1C
-    dd 0                    ;CR3
-    ;+0x20
-    dd 0                    ;EIP
-    ;+0x24
-    dd 0                    ;EFLAGS
-    ;+0x28
-    dd 0                    ;EAX
-    ;+0x2C
-    dd 0                    ;ECX
-    ;+0x30
-    dd 0                    ;EDX
-    ;+0x34
-    dd 0                    ;EBX
-    ;+0x38
-    dd 0                    ;ESP
-    ;+0x3C
-    dd 0                    ;EBP
-    ;+0x40
-    dd 0                    ;ESI
-    ;+0x44
-    dd 0                    ;EDI
-    ;+0x48
-    dw 0                    ;ES
-    dw 0                    ;Reservado
-    ;+0x4C
-    dw 0                    ;CS
-    dw 0                    ;Reservado
-    ;+0x50
-    dw 0                    ;SS
-    dw 0                    ;Reservado
-    ;+0x54
-    dw 0                    ;DS
-    dw 0                    ;Reservado
-    ;+0x58
-    dw 0                    ;FS
-    dw 0                    ;Reservado
-    ;+0x5C
-    dw 0                    ;GS
-    dw 0                    ;Reservado
-    ;+0x60
-    dw 0                    ;LDTR
-    dw 0                    ;Reservado
-    ;+0x64
-    dw 0                    ;Reservado
-    dw 0                    ;Bitmap E/S
