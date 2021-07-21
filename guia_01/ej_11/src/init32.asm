@@ -2,6 +2,7 @@ USE32
 ;-------------------------------VARIABLES EXTERNAS-------------------------------------------------
 EXTERN DS_SEL
 EXTERN CS_SEL
+EXTERN TSS_SEL
 EXTERN _gdtr32
 EXTERN _idtr32
 
@@ -9,6 +10,11 @@ EXTERN __SYS_TABLES_LMA
 EXTERN __SYS_TABLES_LIN
 EXTERN __SYS_TABLES_FIS
 EXTERN __SYS_TABLES_VMA_END
+
+EXTERN __SYS_TABLES_TSS_LMA
+EXTERN __SYS_TABLES_TSS_LIN
+EXTERN __SYS_TABLES_TSS_FIS
+EXTERN __SYS_TABLES_TSS_VMA_END
 
 EXTERN __SYS_TABLES_PAG_LMA
 EXTERN __SYS_TABLES_PAG_LIN
@@ -132,27 +138,27 @@ EXTERN __STACK_KERNEL_FIS
 EXTERN __STACK_KERNEL_END_FIS
 
 EXTERN __STAK_TAREA1_LMA
-EXTERN __STAK_TAREA1_LIN
-EXTERN __STAK_TAREA1_LIN_END
-EXTERN __STAK_TAREA1_FIS
+EXTERN __STACK_TAREA1_LIN
+EXTERN __STACK_TAREA1_LIN_END
+EXTERN __STACK_TAREA1_FIS
 EXTERN __STAK_TAREA1_VMA_END_FIS
 
 EXTERN __STAK_TAREA2_LMA
-EXTERN __STAK_TAREA2_LIN
-EXTERN __STAK_TAREA2_LIN_END
-EXTERN __STAK_TAREA2_FIS
+EXTERN __STACK_TAREA2_LIN
+EXTERN __STACK_TAREA2_LIN_END
+EXTERN __STACK_TAREA2_FIS
 EXTERN __STAK_TAREA2_VMA_END_FIS
 
 EXTERN __STAK_TAREA3_LMA
-EXTERN __STAK_TAREA3_LIN
-EXTERN __STAK_TAREA3_LIN_END
-EXTERN __STAK_TAREA3_FIS
+EXTERN __STACK_TAREA3_LIN
+EXTERN __STACK_TAREA3_LIN_END
+EXTERN __STACK_TAREA3_FIS
 EXTERN __STAK_TAREA3_VMA_END_FIS
 
 EXTERN __STAK_TAREA4_LMA
-EXTERN __STAK_TAREA4_LIN
-EXTERN __STAK_TAREA4_LIN_END
-EXTERN __STAK_TAREA4_FIS
+EXTERN __STACK_TAREA4_LIN
+EXTERN __STACK_TAREA4_LIN_END
+EXTERN __STACK_TAREA4_FIS
 EXTERN __STAK_TAREA4_VMA_END_FIS
 
 
@@ -170,13 +176,16 @@ EXTERN __CR3_tarea2
 EXTERN __CR3_tarea3
 EXTERN __CR3_tarea4
 
-EXTERN TSS_kernel
-EXTERN TSS_tarea1
-EXTERN TSS_tarea2
-EXTERN TSS_tarea3
-EXTERN TSS_tarea4
+EXTERN __TSS_kernel
+EXTERN __TSS_tarea1
+EXTERN __TSS_tarea2
+EXTERN __TSS_tarea3
+EXTERN __TSS_tarea4
 
-EXTERN  TSS_SEL
+EXTERN tarea_1
+EXTERN tarea_2
+EXTERN tarea_3
+EXTERN tarea_4
 
 ;------------------------------VARIABLES GLOBALES--------------------------------------------------
 GLOBAL init32
@@ -250,6 +259,12 @@ copiar_codigo:
     mov ecx, __SYS_TABLES_VMA_END    
     sub ecx, __SYS_TABLES_LIN               ;Tamaño a copiar
     rep movsb     
+
+    mov esi, __SYS_TABLES_TSS_LMA           ;Puntero al inicio de la LMA
+    mov edi, __SYS_TABLES_TSS_FIS           ;Puntero a VMA
+    mov ecx, __SYS_TABLES_TSS_VMA_END    
+    sub ecx, __SYS_TABLES_TSS_LIN           ;Tamaño a copiar
+    rep movsb
 
     mov esi, __SYS_TABLES_PAG_LMA           ;Puntero al inicio de la LMA
     mov edi, __SYS_TABLES_PAG_FIS           ;Puntero a VMA
@@ -396,9 +411,9 @@ copiar_codigo:
     rep movsb 
 
     mov esi, __STAK_TAREA1_LMA              ;Puntero al inicio de la LMA
-    mov edi, __STAK_TAREA1_FIS              ;Puntero a VMA
-    mov ecx, __STAK_TAREA1_LIN_END    
-    sub ecx, __STAK_TAREA1_LIN              ;Tamaño a copiar
+    mov edi, __STACK_TAREA1_FIS              ;Puntero a VMA
+    mov ecx, __STACK_TAREA1_LIN_END    
+    sub ecx, __STACK_TAREA1_LIN              ;Tamaño a copiar
     rep movsb 
 
 
@@ -480,11 +495,22 @@ habilitar_paginacion:
     xor eax,eax                        ;Poner a cero esas entradas.
     rep stosd
 
+;-------------Paginacion Kernel----------------------------
+
 ;Tablas de sistema
     push 0x01                           ;Atributo tabla de pagina
     push 0x03                           ;Atributo descriptor de pagina
     push __SYS_TABLES_FIS               ;Direccion Fisica
     push __SYS_TABLES_LIN               ;Direccion Lineal
+    push __CR3_kernel                   
+    call carga_paginacion_ROM
+    add esp,20
+
+;Tablas de sistema TSS
+    push 0x01                           ;Atributo tabla de pagina
+    push 0x03                           ;Atributo descriptor de pagina
+    push __SYS_TABLES_TSS_FIS               ;Direccion Fisica
+    push __SYS_TABLES_TSS_LIN               ;Direccion Lineal
     push __CR3_kernel       ;Inicio de tabla  CR3_Kernel
     call carga_paginacion_ROM
     add esp,20
@@ -708,36 +734,36 @@ habilitar_paginacion:
 ;Pila Tarea 1
     push 0x07
     push 0x03
-    push __STAK_TAREA1_FIS
-    push __STAK_TAREA1_LIN
-    push __CR3_kernel           ;CR3_tarea1
+    push __STACK_TAREA1_FIS
+    push __STACK_TAREA1_LIN
+    push __CR3_tarea1           ;CR3_tarea1
     call carga_paginacion_ROM
     add esp,20
 
 ;Pila Tarea 2
     push 0x07
     push 0x03
-    push __STAK_TAREA2_FIS
-    push __STAK_TAREA2_LIN
-    push __CR3_kernel            ;CR3_tarea2
+    push __STACK_TAREA2_FIS
+    push __STACK_TAREA2_LIN
+    push __CR3_tarea2            ;CR3_tarea2
     call carga_paginacion_ROM
     add esp,20 
 
 ;Pila Tarea 3
     push 0x07
     push 0x03
-    push __STAK_TAREA3_FIS
-    push __STAK_TAREA3_LIN
-    push __CR3_kernel           ;CR3_tarea3
+    push __STACK_TAREA3_FIS
+    push __STACK_TAREA3_LIN
+    push __CR3_tarea3           ;CR3_tarea3
     call carga_paginacion_ROM
     add esp,20
 
 ;Pila Tarea 4
     push 0x07
     push 0x03
-    push __STAK_TAREA4_FIS
-    push __STAK_TAREA4_LIN
-    push __CR3_kernel           ;CR3_tarea4
+    push __STACK_TAREA4_FIS
+    push __STACK_TAREA4_LIN
+    push __CR3_tarea4           ;CR3_tarea4
     call carga_paginacion_ROM
     add esp,20
 
@@ -769,7 +795,232 @@ habilitar_paginacion:
 
 init_TSS:
 
-    mov eax, TSS_kernel
+
+;------------Inicializo TSS de la tarea 1 ------------
+    mov eax, __TSS_tarea1
+    ;backlink
+    mov [eax], dword(0) 
+    ;ESP0
+    mov [eax+0x04], dword(__STACK_TAREA1_LIN_END) 
+    ;SS0
+    mov [eax+0x08], dword(0x10)                     ;Por que 0x10?
+    ;ESP1
+    mov [eax+0x0C], dword(0) 
+    ;SS1
+    mov [eax+0x10], dword(0) 
+    ;ESP2
+    mov [eax+0x14], dword(0) 
+    ;SS2
+    mov [eax+0x18], dword(0) 
+    ;CR3
+    mov [eax+0x1C], dword(__CR3_tarea1)
+    ;EIP
+    mov [eax+0x20], dword(tarea_1) 
+    ;EFLAGS
+    mov [eax+0x24], dword(0x202) 
+    ;EAX
+    mov [eax+0x28], dword(0) 
+    ;ECX
+    mov [eax+0x2C], dword(0) 
+    ;EDX
+    mov [eax+0x30], dword(0) 
+    ;EBX
+    mov [eax+0x34], dword(0) 
+    ;ESP
+    mov [eax+0x38], dword(0) 
+    ;EBP
+    mov [eax+0x3C], dword(0)    
+    ;ESI
+    mov [eax+0x40], dword(0) 
+    ;EDI
+    mov [eax+0x44], dword(0) 
+    ;ES
+    mov [eax+0x48], dword(DS_SEL) 
+    ;CS
+    mov [eax+0x4C], dword(CS_SEL) 
+    ;SS
+    mov [eax+0x50], dword(DS_SEL) 
+    ;DS
+    mov [eax+0x54], dword(DS_SEL) 
+    ;FS
+    mov [eax+0x58], dword(DS_SEL) 
+    ;GS
+    mov [eax+0x5C], dword(DS_SEL) 
+    ;LDTR
+    mov [eax+0x60], dword(0) 
+    ;Bitmap E/S
+    mov [eax+0x64], dword(0)
+
+;------------Inicializo TSS de la tarea 2 ------------
+    mov eax, __TSS_tarea2
+    ;backlink
+    mov [eax], dword(0) 
+    ;ESP0
+    mov [eax+0x04], dword(__STACK_TAREA2_LIN_END) 
+    ;SS0
+    mov [eax+0x08], dword(0x10)                     ;Por que 0x10?
+    ;ESP1
+    mov [eax+0x0C], dword(0) 
+    ;SS1
+    mov [eax+0x10], dword(0) 
+    ;ESP2
+    mov [eax+0x14], dword(0) 
+    ;SS2
+    mov [eax+0x18], dword(0) 
+    ;CR3
+    mov [eax+0x1C], dword(__CR3_tarea2)
+    ;EIP
+    mov [eax+0x20], dword(tarea_2) 
+    ;EFLAGS
+    mov [eax+0x24], dword(0x202) 
+    ;EAX
+    mov [eax+0x28], dword(0) 
+    ;ECX
+    mov [eax+0x2C], dword(0) 
+    ;EDX
+    mov [eax+0x30], dword(0) 
+    ;EBX
+    mov [eax+0x34], dword(0) 
+    ;ESP
+    mov [eax+0x38], dword(0) 
+    ;EBP
+    mov [eax+0x3C], dword(0)    
+    ;ESI
+    mov [eax+0x40], dword(0) 
+    ;EDI
+    mov [eax+0x44], dword(0) 
+    ;ES
+    mov [eax+0x48], dword(DS_SEL) 
+    ;CS
+    mov [eax+0x4C], dword(CS_SEL) 
+    ;SS
+    mov [eax+0x50], dword(DS_SEL) 
+    ;DS
+    mov [eax+0x54], dword(DS_SEL) 
+    ;FS
+    mov [eax+0x58], dword(DS_SEL) 
+    ;GS
+    mov [eax+0x5C], dword(DS_SEL) 
+    ;LDTR
+    mov [eax+0x60], dword(0) 
+    ;Bitmap E/S
+    mov [eax+0x64], dword(0)
+
+
+;------------Inicializo TSS de la tarea 3------------
+    mov eax, __TSS_tarea3
+    ;backlink
+    mov [eax], dword(0) 
+    ;ESP0
+    mov [eax+0x04], dword(__STACK_TAREA3_LIN_END) 
+    ;SS0
+    mov [eax+0x08], dword(0x10)                     ;Por que 0x10?
+    ;ESP1
+    mov [eax+0x0C], dword(0) 
+    ;SS1
+    mov [eax+0x10], dword(0) 
+    ;ESP2
+    mov [eax+0x14], dword(0) 
+    ;SS2
+    mov [eax+0x18], dword(0) 
+    ;CR3
+    mov [eax+0x1C], dword(__CR3_tarea3)
+    ;EIP
+    mov [eax+0x20], dword(tarea_3) 
+    ;EFLAGS
+    mov [eax+0x24], dword(0x202) 
+    ;EAX
+    mov [eax+0x28], dword(0) 
+    ;ECX
+    mov [eax+0x2C], dword(0) 
+    ;EDX
+    mov [eax+0x30], dword(0) 
+    ;EBX
+    mov [eax+0x34], dword(0) 
+    ;ESP
+    mov [eax+0x38], dword(0) 
+    ;EBP
+    mov [eax+0x3C], dword(0)    
+    ;ESI
+    mov [eax+0x40], dword(0) 
+    ;EDI
+    mov [eax+0x44], dword(0) 
+    ;ES
+    mov [eax+0x48], dword(DS_SEL) 
+    ;CS
+    mov [eax+0x4C], dword(CS_SEL) 
+    ;SS
+    mov [eax+0x50], dword(DS_SEL) 
+    ;DS
+    mov [eax+0x54], dword(DS_SEL) 
+    ;FS
+    mov [eax+0x58], dword(DS_SEL) 
+    ;GS
+    mov [eax+0x5C], dword(DS_SEL) 
+    ;LDTR
+    mov [eax+0x60], dword(0) 
+    ;Bitmap E/S
+    mov [eax+0x64], dword(0)
+
+
+;------------Inicializo TSS de la tarea 3------------    
+    mov eax, __TSS_tarea4                
+    ;backlink
+    mov [eax], dword(0) 
+    ;ESP0
+    mov [eax+0x04], dword(__STACK_TAREA4_LIN_END) 
+    ;SS0
+    mov [eax+0x08], dword(0x10)                     ;Por que 0x10?
+    ;ESP1
+    mov [eax+0x0C], dword(0) 
+    ;SS1
+    mov [eax+0x10], dword(0) 
+    ;ESP2
+    mov [eax+0x14], dword(0) 
+    ;SS2
+    mov [eax+0x18], dword(0) 
+    ;CR3
+    mov [eax+0x1C], dword(__CR3_tarea4)
+    ;EIP
+    mov [eax+0x20], dword(tarea_4) 
+    ;EFLAGS
+    mov [eax+0x24], dword(0x202) 
+    ;EAX
+    mov [eax+0x28], dword(0) 
+    ;ECX
+    mov [eax+0x2C], dword(0) 
+    ;EDX
+    mov [eax+0x30], dword(0) 
+    ;EBX
+    mov [eax+0x34], dword(0) 
+    ;ESP
+    mov [eax+0x38], dword(0) 
+    ;EBP
+    mov [eax+0x3C], dword(0)    
+    ;ESI
+    mov [eax+0x40], dword(0) 
+    ;EDI
+    mov [eax+0x44], dword(0) 
+    ;ES
+    mov [eax+0x48], dword(DS_SEL) 
+    ;CS
+    mov [eax+0x4C], dword(CS_SEL) 
+    ;SS
+    mov [eax+0x50], dword(DS_SEL) 
+    ;DS
+    mov [eax+0x54], dword(DS_SEL) 
+    ;FS
+    mov [eax+0x58], dword(DS_SEL) 
+    ;GS
+    mov [eax+0x5C], dword(DS_SEL) 
+    ;LDTR
+    mov [eax+0x60], dword(0) 
+    ;Bitmap E/S
+    mov [eax+0x64], dword(0)
+
+
+;------------Inicializo TSS de kernel------------
+    mov eax, __TSS_kernel
     ;backlink
     mov [eax], dword(0) 
     ;ESP0
@@ -821,14 +1072,12 @@ init_TSS:
     ;LDTR
     mov [eax+0x60], dword(0) 
     ;Bitmap E/S
-    mov [eax + 0x64], dword(0) 
+    mov [eax+0x64], dword(0) 
 
     xchg bx,bx
 
     mov ax, TSS_SEL
     ltr ax
-
-    xchg bx,bx
 
     STI                 ;Habilitar interrupciones
 

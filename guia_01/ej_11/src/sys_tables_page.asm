@@ -20,7 +20,7 @@
 ;Secuencia inicialización ROM       0xFFFF0000                       0xFFFF0000    
 ;Vector de reset                    0xFFFFFFF0                       0xFFFFFFF0
                   
-
+;-----------------Tablas Kernel--------------------------------
 section .sys_tables_paginacion
 
 ;tamaño de directorio = 0x1000  4kB
@@ -30,3 +30,5 @@ section .sys_tables_paginacion
 puntero_directorio_paginacion resb 0x1000
 
 puntero_tabla_paginacion resb 0x1000
+
+

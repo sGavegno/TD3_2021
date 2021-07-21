@@ -24,6 +24,8 @@ EXTERN L_Handler_AC
 EXTERN L_Handler_MC
 EXTERN L_Handler_XM
 
+EXTERN __SYS_TABLES_TSS_LIN
+
 ;------------------------------VARIABLES GLOBALES--------------------------------------------------
 GLOBAL  CS_SEL
 GLOBAL  DS_SEL
@@ -36,6 +38,13 @@ GLOBAL TSS_tarea1
 GLOBAL TSS_tarea2
 GLOBAL TSS_tarea3
 GLOBAL TSS_tarea4
+
+GLOBAL __TSS_kernel
+GLOBAL __TSS_tarea1
+GLOBAL __TSS_tarea2
+GLOBAL __TSS_tarea3
+GLOBAL __TSS_tarea4
+
 
 ;-------------------------------------SECTION-------------------------------------------
 
@@ -60,14 +69,13 @@ DS_SEL equ $-GDT_32          ;Base 0x00000000 Limite 0xFFFFFFFF
     db  0xCF                            ;G=1/D=1 32 bits/Limite(bits 19:16)
     db  0x00                            ;Base del segmento(bits 31-24) 
 
-TSS_SEL equ $-GDT_32          ;Base 0xMODIFICAR Limite 0x00000067
+TSS_SEL equ $-GDT_32          ;Base 0x00001000 Limite 0x00000067
     dw  0x0067                          ;Limite del segmento(bits 15 -0)
-    dw  0                               ;Base del segmento(bits 15-0)
+    dw  0x1000                          ;Base del segmento(bits 15-0)
     db  0                               ;Base del segmento(bits 23-16)
     db  10001001b                       ;P=1 / DPL=00 / bit3=1 seg.cod/bit2=0/bit1=1 (R/W)
-                                        ;
     db  01000000b                       ;G=0/D=1 32 bits/Limite(bits 19:16)
-    db  0                    ;Base del segmento(bits 31-24)    
+    db  0                               ;Base del segmento(bits 31-24)    
 
 GDT_SIZE_32 equ $-GDT_32
 
@@ -314,15 +322,16 @@ _idtr32:                                ;Imagen de IDTR.
 
 
 ;------------------------------TSS-------------------------------
+SECTION .sys_tables_tss
 
 TSS:
 TSS_kernel EQU $ - TSS
-    times 65 dd 0x0000
+    times 0x68 db 0
 TSS_tarea1 EQU $ - TSS
-    times 65 dd 0x0000
+    times 0x68 db 0
 TSS_tarea2 EQU $ - TSS
-    times 65 dd 0x0000
+    times 0x68 db 0
 TSS_tarea3 EQU $ - TSS
-    times 65 dd 0x0000
+    times 0x68 db 0
 TSS_tarea4 EQU $ - TSS
-    times 65 dd 0x0000
+    times 0x68 db 0

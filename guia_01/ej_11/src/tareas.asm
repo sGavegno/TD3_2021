@@ -20,6 +20,7 @@ EXTERN __VIDEO_VMA_LIN
 GLOBAL tarea_1
 GLOBAL tarea_2
 GLOBAL tarea_3
+GLOBAL tarea_4
 
 GLOBAL FLAG_TAREA_1
 GLOBAL FLAG_TAREA_2
@@ -31,9 +32,7 @@ GLOBAL PROMEDIO_TABLA_DIGITOS
 GLOBAL SUMA2_TABLA_DIGITOS
 GLOBAL SUMA3_TABLA_DIGITOS
 
-GLOBAL contador_1
-GLOBAL contador_2
-GLOBAL contador_3
+
 ;--------------------------------DEFINE------------------------------------------
 
 
@@ -46,8 +45,6 @@ section .bss_tarea1
 FLAG_TAREA_1 db 0
 
 section .datos_tarea1
-
-contador_1 dw 0
 
 section .rodata_tarea1
 
@@ -82,8 +79,6 @@ FLAG_TAREA_2 db 0
 
 section .datos_tarea2
 
-contador_2 dw 0
-
 SUMA2_TABLA_DIGITOS dq 0
 
 section .rodata_tarea2
@@ -112,8 +107,6 @@ section .bss_tarea3
 FLAG_TAREA_3 db 0
 
 section .datos_tarea3
-
-contador_3 dw 0
 
 SUMA3_TABLA_DIGITOS dq 0
 

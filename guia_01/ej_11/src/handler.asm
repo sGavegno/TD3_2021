@@ -3,6 +3,10 @@
 ;-------------------------------VARIABLES EXTERNAS---------------------------------------
 EXTERN  CS_SEL
 
+EXTERN Scheduler
+EXTERN tarea_promedio
+EXTERN carga_paginacion
+
 EXTERN page_fault_msg
 EXTERN page_fault_msg_2
 EXTERN page_fault_msg_3
@@ -25,13 +29,9 @@ EXTERN FLAG_TAREA_3
 
 EXTERN CANTIDAD_TECLAS
 
-EXTERN tarea_promedio
-
 EXTERN contador_1
 EXTERN contador_2
 EXTERN contador_3
-
-EXTERN carga_paginacion
 
 EXTERN error_code_PF
 EXTERN dir_lineal_page_fault
@@ -39,6 +39,8 @@ EXTERN dir_phy_dinamica
 EXTERN __CR3_kernel
 
 ;------------------------------VARIABLES GLOBALES-----------------------------------------
+GLOBAL return_Scheduler
+
 GLOBAL L_Handler_Timer
 GLOBAL L_Handler_Teclado
 
@@ -127,14 +129,10 @@ L_Handler_XM equ (Handler_XM - OFFSET_HANDLER)
 %define TECLA_Y     0x15
 %define TECLA_Z     0x2C
 
-%define Timer_T1     50
-%define Timer_T2     10
-%define Timer_T3     20
-
 ;-------------------------------------SECTION-----------------------------------------------------
-SECTION .handler
-
 USE32
+
+SECTION .handler
 
 ;-----------------------------------HANDLER INTERUPCIONES--------------------------------------------
 ;---Scheduler
@@ -143,45 +141,12 @@ Handler_Timer:
     MOV al, 0x20                        ;Envío End of Interrupt al PIC.
     OUT 0x20, al
 
-    PUSHAD                              ;Salvo los registros de uso general.
     ;xchg bx,bx	
-Scheduler:
-
-    inc byte [contador_1]       
-    inc byte [contador_2]       
-    inc byte [contador_3]
-
-    cmp byte [contador_1], Timer_T1
-    je Time_500ms
-
-    cmp byte [contador_2], Timer_T2
-    je Time_100ms
-
-    cmp byte [contador_3], Timer_T3
-    je Time_200ms
-
-    jmp Timer_fin
-
-Time_100ms:
-    mov byte [contador_2],0x00
-
-    mov byte [FLAG_TAREA_2], 0x01
-
-Time_200ms:
-    mov byte [contador_3],0x00
-
-    mov byte [FLAG_TAREA_3], 0x01
-
-Time_500ms:
-    mov byte [contador_1],0x00
-
-    mov byte [FLAG_TAREA_1], 0x01
-
-Scheduler_fin:
+    jmp Scheduler
+return_Scheduler:
 
 Timer_fin:
 
-    POPAD                               ;Restauro registros de uso general.
     IRET                                ;Fin de la interrupción.
 
     jmp Handler_Timer
