@@ -4,25 +4,25 @@ ENTRY (reset)
     __RESET                 = 0xFFFFFFF0;
 
     __CR3_kernel            = 0x00010000;
+    __CR3_tarea0            = 0x00010000;       /* kernel / halted */
     __CR3_tarea1            = 0x00020000;
     __CR3_tarea2            = 0x00030000;
     __CR3_tarea3            = 0x00040000;
-    __CR3_tarea4            = 0x00050000;
 
     __TSS_kernel            = 0x00001000;
-    __TSS_tarea1            = 0x00001068;
-    __TSS_tarea2            = 0x000010D0;
-    __TSS_tarea3            = 0x00001138;
-    __TSS_tarea4            = 0x000011A0;    
+    __TSS_tarea0            = 0x00001068;
+    __TSS_tarea1            = 0x000010D0;
+    __TSS_tarea2            = 0x00001138;
+    __TSS_tarea3            = 0x000011A0;  
 
    /*--------------Direccion Fisica-----------------*/
     __SYS_TABLES_FIS        = 0x00000000;
     __SYS_TABLES_TSS_FIS    = 0x00001000;
     __SYS_TABLES_PAG_FIS    = 0x00010000;
-    __SYS_TABLES_PAG_T1_FIS = 0x00020000;
-    __SYS_TABLES_PAG_T2_FIS = 0x00030000;
-    __SYS_TABLES_PAG_T3_FIS = 0x00040000;
-    __SYS_TABLES_PAG_T4_FIS = 0x00050000;    
+    __SYS_TABLES_PAG_T0_FIS = 0x00020000;
+    __SYS_TABLES_PAG_T1_FIS = 0x00030000;
+    __SYS_TABLES_PAG_T2_FIS = 0x00040000;
+    __SYS_TABLES_PAG_T3_FIS = 0x00050000;    
     __VIDEO_FIS             = 0x000B8000;
     __HANDLER_FIS           = 0x00100000;
     __DATOS_FIS             = 0x00200000;
@@ -45,10 +45,10 @@ ENTRY (reset)
     __DATA_TAREA3_FIS       = 0x00530000;
     __RODATA_TAREA3_FIS     = 0x00540000;
 
-    __TEXT_TAREA4_FIS       = 0x00610000;
-    __BSS_TAREA4_FIS        = 0x00620000;
-    __DATA_TAREA4_FIS       = 0x00630000;
-    __RODATA_TAREA4_FIS     = 0x00640000;
+    __TEXT_tarea0_FIS       = 0x00610000;
+    __BSS_tarea0_FIS        = 0x00620000;
+    __DATA_tarea0_FIS       = 0x00630000;
+    __RODATA_tarea0_FIS     = 0x00640000;
 
     __STACK_KERNEL_FIS      = 0x1FFF8000;               /* stak de 4k */
     __STACK_KERNEL_END_FIS  = 0x1FFF8FFF;
@@ -62,8 +62,8 @@ ENTRY (reset)
     __STACK_TAREA3_FIS       = 0x2FFF2000;               /* stak de 4k */
     __STACK_TAREA3_END_FIS   = 0x2FFF2FFF;
 
-    __STACK_TAREA4_FIS       = 0x2FFF3000;               /* stak de 4k */
-    __STACK_TAREA4_END_FIS   = 0x2FFF3FFF; 
+    __STACK_tarea0_FIS       = 0x2FFF3000;               /* stak de 4k */
+    __STACK_tarea0_END_FIS   = 0x2FFF3FFF; 
 
     __INIT_VMA              = 0xFFFF0000;
 
@@ -71,10 +71,10 @@ ENTRY (reset)
     __SYS_TABLES_LIN            = 0x00000000;
     __SYS_TABLES_TSS_LIN        = 0x00001000;
     __SYS_TABLES_PAG_LIN        = 0x00010000;
-    __SYS_TABLES_PAG_T1_LIN     = 0x00020000;
-    __SYS_TABLES_PAG_T2_LIN     = 0x00030000;
-    __SYS_TABLES_PAG_T3_LIN     = 0x00040000;
-    __SYS_TABLES_PAG_T4_LIN     = 0x00050000; 
+    __SYS_TABLES_PAG_T0_LIN     = 0x00020000;
+    __SYS_TABLES_PAG_T1_LIN     = 0x00030000;
+    __SYS_TABLES_PAG_T2_LIN     = 0x00040000;
+    __SYS_TABLES_PAG_T3_LIN     = 0x00050000; 
     __VIDEO_LIN                 = 0x00E80000;
     __HANDLER_LIN               = 0x00100000;
     __DATOS_LIN                 = 0x01200000;
@@ -97,10 +97,10 @@ ENTRY (reset)
     __DATA_TAREA3_LIN           = 0x01530000;
     __RODATA_TAREA3_LIN         = 0x01540000;
 
-    __TEXT_TAREA4_LIN           = 0x01610000;
-    __BSS_TAREA4_LIN            = 0x01620000;
-    __DATA_TAREA4_LIN           = 0x01630000;
-    __RODATA_TAREA4_LIN         = 0x01640000;
+    __TEXT_tarea0_LIN           = 0x01610000;
+    __BSS_tarea0_LIN            = 0x01620000;
+    __DATA_tarea0_LIN           = 0x01630000;
+    __RODATA_tarea0_LIN         = 0x01640000;
 
     __STACK_KERNEL_LIN          = 0x1FFF8000;               /* stak de 4k */
     __STACK_KERNEL_LIN_END      = 0x1FFF8FFF;
@@ -114,8 +114,8 @@ ENTRY (reset)
     __STACK_TAREA3_LIN           = 0x00791000;               /* stak de 4k */
     __STACK_TAREA3_LIN_END       = 0x00791FFF;
 
-    __STACK_TAREA4_LIN           = 0x00792000;               /* stak de 4k */
-    __STACK_TAREA4_LIN_END       = 0x00792FFF;
+    __STACK_tarea0_LIN           = 0x00792000;               /* stak de 4k */
+    __STACK_tarea0_LIN_END       = 0x00792FFF;
 
 MEMORY
 {
@@ -319,40 +319,40 @@ SECTIONS
         } > ram
         __RODATA_TAREA3_VMA_END = .;
 
-    .text_tarea4 __TEXT_TAREA4_LIN :
+    .text_tarea0 __TEXT_tarea0_LIN :
         AT ( LOADADDR(.rodata_tarea3) + SIZEOF(.rodata_tarea3) )
         {
-            __TEXT_TAREA4_LMA = LOADADDR(.text_tarea4);
-            *(.text_tarea4);
+            __TEXT_tarea0_LMA = LOADADDR(.text_tarea0);
+            *(.text_tarea0);
         } > ram
-        __TEXT_TAREA4_VMA_END = .;
+        __TEXT_tarea0_VMA_END = .;
 
-    .bss_tarea4 __BSS_TAREA4_LIN :
-        AT ( LOADADDR(.text_tarea4) + SIZEOF(.text_tarea4) )
+    .bss_tarea0 __BSS_tarea0_LIN :
+        AT ( LOADADDR(.text_tarea0) + SIZEOF(.text_tarea0) )
         {
-            __BSS_TAREA4_LMA = LOADADDR(.bss_tarea4);
-            *(.bss_tarea4);
+            __BSS_tarea0_LMA = LOADADDR(.bss_tarea0);
+            *(.bss_tarea0);
         } > ram
-        __BSS_TAREA4_VMA_END = .;
+        __BSS_tarea0_VMA_END = .;
 
-    .datos_tarea4 __DATA_TAREA4_LIN :
-        AT ( LOADADDR(.bss_tarea4) + SIZEOF(.bss_tarea4) )
+    .datos_tarea0 __DATA_tarea0_LIN :
+        AT ( LOADADDR(.bss_tarea0) + SIZEOF(.bss_tarea0) )
         {
-            __DATA_TAREA4_LMA = LOADADDR(.datos_tarea4);
-            *(.datos_tarea4);
+            __DATA_tarea0_LMA = LOADADDR(.datos_tarea0);
+            *(.datos_tarea0);
         } > ram
-        __DATA_TAREA4_VMA_END = .;
+        __DATA_tarea0_VMA_END = .;
 
-    .rodata_tarea4 __RODATA_TAREA4_LIN :
-        AT ( LOADADDR(.datos_tarea4) + SIZEOF(.datos_tarea4) )
+    .rodata_tarea0 __RODATA_tarea0_LIN :
+        AT ( LOADADDR(.datos_tarea0) + SIZEOF(.datos_tarea0) )
         {
-            __RODATA_TAREA4_LMA = LOADADDR(.rodata_tarea4);
-            *(.rodata_tarea4);
+            __RODATA_tarea0_LMA = LOADADDR(.rodata_tarea0);
+            *(.rodata_tarea0);
         } > ram
-        __RODATA_TAREA4_VMA_END = .;
+        __RODATA_tarea0_VMA_END = .;
 
     .stak_kernel __STACK_KERNEL_LIN :
-        AT ( LOADADDR(.rodata_tarea4) + SIZEOF(.rodata_tarea4) )
+        AT ( LOADADDR(.rodata_tarea0) + SIZEOF(.rodata_tarea0) )
         {
             __STACK_KERNEL_LMA = LOADADDR(.stak_kernel);
             *(.stak_kernel);
@@ -383,13 +383,13 @@ SECTIONS
         } > ram
         __STAK_TAREA3_VMA_END = .; 
 
-    .stak_tarea4 __STACK_TAREA4_LIN :
+    .stak_tarea0 __STACK_tarea0_LIN :
         AT ( LOADADDR(.stak_tarea3) + SIZEOF(.stak_tarea3) )
         {
-            __STAK_TAREA4_LMA = LOADADDR(.stak_tarea4);
-            *(.stak_tarea4);
+            __STAK_tarea0_LMA = LOADADDR(.stak_tarea0);
+            *(.stak_tarea0);
         } > ram
-        __STAK_TAREA4_VMA_END = .;               
+        __STAK_tarea0_VMA_END = .;               
 
     .reset __RESET :
         AT (__RESET)

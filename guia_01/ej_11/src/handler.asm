@@ -145,7 +145,7 @@ Handler_Timer:
     jmp Scheduler
 return_Scheduler:
 
-Timer_fin:
+Handler_fin:
 
     IRET                                ;Fin de la interrupción.
 

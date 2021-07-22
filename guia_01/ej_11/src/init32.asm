@@ -21,6 +21,19 @@ EXTERN __SYS_TABLES_PAG_LIN
 EXTERN __SYS_TABLES_PAG_FIS
 EXTERN __SYS_TABLES_PAG_VMA_END
 
+EXTERN __SYS_TABLES_PAG_T1_LIN
+EXTERN __SYS_TABLES_PAG_T1_FIS
+
+EXTERN __SYS_TABLES_PAG_T2_LIN
+EXTERN __SYS_TABLES_PAG_T2_FIS
+
+EXTERN __SYS_TABLES_PAG_T3_LIN
+EXTERN __SYS_TABLES_PAG_T3_FIS
+
+EXTERN __SYS_TABLES_PAG_T0_LIN
+EXTERN __SYS_TABLES_PAG_T0_FIS
+
+
 EXTERN __VIDEO_LMA
 EXTERN __VIDEO_LIN
 EXTERN __VIDEO_FIS
@@ -111,25 +124,25 @@ EXTERN __RODATA_TAREA3_LIN
 EXTERN __RODATA_TAREA3_FIS
 EXTERN __RODATA_TAREA3_VMA_END
 
-EXTERN __TEXT_TAREA4_LMA
-EXTERN __TEXT_TAREA4_LIN
-EXTERN __TEXT_TAREA4_FIS
-EXTERN __TEXT_TAREA4_VMA_END
+EXTERN __TEXT_tarea0_LMA
+EXTERN __TEXT_tarea0_LIN
+EXTERN __TEXT_tarea0_FIS
+EXTERN __TEXT_tarea0_VMA_END
 
-EXTERN __DATA_TAREA4_LMA
-EXTERN __DATA_TAREA4_LIN
-EXTERN __DATA_TAREA4_FIS
-EXTERN __DATA_TAREA4_VMA_END
+EXTERN __DATA_tarea0_LMA
+EXTERN __DATA_tarea0_LIN
+EXTERN __DATA_tarea0_FIS
+EXTERN __DATA_tarea0_VMA_END
 
-EXTERN __BSS_TAREA4_LMA
-EXTERN __BSS_TAREA4_LIN
-EXTERN __BSS_TAREA4_FIS
-EXTERN __BSS_TAREA4_VMA_END
+EXTERN __BSS_tarea0_LMA
+EXTERN __BSS_tarea0_LIN
+EXTERN __BSS_tarea0_FIS
+EXTERN __BSS_tarea0_VMA_END
 
-EXTERN __RODATA_TAREA4_LMA
-EXTERN __RODATA_TAREA4_LIN
-EXTERN __RODATA_TAREA4_FIS
-EXTERN __RODATA_TAREA4_VMA_END
+EXTERN __RODATA_tarea0_LMA
+EXTERN __RODATA_tarea0_LIN
+EXTERN __RODATA_tarea0_FIS
+EXTERN __RODATA_tarea0_VMA_END
 
 EXTERN __STACK_KERNEL_LMA
 EXTERN __STACK_KERNEL_LIN
@@ -155,11 +168,11 @@ EXTERN __STACK_TAREA3_LIN_END
 EXTERN __STACK_TAREA3_FIS
 EXTERN __STAK_TAREA3_VMA_END_FIS
 
-EXTERN __STAK_TAREA4_LMA
-EXTERN __STACK_TAREA4_LIN
-EXTERN __STACK_TAREA4_LIN_END
-EXTERN __STACK_TAREA4_FIS
-EXTERN __STAK_TAREA4_VMA_END_FIS
+EXTERN __STAK_tarea0_LMA
+EXTERN __STACK_tarea0_LIN
+EXTERN __STACK_tarea0_LIN_END
+EXTERN __STACK_tarea0_FIS
+EXTERN __STAK_tarea0_VMA_END_FIS
 
 
 EXTERN kernel_init
@@ -174,18 +187,19 @@ EXTERN __CR3_kernel
 EXTERN __CR3_tarea1
 EXTERN __CR3_tarea2
 EXTERN __CR3_tarea3
-EXTERN __CR3_tarea4
+EXTERN __CR3_tarea0
 
 EXTERN __TSS_kernel
 EXTERN __TSS_tarea1
 EXTERN __TSS_tarea2
 EXTERN __TSS_tarea3
-EXTERN __TSS_tarea4
+EXTERN __TSS_tarea0
 
+EXTERN tarea_0
 EXTERN tarea_1
 EXTERN tarea_2
 EXTERN tarea_3
-EXTERN tarea_4
+
 
 ;------------------------------VARIABLES GLOBALES--------------------------------------------------
 GLOBAL init32
@@ -219,6 +233,30 @@ fin_copia_codigo:
     mov edi, __STACK_KERNEL_FIS
     mov ecx, __STACK_KERNEL_LIN_END
     sub ecx, __STACK_KERNEL_LIN
+    rep stosb
+
+    xor eax, eax
+    mov edi, __STACK_TAREA1_FIS
+    mov ecx, __STACK_TAREA1_LIN_END
+    sub ecx, __STACK_TAREA1_LIN
+    rep stosb
+
+    xor eax, eax
+    mov edi, __STACK_TAREA2_FIS
+    mov ecx, __STACK_TAREA2_LIN_END
+    sub ecx, __STACK_TAREA2_LIN
+    rep stosb
+
+    xor eax, eax
+    mov edi, __STACK_TAREA3_FIS
+    mov ecx, __STACK_TAREA3_LIN_END
+    sub ecx, __STACK_TAREA3_LIN
+    rep stosb
+
+    xor eax, eax
+    mov edi, __STACK_tarea0_FIS
+    mov ecx, __STACK_tarea0_LIN_END
+    sub ecx, __STACK_tarea0_LIN
     rep stosb
 
     ;Inicializar valor.
@@ -380,28 +418,28 @@ copiar_codigo:
     sub ecx, __RODATA_TAREA3_LIN             ;Tamaño a copiar
     rep movsb
 
-    mov esi, __TEXT_TAREA4_LMA              ;Puntero al inicio de la LMA
-    mov edi, __TEXT_TAREA4_FIS              ;Puntero a VMA
-    mov ecx, __TEXT_TAREA4_VMA_END    
-    sub ecx, __TEXT_TAREA4_LIN              ;Tamaño a copiar
+    mov esi, __TEXT_tarea0_LMA              ;Puntero al inicio de la LMA
+    mov edi, __TEXT_tarea0_FIS              ;Puntero a VMA
+    mov ecx, __TEXT_tarea0_VMA_END    
+    sub ecx, __TEXT_tarea0_LIN              ;Tamaño a copiar
     rep movsb 
 
-    mov esi, __BSS_TAREA4_LMA              ;Puntero al inicio de la LMA
-    mov edi, __BSS_TAREA4_FIS              ;Puntero a VMA
-    mov ecx, __BSS_TAREA4_VMA_END    
-    sub ecx, __BSS_TAREA4_LIN              ;Tamaño a copiar
+    mov esi, __BSS_tarea0_LMA              ;Puntero al inicio de la LMA
+    mov edi, __BSS_tarea0_FIS              ;Puntero a VMA
+    mov ecx, __BSS_tarea0_VMA_END    
+    sub ecx, __BSS_tarea0_LIN              ;Tamaño a copiar
     rep movsb 
 
-    mov esi, __DATA_TAREA4_LMA              ;Puntero al inicio de la LMA
-    mov edi, __DATA_TAREA4_FIS              ;Puntero a VMA
-    mov ecx, __DATA_TAREA4_VMA_END    
-    sub ecx, __DATA_TAREA4_LIN              ;Tamaño a copiar
+    mov esi, __DATA_tarea0_LMA              ;Puntero al inicio de la LMA
+    mov edi, __DATA_tarea0_FIS              ;Puntero a VMA
+    mov ecx, __DATA_tarea0_VMA_END    
+    sub ecx, __DATA_tarea0_LIN              ;Tamaño a copiar
     rep movsb 
     
-    mov esi, __RODATA_TAREA4_LMA              ;Puntero al inicio de la LMA
-    mov edi, __RODATA_TAREA4_FIS              ;Puntero a VMA
-    mov ecx, __RODATA_TAREA4_VMA_END    
-    sub ecx, __RODATA_TAREA4_LIN             ;Tamaño a copiar
+    mov esi, __RODATA_tarea0_LMA              ;Puntero al inicio de la LMA
+    mov edi, __RODATA_tarea0_FIS              ;Puntero a VMA
+    mov ecx, __RODATA_tarea0_VMA_END    
+    sub ecx, __RODATA_tarea0_LIN             ;Tamaño a copiar
     rep movsb
 
     mov esi, __STACK_KERNEL_LMA             ;Puntero al inicio de la LMA
@@ -495,6 +533,26 @@ habilitar_paginacion:
     xor eax,eax                        ;Poner a cero esas entradas.
     rep stosd
 
+    mov edi,__CR3_tarea1   ;Apuntar al inicio de la 1ra tabla.
+    mov ecx,0x0400 * 2                 ;Cantidad de entradas del directorio(1024) y una tabla(1024)
+    xor eax,eax                        ;Poner a cero esas entradas.
+    rep stosd
+
+    mov edi,__CR3_tarea2   ;Apuntar al inicio de la 1ra tabla.
+    mov ecx,0x0400 * 2                 ;Cantidad de entradas del directorio(1024) y una tabla(1024)
+    xor eax,eax                        ;Poner a cero esas entradas.
+    rep stosd
+
+    mov edi,__CR3_tarea3   ;Apuntar al inicio de la 1ra tabla.
+    mov ecx,0x0400 * 2                 ;Cantidad de entradas del directorio(1024) y una tabla(1024)
+    xor eax,eax                        ;Poner a cero esas entradas.
+    rep stosd
+
+    mov edi,__CR3_tarea0   ;Apuntar al inicio de la 1ra tabla.
+    mov ecx,0x0400 * 2                 ;Cantidad de entradas del directorio(1024) y una tabla(1024)
+    xor eax,eax                        ;Poner a cero esas entradas.
+    rep stosd
+
 ;-------------Paginacion Kernel----------------------------
 
 ;Tablas de sistema
@@ -578,192 +636,12 @@ habilitar_paginacion:
     call carga_paginacion_ROM                   ;CR3_kernel , tarea1,2,3
     add esp,20
 
-;TEXT Tarea 1
-    push 0x05
-    push 0x03
-    push __TEXT_TAREA1_FIS
-    push __TEXT_TAREA1_LIN
-    push __CR3_kernel           ;CR3_tarea1
-    call carga_paginacion_ROM
-    add esp,20
-       
-;BSS Tarea 1
-    push 0x07
-    push 0x03
-    push __BSS_TAREA1_FIS
-    push __BSS_TAREA1_LIN
-    push __CR3_kernel           ;CR3_tarea1
-    call carga_paginacion_ROM
-    add esp,20
-        
-;Data Tarea 1
-    push 0x07
-    push 0x03
-    push __DATA_TAREA1_FIS
-    push __DATA_TAREA1_LIN
-    push __CR3_kernel           ;CR3_tarea1
-    call carga_paginacion_ROM
-    add esp,20
-       
-;RODATA Tarea 1
-    push 0x05
-    push 0x03
-    push __RODATA_TAREA1_FIS
-    push __RODATA_TAREA1_LIN
-    push __CR3_kernel           ;CR3_tarea1
-    call carga_paginacion_ROM
-    add esp,20
-
-;TEXT Tarea 2
-    push 0x05
-    push 0x03
-    push __TEXT_TAREA2_FIS
-    push __TEXT_TAREA2_LIN
-    push __CR3_kernel           ;CR3_tarea2
-    call carga_paginacion_ROM
-    add esp,20
-       
-;BSS Tarea 2
-    push 0x07
-    push 0x03
-    push __BSS_TAREA2_FIS
-    push __BSS_TAREA2_LIN
-    push __CR3_kernel            ;CR3_tarea2
-    call carga_paginacion_ROM
-    add esp,20
-        
-;Data Tarea 2
-    push 0x07
-    push 0x03
-    push __DATA_TAREA2_FIS
-    push __DATA_TAREA2_LIN
-    push __CR3_kernel           ;CR3_tarea2
-    call carga_paginacion_ROM
-    add esp,20
-       
-;RODATA Tarea 2
-    push 0x05
-    push 0x03
-    push __RODATA_TAREA2_FIS
-    push __RODATA_TAREA2_LIN
-    push __CR3_kernel           ;CR3_tarea2
-    call carga_paginacion_ROM
-    add esp,20    
-
-;TEXT Tarea 3
-    push 0x05
-    push 0x03
-    push __TEXT_TAREA3_FIS
-    push __TEXT_TAREA3_LIN
-    push __CR3_kernel           ;CR3_tarea3
-    call carga_paginacion_ROM
-    add esp,20
-       
-;BSS Tarea 3
-    push 0x07
-    push 0x03
-    push __BSS_TAREA3_FIS
-    push __BSS_TAREA3_LIN
-    push __CR3_kernel           ;CR3_tarea3
-    call carga_paginacion_ROM
-    add esp,20
-        
-;Data Tarea 3
-    push 0x07
-    push 0x03
-    push __DATA_TAREA3_FIS
-    push __DATA_TAREA3_LIN
-    push __CR3_kernel           ;CR3_tarea3
-    call carga_paginacion_ROM
-    add esp,20
-       
-;RODATA Tarea 3
-    push 0x05
-    push 0x03
-    push __RODATA_TAREA3_FIS
-    push __RODATA_TAREA3_LIN
-    push __CR3_kernel           ;CR3_tarea3
-    call carga_paginacion_ROM
-    add esp,20
-
-;TEXT Tarea 4
-    push 0x05
-    push 0x03
-    push __TEXT_TAREA4_FIS
-    push __TEXT_TAREA4_LIN
-    push __CR3_kernel           ;CR3_tarea4
-    call carga_paginacion_ROM
-    add esp,20
-       
-;BSS Tarea 4
-    push 0x07
-    push 0x03
-    push __BSS_TAREA4_FIS
-    push __BSS_TAREA4_LIN
-    push __CR3_kernel           ;CR3_tarea4
-    call carga_paginacion_ROM
-    add esp,20
-        
-;Data Tarea 4
-    push 0x07
-    push 0x03
-    push __DATA_TAREA4_FIS
-    push __DATA_TAREA4_LIN
-    push __CR3_kernel           ;CR3_tarea4
-    call carga_paginacion_ROM
-    add esp,20
-       
-;RODATA Tarea 4
-    push 0x05
-    push 0x03
-    push __RODATA_TAREA4_FIS
-    push __RODATA_TAREA4_LIN
-    push __CR3_kernel           ;CR3_tarea4
-    call carga_paginacion_ROM
-    add esp,20
-
 ;Pila Kernel
     push 0x03
     push 0x03
     push __STACK_KERNEL_FIS
     push __STACK_KERNEL_LIN
     push __CR3_kernel           ;CR3_kernel
-    call carga_paginacion_ROM
-    add esp,20
-                    
-;Pila Tarea 1
-    push 0x07
-    push 0x03
-    push __STACK_TAREA1_FIS
-    push __STACK_TAREA1_LIN
-    push __CR3_tarea1           ;CR3_tarea1
-    call carga_paginacion_ROM
-    add esp,20
-
-;Pila Tarea 2
-    push 0x07
-    push 0x03
-    push __STACK_TAREA2_FIS
-    push __STACK_TAREA2_LIN
-    push __CR3_tarea2            ;CR3_tarea2
-    call carga_paginacion_ROM
-    add esp,20 
-
-;Pila Tarea 3
-    push 0x07
-    push 0x03
-    push __STACK_TAREA3_FIS
-    push __STACK_TAREA3_LIN
-    push __CR3_tarea3           ;CR3_tarea3
-    call carga_paginacion_ROM
-    add esp,20
-
-;Pila Tarea 4
-    push 0x07
-    push 0x03
-    push __STACK_TAREA4_FIS
-    push __STACK_TAREA4_LIN
-    push __CR3_tarea4           ;CR3_tarea4
     call carga_paginacion_ROM
     add esp,20
 
@@ -784,8 +662,401 @@ habilitar_paginacion:
     call carga_paginacion_ROM
     add esp,20
 
+    push 0x01
+    push 0x03
+    push 0xFFFF2000
+    push 0xFFFF2000
+    push __CR3_kernel         
+    call carga_paginacion_ROM
+    add esp,20
+
+xchg bx,bx
+;------------------Tarea 1-----------------
+;Tablas de sistema
+    push 0x01                           ;Atributo tabla de pagina
+    push 0x03                           ;Atributo descriptor de pagina
+    push __SYS_TABLES_FIS               ;Direccion Fisica
+    push __SYS_TABLES_LIN               ;Direccion Lineal
+    push __CR3_tarea1                   
+    call carga_paginacion_ROM
+    add esp,20
+
+;Tablas de sistema TSS
+    push 0x01                           ;Atributo tabla de pagina
+    push 0x03                           ;Atributo descriptor de pagina
+    push __SYS_TABLES_TSS_FIS               ;Direccion Fisica
+    push __SYS_TABLES_TSS_LIN               ;Direccion Lineal
+    push __CR3_tarea1                       
+    call carga_paginacion_ROM
+    add esp,20
+
+    push 0x03
+    push 0x03
+    push __SYS_TABLES_PAG_T1_FIS
+    push __SYS_TABLES_PAG_T1_LIN
+    push __CR3_tarea1         
+    call carga_paginacion_ROM
+    add esp,20
+
+;Video                                          ;Tenfo que paginarlo para cada tarea
+    push 0x03
+    push 0x03
+    push __VIDEO_FIS
+    push __VIDEO_LIN
+    push __CR3_tarea1               ;CR3_kernel, tarea1,2,3
+    call carga_paginacion_ROM
+    add esp,20
+            
+;ISRs                                           ;Tenfo que paginarlo para cada tarea
+    push 0x01
+    push 0x03
+    push __HANDLER_FIS
+    push __HANDLER_LIN
+    push __CR3_tarea1         
+    call carga_paginacion_ROM                       ;CR3_kernel, tarea1,2,3,4
+    add esp,20
+           
+;Datos                                          ;Tenfo que paginarlo para cada tarea
+    push 0x03
+    push 0x03
+    push __DATOS_FIS
+    push __DATOS_LIN
+    push __CR3_tarea1                           ;CR3_kernel, tarea1,2,3
+    call carga_paginacion_ROM
+    add esp,20
+            
+;Tabla de Dígitos                               ;Tenfo que paginarlo para cada tarea
+    push 0x03
+    push 0x03
+    push __TABLES_DIGITOS_FIS
+    push __TABLES_DIGITOS_LIN
+    push __CR3_tarea1                    ;CR3_kernel, tarea1,2,3
+    call carga_paginacion_ROM
+    add esp,20
+
+;Funciones                                      ;Tenfo que paginarlo para cada tarea
+    push 0x01
+    push 0x03
+    push __FUNCIONES_FIS
+    push __FUNCIONES_LIN
+    push __CR3_tarea1         
+    call carga_paginacion_ROM                   ;CR3_kernel , tarea1,2,3
+    add esp,20
+
+;TEXT Tarea 1
+    push 0x05
+    push 0x03
+    push __TEXT_TAREA1_FIS
+    push __TEXT_TAREA1_LIN
+    push __CR3_tarea1           ;CR3_tarea1
+    call carga_paginacion_ROM
+    add esp,20
+       
+;BSS Tarea 1
+    push 0x07
+    push 0x03
+    push __BSS_TAREA1_FIS
+    push __BSS_TAREA1_LIN
+    push __CR3_tarea1           ;CR3_tarea1
+    call carga_paginacion_ROM
+    add esp,20
+        
+;Data Tarea 1
+    push 0x07
+    push 0x03
+    push __DATA_TAREA1_FIS
+    push __DATA_TAREA1_LIN
+    push __CR3_tarea1           ;CR3_tarea1
+    call carga_paginacion_ROM
+    add esp,20
+       
+;RODATA Tarea 1
+    push 0x05
+    push 0x03
+    push __RODATA_TAREA1_FIS
+    push __RODATA_TAREA1_LIN
+    push __CR3_tarea1           ;CR3_tarea1
+    call carga_paginacion_ROM
+    add esp,20
+
+;Pila Tarea 1
+    push 0x07
+    push 0x03
+    push __STACK_TAREA1_FIS
+    push __STACK_TAREA1_LIN
+    push __CR3_tarea1           ;CR3_tarea1
+    call carga_paginacion_ROM
+    add esp,20
+
+;Pila Kernel
+    push 0x03
+    push 0x03
+    push __STACK_KERNEL_FIS
+    push __STACK_KERNEL_LIN
+    push __CR3_tarea1           ;CR3_kernel
+    call carga_paginacion_ROM
+    add esp,20
+
+;------------------Tarea 2-----------------
+;Tablas de sistema
+    push 0x01                           ;Atributo tabla de pagina
+    push 0x03                           ;Atributo descriptor de pagina
+    push __SYS_TABLES_FIS               ;Direccion Fisica
+    push __SYS_TABLES_LIN               ;Direccion Lineal
+    push __CR3_tarea2                   
+    call carga_paginacion_ROM
+    add esp,20
+
+;Tablas de sistema TSS
+    push 0x01                           ;Atributo tabla de pagina
+    push 0x03                           ;Atributo descriptor de pagina
+    push __SYS_TABLES_TSS_FIS               ;Direccion Fisica
+    push __SYS_TABLES_TSS_LIN               ;Direccion Lineal
+    push __CR3_tarea2                       
+    call carga_paginacion_ROM
+    add esp,20
+
+;Tablas de Paginación
+    push 0x03
+    push 0x03
+    push __SYS_TABLES_PAG_T2_FIS
+    push __SYS_TABLES_PAG_T2_LIN
+    push __CR3_tarea2         
+    call carga_paginacion_ROM
+    add esp,20
+        
+;Video                                          ;Tenfo que paginarlo para cada tarea
+    push 0x03
+    push 0x03
+    push __VIDEO_FIS
+    push __VIDEO_LIN
+    push __CR3_tarea2               ;CR3_kernel, tarea1,2,3
+    call carga_paginacion_ROM
+    add esp,20
+            
+;ISRs                                           ;Tenfo que paginarlo para cada tarea
+    push 0x01
+    push 0x03
+    push __HANDLER_FIS
+    push __HANDLER_LIN
+    push __CR3_tarea2         
+    call carga_paginacion_ROM                       ;CR3_kernel, tarea1,2,3,4
+    add esp,20
+           
+;Datos                                          ;Tenfo que paginarlo para cada tarea
+    push 0x03
+    push 0x03
+    push __DATOS_FIS
+    push __DATOS_LIN
+    push __CR3_tarea2                           ;CR3_kernel, tarea1,2,3
+    call carga_paginacion_ROM
+    add esp,20
+            
+;Tabla de Dígitos                               ;Tenfo que paginarlo para cada tarea
+    push 0x03
+    push 0x03
+    push __TABLES_DIGITOS_FIS
+    push __TABLES_DIGITOS_LIN
+    push __CR3_tarea2                    ;CR3_kernel, tarea1,2,3
+    call carga_paginacion_ROM
+    add esp,20
+
+;Funciones                                      ;Tenfo que paginarlo para cada tarea
+    push 0x01
+    push 0x03
+    push __FUNCIONES_FIS
+    push __FUNCIONES_LIN
+    push __CR3_tarea2         
+    call carga_paginacion_ROM                   ;CR3_kernel , tarea1,2,3
+    add esp,20
+
+;TEXT Tarea 2
+    push 0x05
+    push 0x03
+    push __TEXT_TAREA2_FIS
+    push __TEXT_TAREA2_LIN
+    push __CR3_tarea2           ;CR3_tarea2
+    call carga_paginacion_ROM
+    add esp,20
+       
+;BSS Tarea 2
+    push 0x07
+    push 0x03
+    push __BSS_TAREA2_FIS
+    push __BSS_TAREA2_LIN
+    push __CR3_tarea2            ;CR3_tarea2
+    call carga_paginacion_ROM
+    add esp,20
+        
+;Data Tarea 2
+    push 0x07
+    push 0x03
+    push __DATA_TAREA2_FIS
+    push __DATA_TAREA2_LIN
+    push __CR3_tarea2           ;CR3_tarea2
+    call carga_paginacion_ROM
+    add esp,20
+       
+;RODATA Tarea 2
+    push 0x05
+    push 0x03
+    push __RODATA_TAREA2_FIS
+    push __RODATA_TAREA2_LIN
+    push __CR3_tarea2           ;CR3_tarea2
+    call carga_paginacion_ROM
+    add esp,20    
+
+;Pila Tarea 2
+    push 0x07
+    push 0x03
+    push __STACK_TAREA2_FIS
+    push __STACK_TAREA2_LIN
+    push __CR3_tarea2            ;CR3_tarea2
+    call carga_paginacion_ROM
+    add esp,20 
+
+;Pila Kernel
+    push 0x03
+    push 0x03
+    push __STACK_KERNEL_FIS
+    push __STACK_KERNEL_LIN
+    push __CR3_tarea2           ;CR3_kernel
+    call carga_paginacion_ROM
+    add esp,20
+;------------------Tarea 3-----------------
+;Tablas de sistema
+    push 0x01                           ;Atributo tabla de pagina
+    push 0x03                           ;Atributo descriptor de pagina
+    push __SYS_TABLES_FIS               ;Direccion Fisica
+    push __SYS_TABLES_LIN               ;Direccion Lineal
+    push __CR3_tarea3                   
+    call carga_paginacion_ROM
+    add esp,20
+
+;Tablas de sistema TSS
+    push 0x01                           ;Atributo tabla de pagina
+    push 0x03                           ;Atributo descriptor de pagina
+    push __SYS_TABLES_TSS_FIS               ;Direccion Fisica
+    push __SYS_TABLES_TSS_LIN               ;Direccion Lineal
+    push __CR3_tarea3                       
+    call carga_paginacion_ROM
+    add esp,20
+
+;Tablas de Paginación
+    push 0x03
+    push 0x03
+    push __SYS_TABLES_PAG_T3_FIS
+    push __SYS_TABLES_PAG_T3_LIN
+    push __CR3_tarea3         
+    call carga_paginacion_ROM
+    add esp,20
+        
+;Video                                          ;Tenfo que paginarlo para cada tarea
+    push 0x03
+    push 0x03
+    push __VIDEO_FIS
+    push __VIDEO_LIN
+    push __CR3_tarea3               ;CR3_kernel, tarea1,2,3
+    call carga_paginacion_ROM
+    add esp,20
+            
+;ISRs                                           ;Tenfo que paginarlo para cada tarea
+    push 0x01
+    push 0x03
+    push __HANDLER_FIS
+    push __HANDLER_LIN
+    push __CR3_tarea3         
+    call carga_paginacion_ROM                       ;CR3_kernel, tarea1,2,3,4
+    add esp,20
+           
+;Datos                                          ;Tenfo que paginarlo para cada tarea
+    push 0x03
+    push 0x03
+    push __DATOS_FIS
+    push __DATOS_LIN
+    push __CR3_tarea3                           ;CR3_kernel, tarea1,2,3
+    call carga_paginacion_ROM
+    add esp,20
+            
+;Tabla de Dígitos                               ;Tenfo que paginarlo para cada tarea
+    push 0x03
+    push 0x03
+    push __TABLES_DIGITOS_FIS
+    push __TABLES_DIGITOS_LIN
+    push __CR3_tarea3                    ;CR3_kernel, tarea1,2,3
+    call carga_paginacion_ROM
+    add esp,20
+
+;Funciones                                      ;Tenfo que paginarlo para cada tarea
+    push 0x01
+    push 0x03
+    push __FUNCIONES_FIS
+    push __FUNCIONES_LIN
+    push __CR3_tarea3         
+    call carga_paginacion_ROM                   ;CR3_kernel , tarea1,2,3
+    add esp,20
+
+;TEXT Tarea 3
+    push 0x05
+    push 0x03
+    push __TEXT_TAREA3_FIS
+    push __TEXT_TAREA3_LIN
+    push __CR3_tarea3           ;CR3_tarea3
+    call carga_paginacion_ROM
+    add esp,20
+       
+;BSS Tarea 3
+    push 0x07
+    push 0x03
+    push __BSS_TAREA3_FIS
+    push __BSS_TAREA3_LIN
+    push __CR3_tarea3           ;CR3_tarea3
+    call carga_paginacion_ROM
+    add esp,20
+        
+;Data Tarea 3
+    push 0x07
+    push 0x03
+    push __DATA_TAREA3_FIS
+    push __DATA_TAREA3_LIN
+    push __CR3_tarea3           ;CR3_tarea3
+    call carga_paginacion_ROM
+    add esp,20
+       
+;RODATA Tarea 3
+    push 0x05
+    push 0x03
+    push __RODATA_TAREA3_FIS
+    push __RODATA_TAREA3_LIN
+    push __CR3_tarea3           ;CR3_tarea3
+    call carga_paginacion_ROM
+    add esp,20
+
+;Pila Tarea 3
+    push 0x07
+    push 0x03
+    push __STACK_TAREA3_FIS
+    push __STACK_TAREA3_LIN
+    push __CR3_tarea3           ;CR3_tarea3
+    call carga_paginacion_ROM
+    add esp,20
+
+;Pila Kernel
+    push 0x03
+    push 0x03
+    push __STACK_KERNEL_FIS
+    push __STACK_KERNEL_LIN
+    push __CR3_tarea3           ;CR3_kernel
+    call carga_paginacion_ROM
+    add esp,20
+
+;---------------------------------------------;
+;-----------Habilitar Paginacion--------------;
+;---------------------------------------------;
+xchg bx,bx
+
     mov eax,__CR3_kernel 
-    mov cr3,eax                ;Apuntar a directorio de paginas.
+    mov cr3,eax                 ;Apuntar a directorio de paginas.
  
     mov eax,cr0                 ;Activar paginacion encendiendo el
     or eax, 1 << 31             ;bit 31 CR0.
@@ -795,23 +1066,22 @@ habilitar_paginacion:
 
 init_TSS:
 
-
 ;------------Inicializo TSS de la tarea 1 ------------
     mov eax, __TSS_tarea1
     ;backlink
     mov [eax], dword(0) 
     ;ESP0
-    mov [eax+0x04], dword(__STACK_TAREA1_LIN_END) 
+    mov [eax+0x04], dword(__STACK_KERNEL_LIN_END) 
     ;SS0
-    mov [eax+0x08], dword(0x10)                     ;Por que 0x10?
+    mov [eax+0x08], dword(0x10)                    
     ;ESP1
     mov [eax+0x0C], dword(0) 
     ;SS1
     mov [eax+0x10], dword(0) 
     ;ESP2
-    mov [eax+0x14], dword(0) 
+    mov [eax+0x14], dword(__STACK_TAREA1_LIN_END) 
     ;SS2
-    mov [eax+0x18], dword(0) 
+    mov [eax+0x18], dword(0x10) 
     ;CR3
     mov [eax+0x1C], dword(__CR3_tarea1)
     ;EIP
@@ -827,9 +1097,9 @@ init_TSS:
     ;EBX
     mov [eax+0x34], dword(0) 
     ;ESP
-    mov [eax+0x38], dword(0) 
+    mov [eax+0x38], dword(__STACK_TAREA1_LIN_END) 
     ;EBP
-    mov [eax+0x3C], dword(0)    
+    mov [eax+0x3C], dword(__STACK_TAREA1_LIN_END)    
     ;ESI
     mov [eax+0x40], dword(0) 
     ;EDI
@@ -856,17 +1126,17 @@ init_TSS:
     ;backlink
     mov [eax], dword(0) 
     ;ESP0
-    mov [eax+0x04], dword(__STACK_TAREA2_LIN_END) 
+    mov [eax+0x04], dword(__STACK_KERNEL_LIN_END) 
     ;SS0
-    mov [eax+0x08], dword(0x10)                     ;Por que 0x10?
+    mov [eax+0x08], dword(0x10)                    
     ;ESP1
     mov [eax+0x0C], dword(0) 
     ;SS1
     mov [eax+0x10], dword(0) 
     ;ESP2
-    mov [eax+0x14], dword(0) 
+    mov [eax+0x14], dword(__STACK_TAREA2_LIN_END) 
     ;SS2
-    mov [eax+0x18], dword(0) 
+    mov [eax+0x18], dword(0x10) 
     ;CR3
     mov [eax+0x1C], dword(__CR3_tarea2)
     ;EIP
@@ -882,9 +1152,9 @@ init_TSS:
     ;EBX
     mov [eax+0x34], dword(0) 
     ;ESP
-    mov [eax+0x38], dword(0) 
+    mov [eax+0x38], dword(__STACK_TAREA2_LIN_END) 
     ;EBP
-    mov [eax+0x3C], dword(0)    
+    mov [eax+0x3C], dword(__STACK_TAREA2_LIN_END)    
     ;ESI
     mov [eax+0x40], dword(0) 
     ;EDI
@@ -912,7 +1182,7 @@ init_TSS:
     ;backlink
     mov [eax], dword(0) 
     ;ESP0
-    mov [eax+0x04], dword(__STACK_TAREA3_LIN_END) 
+    mov [eax+0x04], dword(__STACK_KERNEL_LIN_END) 
     ;SS0
     mov [eax+0x08], dword(0x10)                     ;Por que 0x10?
     ;ESP1
@@ -920,9 +1190,9 @@ init_TSS:
     ;SS1
     mov [eax+0x10], dword(0) 
     ;ESP2
-    mov [eax+0x14], dword(0) 
+    mov [eax+0x14], dword(__STACK_TAREA3_LIN_END) 
     ;SS2
-    mov [eax+0x18], dword(0) 
+    mov [eax+0x18], dword(0x10) 
     ;CR3
     mov [eax+0x1C], dword(__CR3_tarea3)
     ;EIP
@@ -938,9 +1208,9 @@ init_TSS:
     ;EBX
     mov [eax+0x34], dword(0) 
     ;ESP
-    mov [eax+0x38], dword(0) 
+    mov [eax+0x38], dword(__STACK_TAREA3_LIN_END) 
     ;EBP
-    mov [eax+0x3C], dword(0)    
+    mov [eax+0x3C], dword(__STACK_TAREA3_LIN_END)    
     ;ESI
     mov [eax+0x40], dword(0) 
     ;EDI
@@ -963,12 +1233,12 @@ init_TSS:
     mov [eax+0x64], dword(0)
 
 
-;------------Inicializo TSS de la tarea 3------------    
-    mov eax, __TSS_tarea4                
+;------------Inicializo TSS de la tarea halted------------    
+    mov eax, __TSS_tarea0                
     ;backlink
     mov [eax], dword(0) 
     ;ESP0
-    mov [eax+0x04], dword(__STACK_TAREA4_LIN_END) 
+    mov [eax+0x04], dword(__STACK_KERNEL_LIN_END) 
     ;SS0
     mov [eax+0x08], dword(0x10)                     ;Por que 0x10?
     ;ESP1
@@ -976,13 +1246,13 @@ init_TSS:
     ;SS1
     mov [eax+0x10], dword(0) 
     ;ESP2
-    mov [eax+0x14], dword(0) 
+    mov [eax+0x14], dword(__STACK_tarea0_LIN_END) 
     ;SS2
-    mov [eax+0x18], dword(0) 
+    mov [eax+0x18], dword(0x10) 
     ;CR3
-    mov [eax+0x1C], dword(__CR3_tarea4)
+    mov [eax+0x1C], dword(__CR3_tarea0)
     ;EIP
-    mov [eax+0x20], dword(tarea_4) 
+    mov [eax+0x20], dword(kernel_init) 
     ;EFLAGS
     mov [eax+0x24], dword(0x202) 
     ;EAX
@@ -994,9 +1264,9 @@ init_TSS:
     ;EBX
     mov [eax+0x34], dword(0) 
     ;ESP
-    mov [eax+0x38], dword(0) 
+    mov [eax+0x38], dword(__STACK_tarea0_LIN_END) 
     ;EBP
-    mov [eax+0x3C], dword(0)    
+    mov [eax+0x3C], dword(__STACK_tarea0_LIN_END)    
     ;ESI
     mov [eax+0x40], dword(0) 
     ;EDI
@@ -1032,9 +1302,9 @@ init_TSS:
     ;SS1
     mov [eax+0x10], dword(0) 
     ;ESP2
-    mov [eax+0x14], dword(0) 
+    mov [eax+0x14], dword(__STACK_tarea0_LIN_END) 
     ;SS2
-    mov [eax+0x18], dword(0) 
+    mov [eax+0x18], dword(0x10) 
     ;CR3
     mov [eax+0x1C], dword(__CR3_kernel)
     ;EIP

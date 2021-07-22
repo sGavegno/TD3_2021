@@ -27,8 +27,8 @@ section .sys_tables_paginacion
 ;tamaño de una tabla = 0x1000
 ;tamaño de las 1024(0x400) tablas = 0x1000*0x400 = 0x400000 4MB ???
 
-puntero_directorio_paginacion resb 0x1000
-
-puntero_tabla_paginacion resb 0x1000
-
-
+PagT:
+DPT EQU $ - PagT
+    times 0x1000 db 0
+PTE EQU $ - PagT
+    times 0x1000 db 0

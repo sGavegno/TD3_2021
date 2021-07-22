@@ -37,13 +37,13 @@ GLOBAL TSS_kernel
 GLOBAL TSS_tarea1
 GLOBAL TSS_tarea2
 GLOBAL TSS_tarea3
-GLOBAL TSS_tarea4
+GLOBAL TSS_tarea0
 
 GLOBAL __TSS_kernel
 GLOBAL __TSS_tarea1
 GLOBAL __TSS_tarea2
 GLOBAL __TSS_tarea3
-GLOBAL __TSS_tarea4
+GLOBAL __TSS_tarea0
 
 
 ;-------------------------------------SECTION-------------------------------------------
@@ -333,5 +333,5 @@ TSS_tarea2 EQU $ - TSS
     times 0x68 db 0
 TSS_tarea3 EQU $ - TSS
     times 0x68 db 0
-TSS_tarea4 EQU $ - TSS
+TSS_tarea0 EQU $ - TSS
     times 0x68 db 0
