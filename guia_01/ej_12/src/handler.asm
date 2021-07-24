@@ -356,11 +356,11 @@ Handler_NM:
     jmp fin_Handler_NM
 
 cargar_contexto_Tarea2:
-    FXRSTOR __MMX_tarea2
+    FXRSTOR &__MMX_tarea2
     jmp fin_Handler_NM
 
 cargar_contexto_Tarea3:
-    FXRSTOR __MMX_tarea3
+    FXRSTOR &__MMX_tarea3
     jmp fin_Handler_NM
 
 fin_Handler_NM:

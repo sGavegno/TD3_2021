@@ -4,7 +4,7 @@
 
 /* -------------DEFINES BUFFER------------- */
 #define LONG_BUFFER 16
-#define CANT_TABLA 10                       //Cantidad de datos que puede almacenar mi tabla
+#define CANT_TABLA 25                       //Cantidad de datos que puede almacenar mi tabla
 #define LONG_TABLA 8                        //originalmente 16
 #define LONG_TABLA_DATOS CANT_TABLA*LONG_TABLA
 #define BUFF_SIZE 16

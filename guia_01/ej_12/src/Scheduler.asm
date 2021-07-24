@@ -107,7 +107,7 @@ return_cargar_contexto:
 
     PUSHAD
 
-fin_Scheduler
+fin_Scheduler:
     POPAD
     jmp return_Scheduler
 
@@ -222,7 +222,7 @@ guardar_tarea2:
     mov [__TSS_tarea2 + 0x58], fs ;reserved / FS       
     mov [__TSS_tarea2 + 0x5C], gs ;reserved / GS   
 
-    FXSAVE __MMX_tarea2
+    FXSAVE &__MMX_tarea2
 
         jmp return_guardar_tarea2
 
@@ -254,7 +254,7 @@ guardar_tarea3:
     mov [__TSS_tarea3 + 0x58], fs ;reserved / FS       
     mov [__TSS_tarea3 + 0x5C], gs ;reserved / GS   
 
-    FXSAVE __MMX_tarea3
+    FXSAVE &__MMX_tarea3
 
         jmp return_guardar_tarea3
 

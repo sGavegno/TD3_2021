@@ -167,12 +167,10 @@ __attribute__(( section(".funciones"))) byte convertir_ASCII (byte caracter)
  __attribute__(( section(".funciones"))) void msg_bienvenida_VGA (buff_screen_t* VGA)
 {
     escribir_mensaje_VGA("-----------------------------------------", 0, 0, ASCII_TRUE);
-    escribir_mensaje_VGA("         x86-OS - CPU: Intel 386         ", 1, 0, ASCII_TRUE);
+    escribir_mensaje_VGA("Ej.12 -         SIMD           - TD3 2021", 1, 0, ASCII_TRUE);
     escribir_mensaje_VGA("-----------------------------------------", 2, 0, ASCII_TRUE);
-    escribir_mensaje_VGA("-----------------------------------------", 20, 0, ASCII_TRUE);
-    escribir_mensaje_VGA("           Gavegno Sebastian             ", 21, 0, ASCII_TRUE);
     escribir_mensaje_VGA("-----------------------------------------", 22, 0, ASCII_TRUE);
-    escribir_mensaje_VGA("Ej.11 - conmutacion de tareas - TD3 2021 ", 23, 0, ASCII_TRUE);
+    escribir_mensaje_VGA("     Gavegno Sebastian   152.553-0       ", 23, 0, ASCII_TRUE);
     escribir_mensaje_VGA("-----------------------------------------", 24, 0, ASCII_TRUE);
     escribir_mensaje_VGA("Promedio: ", 0, 54, ASCII_TRUE);
 	escribir_mensaje_VGA("Suma 1: ", 1, 56, ASCII_TRUE);
