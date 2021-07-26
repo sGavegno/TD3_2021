@@ -10,7 +10,7 @@ GLOBAL suma_aritmetica_tarea_3
 ;-------------------------------------SECTION-------------------------------------------
 
 USE32
-section .funciones_SIMD
+section .SIMD_tarea_2
 
 ;Suma aritmetica saturada en tamaño word
 suma_aritmetica_tarea_2:
@@ -32,6 +32,7 @@ jne suma_t2
 
     ret
 
+section .SIMD_tarea_3
 
 ;Suma aritmetica saturada en tamaño quadruple word
 suma_aritmetica_tarea_3:

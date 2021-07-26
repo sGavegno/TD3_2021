@@ -26,8 +26,6 @@ section .kernel
 
 kernel_init:
     
-    ;xchg bx,bx
-
     call borrar_pantalla
 
     ; -> Escribo la pantalla con mensaje fijo.
@@ -36,13 +34,6 @@ kernel_init:
     add esp,4
 
     .halted:
-
-;        call CS_SEL:tarea_1
-
-;        call CS_SEL:tarea_2
-
-;        call CS_SEL:tarea_3
-
         hlt
         jmp .halted
 

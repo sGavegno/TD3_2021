@@ -280,7 +280,7 @@ return_cargar_tarea3:
     jmp return_cargar_contexto
 
 cargar_tarea0:
-;xchg bx,bx
+xchg bx,bx
 ;cambiar CR3 para que apunte a la tabla de paginacion de la tarea_x
     mov eax,__CR3_tarea0
     mov cr3,eax                ;Apuntar a directorio de paginas de la tarea_x

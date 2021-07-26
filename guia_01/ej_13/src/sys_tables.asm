@@ -27,11 +27,13 @@ EXTERN L_Handler_XM
 EXTERN __SYS_TABLES_TSS_LIN
 
 ;------------------------------VARIABLES GLOBALES--------------------------------------------------
-GLOBAL  CS_SEL
-GLOBAL  DS_SEL
-GLOBAL  TSS_SEL
-GLOBAL  _gdtr32
-GLOBAL  _idtr32
+GLOBAL CS_SEL
+GLOBAL DS_SEL
+GLOBAL CS_SEL_11
+GLOBAL DS_SEL_11
+GLOBAL TSS_SEL
+GLOBAL _gdtr32
+GLOBAL _idtr32
 
 GLOBAL TSS_kernel
 GLOBAL TSS_tarea1
