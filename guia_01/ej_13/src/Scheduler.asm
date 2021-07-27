@@ -7,6 +7,8 @@ EXTERN return_Scheduler
 EXTERN tarea_actual 
 EXTERN tarea_siguiente
 
+EXTERN Nuevo_Stack
+
 EXTERN contador_1
 EXTERN contador_2
 EXTERN contador_3
@@ -138,90 +140,108 @@ return_guardar_tarea3:
 guardar_tarea0:
 
     ;Registros Generales
-    mov [__TSS_tarea0 + 0x28], eax ;EAX
-    mov [__TSS_tarea0 + 0x2C], ecx ;ECX
-    mov [__TSS_tarea0 + 0x30], edx ;EDX
-    mov [__TSS_tarea0 + 0x34], ebx ;EBX
-    mov [__TSS_tarea0 + 0x38], esp ;ESP
-    mov [__TSS_tarea0 + 0x3C], ebp ;EBP 
-    mov [__TSS_tarea0 + 0x40], esi ;ESI
-    mov [__TSS_tarea0 + 0x44], edi ;EDI
-
-    ;Registros del Stack
-    mov eax, [esp]   ;EIP
-    mov [__TSS_tarea0 + 0x20], eax  ;EIP del stack
-    mov eax, [esp + 0x04]   ;CS
-    mov [__TSS_tarea0 + 0x4C], eax ; CS del stack
-    mov eax, [esp + 0x08]  ;EFLAGS
-    mov [__TSS_tarea0 + 0x24], eax  ;EFLAGS del stack
+    mov [__TSS_tarea0 + 0x28], eax ;Guardo EAX
+    mov [__TSS_tarea0 + 0x2C], ecx ;Guardo ECX
+    mov [__TSS_tarea0 + 0x30], edx ;Guardo EDX
+    mov [__TSS_tarea0 + 0x34], ebx ;Guardo EBX
+    ;mov [__TSS_tarea0 + 0x38], esp ;Guardo ESP
+    mov [__TSS_tarea0 + 0x3C], ebp ;Guardo EBP 
+    mov [__TSS_tarea0 + 0x40], esi ;Guardo ESI
+    mov [__TSS_tarea0 + 0x44], edi ;Guardo EDI
 
     ;Registros de Segmento
-    mov [__TSS_tarea0 + 0x48], es ;reserved / ES
-    ;mov [__TSS_tarea0 + 0x4C], cs ;reserved / CS        
-    mov [__TSS_tarea0 + 0x50], ss ;reserved / SS
-    mov [__TSS_tarea0 + 0x54], ds ;reserved / DS   
-    mov [__TSS_tarea0 + 0x58], fs ;reserved / FS       
-    mov [__TSS_tarea0 + 0x5C], gs ;reserved / GS   
+    mov [__TSS_tarea0 + 0x48], es  ;Guardo ES
+    ;mov [__TSS_tarea0 + 0x4C], cs   ;Guardo CS        
+    ;mov [__TSS_tarea0 + 0x50], ss ;Guardo SS
+    mov [__TSS_tarea0 + 0x54], ds  ;Guardo DS   
+    mov [__TSS_tarea0 + 0x58], fs  ;Guardo FS       
+    mov [__TSS_tarea0 + 0x5C], gs  ;Guardo GS   
+
+    mov eax, cr3                    ;Guardo CR3
+    mov [__TSS_tarea0 + 0x1C], eax
+
+    ;Registros del Stack
+    mov eax, [esp]                  ;Guardo EIP
+    mov [__TSS_tarea0 + 0x20], eax  
+    mov eax, [esp + 0x04]           ;Guardo CS
+    mov [__TSS_tarea0 + 0x4C], eax  
+    mov eax, [esp + 0x08]           ;Guardo EFLAGS
+    mov [__TSS_tarea0 + 0x24], eax  
+
+    mov [__TSS_tarea0 + 0x04], esp  ;Guardo ESP0
+    mov [__TSS_tarea0 + 0x08], ss   ;Guardo SS0
 
     jmp return_guardar_tarea0
 
 guardar_tarea1:
 
     ;Registros Generales
-    mov [__TSS_tarea1 + 0x28], eax ;EAX
-    mov [__TSS_tarea1 + 0x2C], ecx ;ECX
-    mov [__TSS_tarea1 + 0x30], edx ;EDX
-    mov [__TSS_tarea1 + 0x34], ebx ;EBX
-    mov [__TSS_tarea1 + 0x38], esp ;ESP
-    mov [__TSS_tarea1 + 0x3C], ebp ;EBP 
-    mov [__TSS_tarea1 + 0x40], esi ;ESI
-    mov [__TSS_tarea1 + 0x44], edi ;EDI
-
-    ;Registros del Stack
-    mov eax, [esp]   ;EIP
-    mov [__TSS_tarea1 + 0x20], eax  ;EIP del stack
-    mov eax, [esp + 0x04]   ;CS
-    mov [__TSS_tarea1 + 0x4C], eax ; CS del stack
-    mov eax, [esp + 0x08]  ;EFLAGS
-    mov [__TSS_tarea1 + 0x24], eax  ;EFLAGS del stack
+    mov [__TSS_tarea1 + 0x28], eax ;Guardo EAX
+    mov [__TSS_tarea1 + 0x2C], ecx ;Guardo ECX
+    mov [__TSS_tarea1 + 0x30], edx ;Guardo EDX
+    mov [__TSS_tarea1 + 0x34], ebx ;Guardo EBX
+    ;mov [__TSS_tarea1 + 0x38], esp ;Guardo ESP
+    mov [__TSS_tarea1 + 0x3C], ebp ;Guardo EBP 
+    mov [__TSS_tarea1 + 0x40], esi ;Guardo ESI
+    mov [__TSS_tarea1 + 0x44], edi ;Guardo EDI
 
     ;Registros de Segmento
-    mov [__TSS_tarea1 + 0x48], es ;reserved / ES
-    ;mov [__TSS_tarea1 + 0x4C], cs ;reserved / CS        
-    mov [__TSS_tarea1 + 0x50], ss ;reserved / SS
-    mov [__TSS_tarea1 + 0x54], ds ;reserved / DS   
-    mov [__TSS_tarea1 + 0x58], fs ;reserved / FS       
-    mov [__TSS_tarea1 + 0x5C], gs ;reserved / GS   
+    mov [__TSS_tarea1 + 0x48], es  ;Guardo ES
+    ;mov [__TSS_tarea1 + 0x4C], cs   ;Guardo CS        
+    ;mov [__TSS_tarea1 + 0x50], ss ;Guardo SS
+    mov [__TSS_tarea1 + 0x54], ds  ;Guardo DS   
+    mov [__TSS_tarea1 + 0x58], fs  ;Guardo FS       
+    mov [__TSS_tarea1 + 0x5C], gs  ;Guardo GS   
+
+    mov eax, cr3                    ;Guardo CR3
+    mov [__TSS_tarea1 + 0x1C], eax
+
+    ;Registros del Stack
+    mov eax, [esp]                  ;Guardo EIP
+    mov [__TSS_tarea1 + 0x20], eax  
+    mov eax, [esp + 0x04]           ;Guardo CS
+    mov [__TSS_tarea1 + 0x4C], eax  
+    mov eax, [esp + 0x08]           ;Guardo EFLAGS
+    mov [__TSS_tarea1 + 0x24], eax  
+
+    mov [__TSS_tarea1 + 0x04], esp  ;Guardo ESP0
+    mov [__TSS_tarea1 + 0x08], ss   ;Guardo SS0
 
     jmp return_guardar_tarea1
 
 guardar_tarea2:
 
     ;Registros Generales
-    mov [__TSS_tarea2 + 0x28], eax ;EAX
-    mov [__TSS_tarea2 + 0x2C], ecx ;ECX
-    mov [__TSS_tarea2 + 0x30], edx ;EDX
-    mov [__TSS_tarea2 + 0x34], ebx ;EBX
-    mov [__TSS_tarea2 + 0x38], esp ;ESP
-    mov [__TSS_tarea2 + 0x3C], ebp ;EBP 
-    mov [__TSS_tarea2 + 0x40], esi ;ESI
-    mov [__TSS_tarea2 + 0x44], edi ;EDI
-
-    ;Registros del Stack
-    mov eax, [esp]   ;EIP
-    mov [__TSS_tarea2 + 0x20], eax  ;EIP del stack
-    mov eax, [esp + 0x04]   ;CS
-    mov [__TSS_tarea2 + 0x4C], eax ;reserved / CS del stack
-    mov eax, [esp + 0x08]  ;EFLAGS
-    mov [__TSS_tarea2 + 0x24], eax  ;EFLAGS del stack
+    mov [__TSS_tarea2 + 0x28], eax ;Guardo EAX
+    mov [__TSS_tarea2 + 0x2C], ecx ;Guardo ECX
+    mov [__TSS_tarea2 + 0x30], edx ;Guardo EDX
+    mov [__TSS_tarea2 + 0x34], ebx ;Guardo EBX
+    ;mov [__TSS_tarea2 + 0x38], esp ;Guardo ESP
+    mov [__TSS_tarea2 + 0x3C], ebp ;Guardo EBP 
+    mov [__TSS_tarea2 + 0x40], esi ;Guardo ESI
+    mov [__TSS_tarea2 + 0x44], edi ;Guardo EDI
 
     ;Registros de Segmento
-    mov [__TSS_tarea2 + 0x48], es ;reserved / ES
-    ;mov [__TSS_tarea2 + 0x4C], cs ;reserved / CS        
-    mov [__TSS_tarea2 + 0x50], ss ;reserved / SS
-    mov [__TSS_tarea2 + 0x54], ds ;reserved / DS   
-    mov [__TSS_tarea2 + 0x58], fs ;reserved / FS       
-    mov [__TSS_tarea2 + 0x5C], gs ;reserved / GS   
+    mov [__TSS_tarea2 + 0x48], es  ;Guardo ES
+    ;mov [__TSS_tarea2 + 0x4C], cs ;Guardo CS        
+    ;mov [__TSS_tarea2 + 0x50], ss ;Guardo SS
+    mov [__TSS_tarea2 + 0x54], ds  ;Guardo DS   
+    mov [__TSS_tarea2 + 0x58], fs  ;Guardo FS       
+    mov [__TSS_tarea2 + 0x5C], gs  ;Guardo GS   
+
+    mov eax, cr3                    ;Guardo CR3
+    mov [__TSS_tarea2 + 0x1C], eax
+
+    ;Registros del Stack
+    mov eax, [esp]                  ;Guardo EIP
+    mov [__TSS_tarea2 + 0x20], eax  
+    mov eax, [esp + 0x04]           ;Guardo CS
+    mov [__TSS_tarea2 + 0x4C], eax  
+    mov eax, [esp + 0x08]           ;Guardo EFLAGS
+    mov [__TSS_tarea2 + 0x24], eax  
+
+    mov [__TSS_tarea2 + 0x04], esp  ;Guardo ESP0
+    mov [__TSS_tarea2 + 0x08], ss   ;Guardo SS0
 
     FXSAVE &__MMX_tarea2
 
@@ -230,30 +250,36 @@ guardar_tarea2:
 guardar_tarea3:
 
     ;Registros Generales
-    mov [__TSS_tarea3 + 0x28], eax ;EAX
-    mov [__TSS_tarea3 + 0x2C], ecx ;ECX
-    mov [__TSS_tarea3 + 0x30], edx ;EDX
-    mov [__TSS_tarea3 + 0x34], ebx ;EBX
-    mov [__TSS_tarea3 + 0x38], esp ;ESP
-    mov [__TSS_tarea3 + 0x3C], ebp ;EBP 
-    mov [__TSS_tarea3 + 0x40], esi ;ESI
-    mov [__TSS_tarea3 + 0x44], edi ;EDI
-
-    ;Registros del Stack
-    mov eax, [esp]   ;EIP
-    mov [__TSS_tarea3 + 0x20], eax  ;EIP del stack
-    mov eax, [esp + 0x04]   ;CS
-    mov [__TSS_tarea3 + 0x4C], eax ;reserved / CS del stack
-    mov eax, [esp + 0x08]  ;EFLAGS
-    mov [__TSS_tarea3 + 0x24], eax  ;EFLAGS del stack
+    mov [__TSS_tarea3 + 0x28], eax ;Guardo EAX
+    mov [__TSS_tarea3 + 0x2C], ecx ;Guardo ECX
+    mov [__TSS_tarea3 + 0x30], edx ;Guardo EDX
+    mov [__TSS_tarea3 + 0x34], ebx ;Guardo EBX
+    ;mov [__TSS_tarea3 + 0x38], esp ;Guardo ESP
+    mov [__TSS_tarea3 + 0x3C], ebp ;Guardo EBP 
+    mov [__TSS_tarea3 + 0x40], esi ;Guardo ESI
+    mov [__TSS_tarea3 + 0x44], edi ;Guardo EDI
 
     ;Registros de Segmento
-    mov [__TSS_tarea3 + 0x48], es ;reserved / ES
-    ;mov [TSS_tarea3 + 0x4C], cs ;reserved / CS        
-    mov [__TSS_tarea3 + 0x50], ss ;reserved / SS
-    mov [__TSS_tarea3 + 0x54], ds ;reserved / DS   
-    mov [__TSS_tarea3 + 0x58], fs ;reserved / FS       
-    mov [__TSS_tarea3 + 0x5C], gs ;reserved / GS   
+    mov [__TSS_tarea3 + 0x48], es  ;Guardo ES
+    ;mov [TSS_tarea3 + 0x4C], cs   ;Guardo CS        
+    ;mov [__TSS_tarea3 + 0x50], ss ;Guardo SS
+    mov [__TSS_tarea3 + 0x54], ds  ;Guardo DS   
+    mov [__TSS_tarea3 + 0x58], fs  ;Guardo FS       
+    mov [__TSS_tarea3 + 0x5C], gs  ;Guardo GS   
+
+    mov eax, cr3                    ;Guardo CR3
+    mov [__TSS_tarea3 + 0x1C], eax
+
+    ;Registros del Stack
+    mov eax, [esp]                  ;Guardo EIP
+    mov [__TSS_tarea3 + 0x20], eax  
+    mov eax, [esp + 0x04]           ;Guardo CS
+    mov [__TSS_tarea3 + 0x4C], eax  
+    mov eax, [esp + 0x08]           ;Guardo EFLAGS
+    mov [__TSS_tarea3 + 0x24], eax  
+
+    mov [__TSS_tarea3 + 0x04], esp  ;Guardo ESP0
+    mov [__TSS_tarea3 + 0x08], ss   ;Guardo SS0
 
     FXSAVE &__MMX_tarea3
 
@@ -280,43 +306,52 @@ return_cargar_tarea3:
     jmp return_cargar_contexto
 
 cargar_tarea0:
-xchg bx,bx
+;xchg bx,bx
+
+    mov byte [tarea_actual], TAREA_0
 ;cambiar CR3 para que apunte a la tabla de paginacion de la tarea_x
     mov eax,__CR3_tarea0
     mov cr3,eax                ;Apuntar a directorio de paginas de la tarea_x
 
     ;Cargo los registros de segmento
-    mov es,[__TSS_tarea0 + 0x48]
-    ;mov cs,[__TSS_tarea0 + 0x4C] 
-    mov ss,[__TSS_tarea0 + 0x50] 
-    mov ds,[__TSS_tarea0 + 0x54] 
-    mov fs,[__TSS_tarea0 + 0x58] 
-    mov gs,[__TSS_tarea0 + 0x5C] 
-
-    mov esp, [__TSS_tarea0 + 0x38]
+    mov eax, [__TSS_tarea0 + 0x48]       ;Recupero es
+    mov es, eax 
+    mov eax, [__TSS_tarea0 + 0x54]       ;Recupero ds
+    mov ds, eax
+    mov eax, [__TSS_tarea0 + 0x58]       ;Recupero fs
+    mov fs, eax
+    mov eax, [__TSS_tarea0 + 0x5C]       ;Recupero gs
+    mov gs, eax
+    
+    ;mov esp, [__TSS_tarea0 + 0x38]
     mov ebp, [__TSS_tarea0 + 0x3C]   
 
-    ;Registros del Stack
-    ;hago el push para poder cargar los registros en el stack
-    push eax 
-    push eax
-    push eax
+    ;seteo el Stack
+    mov eax, [__TSS_tarea0 + 0x04]      ;Recupero ESP0
+    mov [Nuevo_Stack], eax
+    mov eax, [__TSS_tarea0 + 0x08]      ;Recupero SS0
+    mov [Nuevo_Stack + 4], eax
 
-    mov eax, [__TSS_tarea0 + 0x20] ;EIP
-    mov [esp], eax
-    mov eax, [__TSS_tarea0 + 0x4C] ;CS
-    mov [esp + 0x04], eax
-    mov eax, [__TSS_tarea0 + 0x24] ;EFLAGS
-    or eax, 0x0202                   ;Enable int
-    mov [esp + 0x08], eax
+    ;LSS --> load stack segment
+    lss esp, [Nuevo_Stack]
+
+    ;cargo el stack 
+    mov eax, [__TSS_tarea0 + 0x18]      ;Recupero SS2
+    push eax
+    mov eax, [__TSS_tarea0 + 0x14]      ;Recupero ESP2
+    push eax
+    mov eax, [__TSS_tarea0 + 0x24]      ;Recupero EFLAGS
+    push eax
+    mov eax, [__TSS_tarea0 + 0x4C]      ;Recupero CS
+    push eax
+    mov eax, [__TSS_tarea0 + 0x20]      ;Recupero EIP
+    push eax
 
     ;Registros de Proposito general
     mov eax, [__TSS_tarea0 + 0x28]    
     mov ecx, [__TSS_tarea0 + 0x2C]
     mov edx, [__TSS_tarea0 + 0x30]
-    mov ebx, [__TSS_tarea0 + 0x34]
-    ;mov esp, [__TSS_tarea0 + 0x38]
-    ;mov ebp, [__TSS_tarea0 + 0x3C]        
+    mov ebx, [__TSS_tarea0 + 0x34]       
     mov esi, [__TSS_tarea0 + 0x40]
     mov edi, [__TSS_tarea0 + 0x44]
 
@@ -324,128 +359,254 @@ xchg bx,bx
 
 cargar_tarea1:
 ;xchg bx,bx
+    mov byte [tarea_actual], TAREA_1
 ;cambiar CR3 para que apunte a la tabla de paginacion de la tarea_x
     mov eax,__CR3_tarea1
     mov cr3,eax                ;Apuntar a directorio de paginas de la tarea_x
 
     ;Cargo los registros de segmento
-    mov es,[__TSS_tarea1 + 0x48] 
-    ;mov cs,[__TSS_tarea1 + 0x4C]
-    mov ss,[__TSS_tarea1 + 0x50] 
-    mov ds,[__TSS_tarea1 + 0x54] 
-    mov fs,[__TSS_tarea1 + 0x58] 
-    mov gs,[__TSS_tarea1 + 0x5C] 
-
-    mov esp, [__TSS_tarea1 + 0x38]
+    mov eax, [__TSS_tarea1 + 0x48]       ;Recupero es
+    mov es, eax 
+    mov eax, [__TSS_tarea1 + 0x54]       ;Recupero ds
+    mov ds, eax
+    mov eax, [__TSS_tarea1 + 0x58]       ;Recupero fs
+    mov fs, eax
+    mov eax, [__TSS_tarea1 + 0x5C]       ;Recupero gs
+    mov gs, eax
+    
+    ;mov esp, [__TSS_tarea1 + 0x38]
     mov ebp, [__TSS_tarea1 + 0x3C]   
 
-    ;Registros del Stack
-    ;hago el push para poder cargar los registros en el stack
-    push eax 
-    push eax
-    push eax
+    ;seteo el Stack
+    mov eax, [__TSS_tarea1 + 0x04]      ;Recupero ESP0
+    mov [Nuevo_Stack], eax
+    mov eax, [__TSS_tarea1 + 0x08]      ;Recupero SS0
+    mov [Nuevo_Stack + 4], eax
 
-    mov eax, [__TSS_tarea1 + 0x20] ;EIP
-    mov [esp], eax
-    mov eax, [__TSS_tarea1 + 0x4C] ;CS
-    mov [esp + 0x04], eax
-    mov eax, [__TSS_tarea1 + 0x24] ;EFLAGS
-    or eax, 0x0202                   ;Enable int
-    mov [esp + 0x08], eax
+    ;LSS --> load stack segment
+    lss esp, [Nuevo_Stack]
+
+    ;cargo el stack 
+    mov eax, [__TSS_tarea1 + 0x18]      ;Recupero SS2
+    add eax, 3                          ;cargo el RPL al selector
+    push eax
+    mov eax, [__TSS_tarea1 + 0x14]      ;Recupero ESP2
+    push eax
+    mov eax, [__TSS_tarea1 + 0x24]      ;Recupero EFLAGS
+    push eax
+    mov eax, [__TSS_tarea1 + 0x4C]      ;Recupero CS
+    add eax, 3                          ;cargo el RPL al selector
+    push eax
+    mov eax, [__TSS_tarea1 + 0x20]      ;Recupero EIP
+    push eax
 
     ;Registros de Proposito general
     mov eax, [__TSS_tarea1 + 0x28]    
     mov ecx, [__TSS_tarea1 + 0x2C]
     mov edx, [__TSS_tarea1 + 0x30]
-    mov ebx, [__TSS_tarea1 + 0x34]
-    ;mov esp, [__TSS_tarea1 + 0x38]
-    ;mov ebp, [__TSS_tarea1 + 0x3C]        
+    mov ebx, [__TSS_tarea1 + 0x34]       
     mov esi, [__TSS_tarea1 + 0x40]
     mov edi, [__TSS_tarea1 + 0x44]
 
     jmp return_cargar_tarea1
 
 cargar_tarea2:
-;xchg bx,bx
+xchg bx,bx
+    mov byte [tarea_actual], TAREA_2
 ;cambiar CR3 para que apunte a la tabla de paginacion de la tarea_x
     mov eax,__CR3_tarea2
     mov cr3,eax                ;Apuntar a directorio de paginas de la tarea_x
 
     ;Cargo los registros de segmento
-    mov es,[__TSS_tarea2 + 0x48] 
-    ;mov cs,[__TSS_tarea2 + 0x4C]
-    mov ss,[__TSS_tarea2 + 0x50] 
-    mov ds,[__TSS_tarea2 + 0x54] 
-    mov fs,[__TSS_tarea2 + 0x58] 
-    mov gs,[__TSS_tarea2 + 0x5C] 
-
-    mov esp, [__TSS_tarea2 + 0x38]
+    mov eax, [__TSS_tarea2 + 0x48]      ;Recupero es
+    add eax, 3                          ;cargo el RPL al selector
+    mov es, eax 
+    mov eax, [__TSS_tarea2 + 0x54]      ;Recupero ds
+    add eax, 3                          ;cargo el RPL al selector
+    mov ds, eax
+    mov eax, [__TSS_tarea2 + 0x58]      ;Recupero fs
+    add eax, 3                          ;cargo el RPL al selector
+    mov fs, eax
+    mov eax, [__TSS_tarea2 + 0x5C]      ;Recupero gs
+    add eax, 3                          ;cargo el RPL al selector
+    mov gs, eax
+    
+    ;mov esp, [__TSS_tarea2 + 0x38]
     mov ebp, [__TSS_tarea2 + 0x3C]   
 
-    ;Registros del Stack
-    ;hago el push para poder cargar los registros en el stack
-    push eax 
-    push eax
-    push eax
+    ;seteo el Stack
+    mov eax, [__TSS_tarea2 + 0x04]      ;Recupero ESP0
+    mov [Nuevo_Stack], eax
+    mov eax, [__TSS_tarea2 + 0x08]      ;Recupero SS0
+    mov [Nuevo_Stack + 4], eax
 
-    mov eax, [__TSS_tarea2 + 0x20] ;EIP
-    mov [esp], eax
-    mov eax, [__TSS_tarea2 + 0x4C] ;CS
-    mov [esp + 0x04], eax
-    mov eax, [__TSS_tarea2 + 0x24] ;EFLAGS
-    or eax, 0x0202                   ;Enable int
-    mov [esp + 0x08], eax
+    ;LSS --> load stack segment
+    lss esp, [Nuevo_Stack]
+
+    ;setear el flag CR0.TS = 1
+    smsw ax
+    or ax, 0x0008
+    lmsw ax
+
+
+    ;cargo el stack 
+    mov eax, [__TSS_tarea2 + 0x18]      ;Recupero SS2
+    add eax, 3                          ;cargo el RPL al selector
+    push eax
+    mov eax, [__TSS_tarea2 + 0x14]      ;Recupero ESP2
+    push eax
+    mov eax, [__TSS_tarea2 + 0x24]      ;Recupero EFLAGS
+    push eax
+    mov eax, [__TSS_tarea2 + 0x4C]      ;Recupero CS
+    add eax, 3                          ;cargo el RPL al selector
+    push eax
+    mov eax, [__TSS_tarea2 + 0x20]      ;Recupero EIP
+    push eax
 
     ;Registros de Proposito general
     mov eax, [__TSS_tarea2 + 0x28]    
     mov ecx, [__TSS_tarea2 + 0x2C]
     mov edx, [__TSS_tarea2 + 0x30]
-    mov ebx, [__TSS_tarea2 + 0x34]
-    ;mov esp, [__TSS_tarea2 + 0x38]
-    ;mov ebp, [__TSS_tarea2 + 0x3C]        
+    mov ebx, [__TSS_tarea2 + 0x34]       
     mov esi, [__TSS_tarea2 + 0x40]
     mov edi, [__TSS_tarea2 + 0x44]
+
+    ;Cargo la TSS
+    ;backlink
+    mov eax, [__TSS_tarea2]
+    mov [__TSS_kernel], eax 
+    ;ESP0
+    mov eax, [__TSS_tarea2+0x04]
+    mov [__TSS_kernel+0x04], eax
+    ;SS0
+    mov eax, [__TSS_tarea2+0x08]
+    mov [__TSS_kernel+0x08], eax
+    ;ESP1
+    mov eax, [__TSS_tarea2+0x0C]
+    mov [__TSS_kernel+0x0C], eax 
+    ;SS1
+    mov eax, [__TSS_tarea2+0x10]
+    mov [__TSS_kernel+0x10], eax
+    ;ESP2
+    mov eax, [__TSS_tarea2+0x14]
+    mov [__TSS_kernel+0x14], eax 
+    ;SS2
+    mov eax, [__TSS_tarea2+0x18]
+    mov [__TSS_kernel+0x18], eax 
+    ;CR3
+    mov eax, [__TSS_tarea2+0x1C]
+    mov [__TSS_kernel+0x1C], eax
+    ;EIP
+    mov eax, [__TSS_tarea2+0x20]
+    mov [__TSS_kernel+0x20], eax 
+    ;EFLAGS
+    mov eax, [__TSS_tarea2+0x24]
+    mov [__TSS_kernel+0x24], eax 
+    ;EAX
+    mov eax, [__TSS_tarea2+0x28]
+    mov [__TSS_kernel+0x28], eax 
+    ;ECX
+    mov eax, [__TSS_tarea2+0x2C]
+    mov [__TSS_kernel+0x2C], eax 
+    ;EDX
+    mov eax, [__TSS_tarea2+0x30]
+    mov [__TSS_kernel+0x30], eax 
+    ;EBX
+    mov eax, [__TSS_tarea2+0x34]
+    mov [__TSS_kernel+0x34], eax 
+    ;ESP
+    mov eax, [__TSS_tarea2+0x38]
+    mov [__TSS_kernel+0x38], eax
+    ;EBP
+    mov eax, [__TSS_tarea2+0x3C]
+    mov [__TSS_kernel+0x3C], eax
+    ;ESI
+    mov eax, [__TSS_tarea2+0x40]
+    mov [__TSS_kernel+0x40], eax
+    ;EDI
+    mov eax, [__TSS_tarea2+0x44]
+    mov [__TSS_kernel+0x44], eax
+    ;ES
+    mov eax, [__TSS_tarea2+0x48]
+    mov [__TSS_kernel+0x48], eax
+    ;CS
+    mov eax, [__TSS_tarea2+0x4C]
+    mov [__TSS_kernel+0x4C], eax
+    ;SS
+    mov eax, [__TSS_tarea2+0x50]
+    mov [__TSS_kernel+0x50], eax
+    ;DS
+    mov eax, [__TSS_tarea2+0x54]
+    mov [__TSS_kernel+0x54], eax
+    ;FS
+    mov eax, [__TSS_tarea2+0x58]
+    mov [__TSS_kernel+0x58], eax
+    ;GS
+    mov eax, [__TSS_tarea2+0x5C]
+    mov [__TSS_kernel+0x5C], eax
+    ;LDTR
+    mov eax, [__TSS_tarea2+0x60]
+    mov [__TSS_kernel+0x60], eax
+    ;Bitmap E/S
+    mov eax, [__TSS_tarea2+0x64]
+    mov [__TSS_kernel+0x64], eax
 
     jmp return_cargar_tarea2
     
 cargar_tarea3:
-;xchg bx,bx
+xchg bx,bx
+    mov byte [tarea_actual], TAREA_3
 ;cambiar CR3 para que apunte a la tabla de paginacion de la tarea_x
     mov eax,__CR3_tarea3
     mov cr3,eax                ;Apuntar a directorio de paginas de la tarea_x
 
     ;Cargo los registros de segmento
-    mov es,[__TSS_tarea3 + 0x48] 
-    ;mov cs,[__TSS_tarea3 + 0x4C]
-    mov ss,[__TSS_tarea3 + 0x50] 
-    mov ds,[__TSS_tarea3 + 0x54] 
-    mov fs,[__TSS_tarea3 + 0x58] 
-    mov gs,[__TSS_tarea3 + 0x5C] 
-
-    mov esp, [__TSS_tarea3 + 0x38]
+    mov eax, [__TSS_tarea3 + 0x48]       ;Recupero es
+    mov es, eax 
+    mov eax, [__TSS_tarea3 + 0x54]       ;Recupero ds
+    mov ds, eax
+    mov eax, [__TSS_tarea3 + 0x58]       ;Recupero fs
+    mov fs, eax
+    mov eax, [__TSS_tarea3 + 0x5C]       ;Recupero gs
+    mov gs, eax
+    
+    ;mov esp, [__TSS_tarea3 + 0x38]
     mov ebp, [__TSS_tarea3 + 0x3C]   
 
-    ;Registros del Stack
-    ;hago el push para poder cargar los registros en el stack
-    push eax 
-    push eax
-    push eax
+    ;seteo el Stack
+    mov eax, [__TSS_tarea3 + 0x04]      ;Recupero ESP0
+    mov [Nuevo_Stack], eax
+    mov eax, [__TSS_tarea3 + 0x08]      ;Recupero SS0
+    mov [Nuevo_Stack + 4], eax
 
-    mov eax, [__TSS_tarea3 + 0x20] ;EIP
-    mov [esp], eax
-    mov eax, [__TSS_tarea3 + 0x4C] ;CS
-    mov [esp + 0x04], eax
-    mov eax, [__TSS_tarea3 + 0x24] ;EFLAGS
-    or eax, 0x0202                   ;Enable int
-    mov [esp + 0x08], eax
+    ;LSS --> load stack segment
+    lss esp, [Nuevo_Stack]
+
+    ;setear el flag CR0.TS = 1
+    smsw ax
+    or ax, 0x0008
+    lmsw ax
+
+
+    ;cargo el stack 
+    mov eax, [__TSS_tarea3 + 0x18]      ;Recupero SS2
+    add eax, 3                          ;cargo el RPL al selector
+    push eax
+    mov eax, [__TSS_tarea3 + 0x14]      ;Recupero ESP2
+    push eax
+    mov eax, [__TSS_tarea3 + 0x24]      ;Recupero EFLAGS
+    push eax
+    mov eax, [__TSS_tarea3 + 0x4C]      ;Recupero CS
+    add eax, 3                          ;cargo el RPL al selector
+    push eax
+    mov eax, [__TSS_tarea3 + 0x20]      ;Recupero EIP
+    push eax
 
     ;Registros de Proposito general
     mov eax, [__TSS_tarea3 + 0x28]    
     mov ecx, [__TSS_tarea3 + 0x2C]
     mov edx, [__TSS_tarea3 + 0x30]
-    mov ebx, [__TSS_tarea3 + 0x34]
-    ;mov esp, [__TSS_tarea3 + 0x38]
-    ;mov ebp, [__TSS_tarea3 + 0x3C]        
+    mov ebx, [__TSS_tarea3 + 0x34]       
     mov esi, [__TSS_tarea3 + 0x40]
     mov edi, [__TSS_tarea3 + 0x44]
 

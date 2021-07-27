@@ -343,10 +343,11 @@ Handler_UD:
     hlt
 
 Handler_NM:
+    PUSHAD
     mov dl,0x07
-;xchg bx,bx
+xchg bx,bx
     clts        
-	
+
     cmp byte [tarea_actual], TAREA_2
     je cargar_contexto_Tarea2
 
@@ -356,15 +357,17 @@ Handler_NM:
     jmp fin_Handler_NM
 
 cargar_contexto_Tarea2:
-    FXRSTOR &__MMX_tarea2
+    mov eax, __MMX_tarea2
+    FXRSTOR [eax]
     jmp fin_Handler_NM
 
 cargar_contexto_Tarea3:
-    FXRSTOR &__MMX_tarea3
+    mov eax, __MMX_tarea3
+    FXRSTOR [eax]
     jmp fin_Handler_NM
 
 fin_Handler_NM:
-
+    POPAD
     iret
 
 Handler_DF:

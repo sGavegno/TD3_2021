@@ -17,12 +17,10 @@ __attribute__(( section(".funciones_ROM"))) void carga_paginacion_ROM(dword Init
 	indice_TP = Aux & 0x3FF;
 
 	dword *Dir_DP = (dword *)(Init_DP + indice_DP*4);
-	//*Dir_DP  = Init_DP + indice_DP*4;
-	Cont_DP = (Init_DP + 0x1000 + indice_DP * 0x1000) | AtDP;
+	Cont_DP = (Init_DP + 0x1000 + indice_DP * 0x1000) + AtDP;
 
 	dword *Dir_TP = (dword *)(Init_DP + 0x1000 + indice_DP * 0x1000 + indice_TP * 4);
-//	*Dir_TP = Init_DP + 0x1000 + indice_DP * 0x1000 + indice_TP * 4;
-	Cont_TP = Dir_Fisica | AtTP;
+	Cont_TP = Dir_Fisica + AtTP;
 
 	*Dir_DP = Cont_DP;
 	*Dir_TP = Cont_TP;

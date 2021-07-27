@@ -16,7 +16,7 @@ EXTERN limpiar_VGA
 ;------------------------------VARIABLES GLOBALES--------------------------------------------------
 GLOBAL kernel_size
 GLOBAL kernel_init
-
+GLOBAL main
 ;-------------------------------------SECTION-------------------------------------------
 section .stak_kernel
 
@@ -33,9 +33,9 @@ kernel_init:
     call msg_bienvenida_VGA                     
     add esp,4
 
-    .halted:
-        hlt
-        jmp .halted
+main:
+    hlt
+    jmp main
 
     .guard:
         hlt

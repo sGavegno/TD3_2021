@@ -345,11 +345,5 @@ SECTION .sys_tables_tss
 TSS:
 TSS_kernel EQU $ - TSS
     times 0x68 db 0
-TSS_tarea1 EQU $ - TSS
-    times 0x68 db 0
-TSS_tarea2 EQU $ - TSS
-    times 0x68 db 0
-TSS_tarea3 EQU $ - TSS
-    times 0x68 db 0
-TSS_tarea0 EQU $ - TSS
-    times 0x68 db 0
+
+

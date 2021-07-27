@@ -197,6 +197,7 @@ EXTERN __STACK_KERNEL_T4_END_LIN
 
 
 EXTERN kernel_init
+EXTERN main
 
 EXTERN __VIDEO_LIN
 
@@ -216,6 +217,8 @@ EXTERN __TSS_tarea1
 EXTERN __TSS_tarea2
 EXTERN __TSS_tarea3
 EXTERN __TSS_tarea0
+EXTERN __MMX_tarea2
+EXTERN __MMX_tarea3
 
 EXTERN tarea_0
 EXTERN tarea_1
@@ -629,8 +632,8 @@ habilitar_paginacion:
     add esp,20
             
 ;Tabla de Dígitos                            
-    push 0x03
-    push 0x03
+    push 0x07
+    push 0x07
     push __TABLES_DIGITOS_FIS
     push __TABLES_DIGITOS_LIN
     push __CR3_kernel                    
@@ -1055,7 +1058,7 @@ habilitar_paginacion:
 
     mov eax,__CR3_kernel 
     mov cr3,eax                 ;Apuntar a directorio de paginas.
- 
+
     mov eax,cr0                 ;Activar paginacion encendiendo el
     or eax, 1 << 31             ;bit 31 CR0.
     mov cr0,eax 
@@ -1105,9 +1108,9 @@ init_TSS:
     ;ES
     mov [eax+0x48], dword(DS_SEL_11) 
     ;CS
-    mov [eax+0x4C], dword(CS_SEL) 
+    mov [eax+0x4C], dword(CS_SEL_11) 
     ;SS
-    mov [eax+0x50], dword(DS_SEL) 
+    mov [eax+0x50], dword(DS_SEL_11) 
     ;DS
     mov [eax+0x54], dword(DS_SEL_11) 
     ;FS
@@ -1160,9 +1163,9 @@ init_TSS:
     ;ES
     mov [eax+0x48], dword(DS_SEL_11) 
     ;CS
-    mov [eax+0x4C], dword(CS_SEL) 
+    mov [eax+0x4C], dword(CS_SEL_11) 
     ;SS
-    mov [eax+0x50], dword(DS_SEL) 
+    mov [eax+0x50], dword(DS_SEL_11) 
     ;DS
     mov [eax+0x54], dword(DS_SEL_11) 
     ;FS
@@ -1216,9 +1219,9 @@ init_TSS:
     ;ES
     mov [eax+0x48], dword(DS_SEL_11) 
     ;CS
-    mov [eax+0x4C], dword(CS_SEL) 
+    mov [eax+0x4C], dword(CS_SEL_11) 
     ;SS
-    mov [eax+0x50], dword(DS_SEL) 
+    mov [eax+0x50], dword(DS_SEL_11) 
     ;DS
     mov [eax+0x54], dword(DS_SEL_11) 
     ;FS
@@ -1251,7 +1254,7 @@ init_TSS:
     ;CR3
     mov [eax+0x1C], dword(__CR3_tarea0)
     ;EIP
-    mov [eax+0x20], dword(kernel_init) 
+    mov [eax+0x20], dword(main) 
     ;EFLAGS
     mov [eax+0x24], dword(0x202) 
     ;EAX
@@ -1307,7 +1310,7 @@ init_TSS:
     ;CR3
     mov [eax+0x1C], dword(__CR3_kernel)
     ;EIP
-    mov [eax+0x20], dword(kernel_init) 
+    mov [eax+0x20], dword(main) 
     ;EFLAGS
     mov [eax+0x24], dword(0x202) 
     ;EAX
