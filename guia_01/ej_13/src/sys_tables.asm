@@ -91,8 +91,8 @@ TSS_SEL equ $-GDT_32          ;Base 0x00001000 Limite 0x00000067
     dw  0x0067                          ;Limite del segmento(bits 15 -0)
     dw  0x1000                          ;Base del segmento(bits 15-0)
     db  0                               ;Base del segmento(bits 23-16)
-    db  10001001b                       ;P=1 / DPL=00 / bit3=1 seg.cod/bit2=0/bit1=1 (R/W)
-    db  01000000b                       ;G=0/D=1 32 bits/Limite(bits 19:16)
+    db  10001001b                       ;P=1 / DPL=00 / bit3=1 / B=0 / bit0 = 1
+    db  00000000b                       ;G=0 / Limite(bits 19:16)
     db  0                               ;Base del segmento(bits 31-24)    
 
 GDT_SIZE_32 equ $-GDT_32

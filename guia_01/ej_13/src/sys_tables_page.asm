@@ -26,5 +26,5 @@ section .sys_tables_paginacion
 ;tamaño de directorio = 0x1000  4kB
 ;tamaño de una tabla = 0x1000
 ;tamaño de las 1024(0x400) tablas = 0x1000*0x400 = 0x400000 4MB ???
-
+    
 

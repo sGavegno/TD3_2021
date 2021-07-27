@@ -556,20 +556,20 @@ habilitar_paginacion:
     xor eax,eax                        ;Poner a cero esas entradas.
     rep stosd
 
-;    mov edi,__CR3_tarea1   ;Apuntar al inicio de la 1ra tabla.
-;    mov ecx,0x400 *2                 ;Cantidad de entradas del directorio(1024) y una tabla(1024)
-;    xor eax,eax                        ;Poner a cero esas entradas.
-;    rep stosd
-;
-;    mov edi,__CR3_tarea2   ;Apuntar al inicio de la 1ra tabla.
-;    mov ecx,0x400 *2                 ;Cantidad de entradas del directorio(1024) y una tabla(1024)
-;    xor eax,eax                        ;Poner a cero esas entradas.
-;    rep stosd
-;
-;    mov edi,__CR3_tarea3   ;Apuntar al inicio de la 1ra tabla.
-;    mov ecx,0x400 *2                 ;Cantidad de entradas del directorio(1024) y una tabla(1024)
-;    xor eax,eax                        ;Poner a cero esas entradas.
-;    rep stosd
+    mov edi,__CR3_tarea1   ;Apuntar al inicio de la 1ra tabla.
+    mov ecx,0x400 *2                 ;Cantidad de entradas del directorio(1024) y una tabla(1024)
+    xor eax,eax                        ;Poner a cero esas entradas.
+    rep stosd
+
+    mov edi,__CR3_tarea2   ;Apuntar al inicio de la 1ra tabla.
+    mov ecx,0x400 *2                 ;Cantidad de entradas del directorio(1024) y una tabla(1024)
+    xor eax,eax                        ;Poner a cero esas entradas.
+    rep stosd
+
+    mov edi,__CR3_tarea3   ;Apuntar al inicio de la 1ra tabla.
+    mov ecx,0x400 *2                 ;Cantidad de entradas del directorio(1024) y una tabla(1024)
+    xor eax,eax                        ;Poner a cero esas entradas.
+    rep stosd
 
 
 ;-------------Paginacion Kernel----------------------------
@@ -1055,7 +1055,7 @@ habilitar_paginacion:
 ;---------------------------------------------;
 ;-----------Habilitar Paginacion--------------;
 ;---------------------------------------------;
-
+    xchg bx,bx
     mov eax,__CR3_kernel 
     mov cr3,eax                 ;Apuntar a directorio de paginas.
 
