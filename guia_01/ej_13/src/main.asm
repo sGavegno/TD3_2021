@@ -34,6 +34,7 @@ kernel_init:
     add esp,4
 
 main:
+
     hlt
     jmp main
 

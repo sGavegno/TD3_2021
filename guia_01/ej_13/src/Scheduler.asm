@@ -159,13 +159,14 @@ guardar_tarea0:
 
     mov eax, cr3                    ;Guardo CR3
     mov [__TSS_tarea0 + 0x1C], eax
-
+xchg bx,bx
+mov eax, 0
     ;Registros del Stack
     mov eax, [esp]                  ;Guardo EIP
     mov [__TSS_tarea0 + 0x20], eax  
-    mov eax, [esp + 0x04]           ;Guardo CS
+    mov eax, [esp + 4]           ;Guardo CS
     mov [__TSS_tarea0 + 0x4C], eax  
-    mov eax, [esp + 0x08]           ;Guardo EFLAGS
+    mov eax, [esp + 8]           ;Guardo EFLAGS
     mov [__TSS_tarea0 + 0x24], eax  
 
     mov [__TSS_tarea0 + 0x04], esp  ;Guardo ESP0
@@ -195,13 +196,14 @@ guardar_tarea1:
 
     mov eax, cr3                    ;Guardo CR3
     mov [__TSS_tarea1 + 0x1C], eax
-
+xchg bx,bx
+mov eax, 1
     ;Registros del Stack
-    mov eax, [esp]                  ;Guardo EIP
+    mov eax, [esp + 12]                  ;Guardo EIP
     mov [__TSS_tarea1 + 0x20], eax  
-    mov eax, [esp + 0x04]           ;Guardo CS
+    mov eax, [esp + 16]           ;Guardo CS
     mov [__TSS_tarea1 + 0x4C], eax  
-    mov eax, [esp + 0x08]           ;Guardo EFLAGS
+    mov eax, [esp + 20]           ;Guardo EFLAGS
     mov [__TSS_tarea1 + 0x24], eax  
 
     mov [__TSS_tarea1 + 0x04], esp  ;Guardo ESP0
@@ -231,13 +233,14 @@ guardar_tarea2:
 
     mov eax, cr3                    ;Guardo CR3
     mov [__TSS_tarea2 + 0x1C], eax
-
+xchg bx,bx
+mov eax, 2
     ;Registros del Stack
-    mov eax, [esp]                  ;Guardo EIP
+    mov eax, [esp + 12]             ;Guardo EIP
     mov [__TSS_tarea2 + 0x20], eax  
-    mov eax, [esp + 0x04]           ;Guardo CS
+    mov eax, [esp + 16]             ;Guardo CS
     mov [__TSS_tarea2 + 0x4C], eax  
-    mov eax, [esp + 0x08]           ;Guardo EFLAGS
+    mov eax, [esp + 20]             ;Guardo EFLAGS
     mov [__TSS_tarea2 + 0x24], eax  
 
     mov [__TSS_tarea2 + 0x04], esp  ;Guardo ESP0
@@ -269,13 +272,14 @@ guardar_tarea3:
 
     mov eax, cr3                    ;Guardo CR3
     mov [__TSS_tarea3 + 0x1C], eax
-
+xchg bx,bx
+mov eax, 3
     ;Registros del Stack
-    mov eax, [esp]                  ;Guardo EIP
+    mov eax, [esp + 12]                  ;Guardo EIP
     mov [__TSS_tarea3 + 0x20], eax  
-    mov eax, [esp + 0x04]           ;Guardo CS
+    mov eax, [esp + 16]           ;Guardo CS
     mov [__TSS_tarea3 + 0x4C], eax  
-    mov eax, [esp + 0x08]           ;Guardo EFLAGS
+    mov eax, [esp + 20]           ;Guardo EFLAGS
     mov [__TSS_tarea3 + 0x24], eax  
 
     mov [__TSS_tarea3 + 0x04], esp  ;Guardo ESP0
@@ -307,7 +311,6 @@ return_cargar_tarea3:
 
 cargar_tarea0:
 ;xchg bx,bx
-
     mov byte [tarea_actual], TAREA_0
 ;cambiar CR3 para que apunte a la tabla de paginacion de la tarea_x
     mov eax,__CR3_tarea0
@@ -355,10 +358,17 @@ cargar_tarea0:
     mov esi, [__TSS_tarea0 + 0x40]
     mov edi, [__TSS_tarea0 + 0x44]
 
+    ;Cargo la TSS
+    push __TSS_tarea0
+    call cargar_TSS
+    add esp,4
+
     jmp return_cargar_tarea0
 
 cargar_tarea1:
-;xchg bx,bx
+xchg bx,bx
+mov eax, 1
+
     mov byte [tarea_actual], TAREA_1
 ;cambiar CR3 para que apunte a la tabla de paginacion de la tarea_x
     mov eax,__CR3_tarea1
@@ -408,10 +418,16 @@ cargar_tarea1:
     mov esi, [__TSS_tarea1 + 0x40]
     mov edi, [__TSS_tarea1 + 0x44]
 
+    ;Cargo la TSS
+    push __TSS_tarea1
+    call cargar_TSS
+    add esp,4
+
     jmp return_cargar_tarea1
 
 cargar_tarea2:
 xchg bx,bx
+mov eax, 2
     mov byte [tarea_actual], TAREA_2
 ;cambiar CR3 para que apunte a la tabla de paginacion de la tarea_x
     mov eax,__CR3_tarea2
@@ -419,16 +435,12 @@ xchg bx,bx
 
     ;Cargo los registros de segmento
     mov eax, [__TSS_tarea2 + 0x48]      ;Recupero es
-    add eax, 3                          ;cargo el RPL al selector
     mov es, eax 
     mov eax, [__TSS_tarea2 + 0x54]      ;Recupero ds
-    add eax, 3                          ;cargo el RPL al selector
     mov ds, eax
     mov eax, [__TSS_tarea2 + 0x58]      ;Recupero fs
-    add eax, 3                          ;cargo el RPL al selector
     mov fs, eax
     mov eax, [__TSS_tarea2 + 0x5C]      ;Recupero gs
-    add eax, 3                          ;cargo el RPL al selector
     mov gs, eax
     
     ;mov esp, [__TSS_tarea2 + 0x38]
@@ -448,17 +460,15 @@ xchg bx,bx
     or ax, 0x0008
     lmsw ax
 
-
     ;cargo el stack 
     mov eax, [__TSS_tarea2 + 0x18]      ;Recupero SS2
-    add eax, 3                          ;cargo el RPL al selector
+    ;add eax, 3                          ;cargo el RPL al selector
     push eax
     mov eax, [__TSS_tarea2 + 0x14]      ;Recupero ESP2
     push eax
     mov eax, [__TSS_tarea2 + 0x24]      ;Recupero EFLAGS
     push eax
     mov eax, [__TSS_tarea2 + 0x4C]      ;Recupero CS
-    add eax, 3                          ;cargo el RPL al selector
     push eax
     mov eax, [__TSS_tarea2 + 0x20]      ;Recupero EIP
     push eax
@@ -472,89 +482,15 @@ xchg bx,bx
     mov edi, [__TSS_tarea2 + 0x44]
 
     ;Cargo la TSS
-    ;backlink
-    mov eax, [__TSS_tarea2]
-    mov [__TSS_kernel], eax 
-    ;ESP0
-    mov eax, [__TSS_tarea2+0x04]
-    mov [__TSS_kernel+0x04], eax
-    ;SS0
-    mov eax, [__TSS_tarea2+0x08]
-    mov [__TSS_kernel+0x08], eax
-    ;ESP1
-    mov eax, [__TSS_tarea2+0x0C]
-    mov [__TSS_kernel+0x0C], eax 
-    ;SS1
-    mov eax, [__TSS_tarea2+0x10]
-    mov [__TSS_kernel+0x10], eax
-    ;ESP2
-    mov eax, [__TSS_tarea2+0x14]
-    mov [__TSS_kernel+0x14], eax 
-    ;SS2
-    mov eax, [__TSS_tarea2+0x18]
-    mov [__TSS_kernel+0x18], eax 
-    ;CR3
-    mov eax, [__TSS_tarea2+0x1C]
-    mov [__TSS_kernel+0x1C], eax
-    ;EIP
-    mov eax, [__TSS_tarea2+0x20]
-    mov [__TSS_kernel+0x20], eax 
-    ;EFLAGS
-    mov eax, [__TSS_tarea2+0x24]
-    mov [__TSS_kernel+0x24], eax 
-    ;EAX
-    mov eax, [__TSS_tarea2+0x28]
-    mov [__TSS_kernel+0x28], eax 
-    ;ECX
-    mov eax, [__TSS_tarea2+0x2C]
-    mov [__TSS_kernel+0x2C], eax 
-    ;EDX
-    mov eax, [__TSS_tarea2+0x30]
-    mov [__TSS_kernel+0x30], eax 
-    ;EBX
-    mov eax, [__TSS_tarea2+0x34]
-    mov [__TSS_kernel+0x34], eax 
-    ;ESP
-    mov eax, [__TSS_tarea2+0x38]
-    mov [__TSS_kernel+0x38], eax
-    ;EBP
-    mov eax, [__TSS_tarea2+0x3C]
-    mov [__TSS_kernel+0x3C], eax
-    ;ESI
-    mov eax, [__TSS_tarea2+0x40]
-    mov [__TSS_kernel+0x40], eax
-    ;EDI
-    mov eax, [__TSS_tarea2+0x44]
-    mov [__TSS_kernel+0x44], eax
-    ;ES
-    mov eax, [__TSS_tarea2+0x48]
-    mov [__TSS_kernel+0x48], eax
-    ;CS
-    mov eax, [__TSS_tarea2+0x4C]
-    mov [__TSS_kernel+0x4C], eax
-    ;SS
-    mov eax, [__TSS_tarea2+0x50]
-    mov [__TSS_kernel+0x50], eax
-    ;DS
-    mov eax, [__TSS_tarea2+0x54]
-    mov [__TSS_kernel+0x54], eax
-    ;FS
-    mov eax, [__TSS_tarea2+0x58]
-    mov [__TSS_kernel+0x58], eax
-    ;GS
-    mov eax, [__TSS_tarea2+0x5C]
-    mov [__TSS_kernel+0x5C], eax
-    ;LDTR
-    mov eax, [__TSS_tarea2+0x60]
-    mov [__TSS_kernel+0x60], eax
-    ;Bitmap E/S
-    mov eax, [__TSS_tarea2+0x64]
-    mov [__TSS_kernel+0x64], eax
-
+    push __TSS_tarea2
+    call cargar_TSS
+    add esp,4
+    
     jmp return_cargar_tarea2
     
 cargar_tarea3:
 xchg bx,bx
+mov eax, 3
     mov byte [tarea_actual], TAREA_3
 ;cambiar CR3 para que apunte a la tabla de paginacion de la tarea_x
     mov eax,__CR3_tarea3
@@ -587,7 +523,6 @@ xchg bx,bx
     or ax, 0x0008
     lmsw ax
 
-
     ;cargo el stack 
     mov eax, [__TSS_tarea3 + 0x18]      ;Recupero SS2
     add eax, 3                          ;cargo el RPL al selector
@@ -597,7 +532,6 @@ xchg bx,bx
     mov eax, [__TSS_tarea3 + 0x24]      ;Recupero EFLAGS
     push eax
     mov eax, [__TSS_tarea3 + 0x4C]      ;Recupero CS
-    add eax, 3                          ;cargo el RPL al selector
     push eax
     mov eax, [__TSS_tarea3 + 0x20]      ;Recupero EIP
     push eax
@@ -610,5 +544,94 @@ xchg bx,bx
     mov esi, [__TSS_tarea3 + 0x40]
     mov edi, [__TSS_tarea3 + 0x44]
 
+    ;Cargo la TSS
+    push __TSS_tarea3
+    call cargar_TSS
+    add esp,4
+
     jmp return_cargar_tarea3    
 
+cargar_TSS:
+
+    mov ebx, [esp + 4]
+
+    ;backlink
+    mov eax, [ebx]
+    mov [__TSS_kernel], eax 
+    ;ESP0
+    mov eax, [ebx+0x04]
+    mov [__TSS_kernel+0x04], eax
+    ;SS0
+    mov eax, [ebx+0x08]
+    mov [__TSS_kernel+0x08], eax
+    ;ESP1
+    mov eax, [ebx+0x0C]
+    mov [__TSS_kernel+0x0C], eax 
+    ;SS1
+    mov eax, [ebx+0x10]
+    mov [__TSS_kernel+0x10], eax
+    ;ESP2
+    mov eax, [ebx+0x14]
+    mov [__TSS_kernel+0x14], eax 
+    ;SS2
+    mov eax, [ebx+0x18]
+    mov [__TSS_kernel+0x18], eax 
+    ;CR3
+    mov eax, [ebx+0x1C]
+    mov [__TSS_kernel+0x1C], eax
+    ;EIP
+    mov eax, [ebx+0x20]
+    mov [__TSS_kernel+0x20], eax 
+    ;EFLAGS
+    mov eax, [ebx+0x24]
+    mov [__TSS_kernel+0x24], eax 
+    ;EAX
+    mov eax, [ebx+0x28]
+    mov [__TSS_kernel+0x28], eax 
+    ;ECX
+    mov eax, [ebx+0x2C]
+    mov [__TSS_kernel+0x2C], eax 
+    ;EDX
+    mov eax, [ebx+0x30]
+    mov [__TSS_kernel+0x30], eax 
+    ;EBX
+    mov eax, [ebx+0x34]
+    mov [__TSS_kernel+0x34], eax 
+    ;ESP
+    mov eax, [ebx+0x38]
+    mov [__TSS_kernel+0x38], eax
+    ;EBP
+    mov eax, [ebx+0x3C]
+    mov [__TSS_kernel+0x3C], eax
+    ;ESI
+    mov eax, [ebx+0x40]
+    mov [__TSS_kernel+0x40], eax
+    ;EDI
+    mov eax, [ebx+0x44]
+    mov [__TSS_kernel+0x44], eax
+    ;ES
+    mov eax, [ebx+0x48]
+    mov [__TSS_kernel+0x48], eax
+    ;CS
+    mov eax, [ebx+0x4C]
+    mov [__TSS_kernel+0x4C], eax
+    ;SS
+    mov eax, [ebx+0x50]
+    mov [__TSS_kernel+0x50], eax
+    ;DS
+    mov eax, [ebx+0x54]
+    mov [__TSS_kernel+0x54], eax
+    ;FS
+    mov eax, [ebx+0x58]
+    mov [__TSS_kernel+0x58], eax
+    ;GS
+    mov eax, [ebx+0x5C]
+    mov [__TSS_kernel+0x5C], eax
+    ;LDTR
+    mov eax, [ebx+0x60]
+    mov [__TSS_kernel+0x60], eax
+    ;Bitmap E/S
+    mov eax, [ebx+0x64]
+    mov [__TSS_kernel+0x64], eax
+
+    ret

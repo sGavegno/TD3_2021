@@ -7,7 +7,7 @@ __attribute__(( section(".text_tarea1"))) void ejecutar_tarea_1(void)
 
 	calcular_Promedio(&PUNTERO_TABLA_DIGITO, &PROMEDIO_TABLA_DIGITOS);
  
-	escribir_Nro64_VGA(&__VIDEO_LIN, &PROMEDIO_TABLA_DIGITOS, 0, 64);
+	//escribir_Nro64_VGA(&__VIDEO_LIN, &PROMEDIO_TABLA_DIGITOS, 0, 64);
 
 }
 

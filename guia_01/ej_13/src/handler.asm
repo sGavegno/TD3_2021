@@ -7,6 +7,8 @@ EXTERN Scheduler
 EXTERN tarea_promedio
 EXTERN carga_paginacion
 
+EXTERN escribir_Nro64_VGA
+
 EXTERN __MMX_tarea2
 EXTERN __MMX_tarea3
 
@@ -46,8 +48,14 @@ EXTERN __CR3_kernel
 ;------------------------------VARIABLES GLOBALES-----------------------------------------
 GLOBAL return_Scheduler
 
+GLOBAL SYS_H
+GLOBAL SYS_R
+GLOBAL SYS_P
+GLOBAL SYS_P_VGA
+
 GLOBAL L_Handler_Timer
 GLOBAL L_Handler_Teclado
+GLOBAL L_SYS_CALL
 
 GLOBAL L_Handler_DE
 GLOBAL L_Handler_NMI
@@ -72,6 +80,7 @@ OFFSET_HANDLER equ 0x00100000
 
 L_Handler_Timer EQU (Handler_Timer - OFFSET_HANDLER)
 L_Handler_Teclado EQU (Handler_Teclado - OFFSET_HANDLER)
+L_SYS_CALL EQU (SYS_CALL - OFFSET_HANDLER)
 
 
 L_Handler_DE equ (Handler_DE - OFFSET_HANDLER)
@@ -139,6 +148,11 @@ L_Handler_XM equ (Handler_XM - OFFSET_HANDLER)
 %define TAREA_2     2
 %define TAREA_3     3
 
+
+SYS_H       EQU     0
+SYS_R       EQU     1
+SYS_P       EQU     2
+SYS_P_VGA   EQU     3
 ;-------------------------------------SECTION-----------------------------------------------------
 USE32
 
@@ -164,8 +178,6 @@ Handler_fin:
 Handler_Teclado:
     PUSHAD                              ;Salvo los registros de uso general.
     
-    ;xchg bx,bx	
-
     IN al, 0x60                         ;Leer tecla del buffer de teclado
     mov bl, al
     AND al, al
@@ -315,7 +327,131 @@ Teclado_fin:
     IRET                                ;Fin de la interrupción.
 
 Handler_Teclado_END:
+    
 
+SYS_CALL:
+
+    sti
+
+    cmp eax, SYS_R
+    je sys_read
+
+    cmp eax, SYS_P
+    je sys_print
+
+    cmp eax, SYS_P_VGA
+    je sys_print_VGA
+
+    cmp eax, SYS_H
+    je sys_hlt
+
+sys_read:
+
+    cmp ebx, 1 
+    je read_byte
+
+    cmp ebx, 2 
+    je read_word
+
+    cmp ebx, 3 
+    je read_dword
+
+    cmp ebx, 4 
+    je read_qword
+
+;8bits
+read_byte:
+    mov al, [esi]
+    jmp SYS_CALL_FIN
+
+;16bits
+read_word:
+    mov ax, [esi]
+    jmp SYS_CALL_FIN
+
+;32bits
+read_dword:
+    mov eax, [esi]
+    jmp SYS_CALL_FIN
+
+;64bits
+read_qword:
+    mov dword eax, [esi]
+    mov dword edx, [esi + 4]            ;parte alta 
+    jmp SYS_CALL_FIN
+
+sys_print:
+
+    cmp ebx, 1 
+    je print_byte
+
+    cmp ebx, 2 
+    je print_word
+
+    cmp ebx, 3 
+    je print_dword
+
+    cmp ebx, 4 
+    je print_qword
+
+;8bits
+print_byte:
+    mov byte [edi], cl
+    jmp SYS_CALL_FIN
+
+;16bits
+print_word:
+    mov word [edi], cx
+    jmp SYS_CALL_FIN
+
+;32bits
+print_dword:
+    mov dword [edi], ecx
+    jmp SYS_CALL_FIN
+
+;64bits
+print_qword:
+    mov dword [edi], ecx
+    mov dword [edi + 4], edx            ;parte alta 
+    jmp SYS_CALL_FIN
+
+sys_print_VGA:
+
+    cmp ebx, 1
+    je print_VGA_byte
+
+    cmp ebx, 2
+    je print_VGA_word
+
+    cmp ebx, 3
+    je print_VGA_dword
+
+    cmp ebx, 4
+    je print_VGA_qword
+
+print_VGA_byte:
+
+print_VGA_word:
+
+print_VGA_dword:
+
+print_VGA_qword:
+    push ecx
+    push edx    
+    push edi
+    push esi
+    call escribir_Nro64_VGA
+    add esp,16
+    jmp SYS_CALL_FIN
+
+sys_hlt:
+
+    hlt
+    jmp sys_hlt
+;    add esp, 12
+SYS_CALL_FIN:
+
+    IRET
 
 ;-----------------------------------HANDLER EXCEPCIONES--------------------------------------------
 Handler_DE:
@@ -345,7 +481,7 @@ Handler_UD:
 Handler_NM:
     PUSHAD
     mov dl,0x07
-xchg bx,bx
+
     clts        
 
     cmp byte [tarea_actual], TAREA_2
@@ -452,7 +588,7 @@ write_access:
 end_handler_PF:
     popad                       ; Tomo valores de registros guardados.
     pop eax
-xchg bx,bx
+;xchg bx,bx
     sti                         ; Habilito interrupciones.
     IRET
 

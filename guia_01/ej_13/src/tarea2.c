@@ -8,7 +8,7 @@ __attribute__(( section(".text_tarea2"))) void ejecutar_tarea_2(void)
 {
     suma_aritmetica_tarea_2(&PUNTERO_TABLA_DIGITO, &SUMA2_TABLA_DIGITOS);
 
-    escribir_Nro64_VGA(&__VIDEO_LIN, &SUMA2_TABLA_DIGITOS, 1,64);
+    //escribir_Nro64_VGA(&__VIDEO_LIN, &SUMA2_TABLA_DIGITOS, 1,64);
 
 }
 
@@ -30,7 +30,7 @@ __attribute__(( section(".text_tarea3"))) void ejecutar_tarea_3(void)
 {
     suma_aritmetica_tarea_3(&PUNTERO_TABLA_DIGITO, &SUMA3_TABLA_DIGITOS);
 
-    escribir_Nro64_VGA(&__VIDEO_LIN, &SUMA3_TABLA_DIGITOS, 2, 64);
+    //escribir_Nro64_VGA(&__VIDEO_LIN, &SUMA3_TABLA_DIGITOS, 2, 64);
 
 }
 

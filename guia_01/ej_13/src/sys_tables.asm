@@ -5,6 +5,7 @@ EXTERN __SYS_TABLES_LMA
 
 EXTERN L_Handler_Timer
 EXTERN L_Handler_Teclado
+EXTERN L_SYS_CALL
 
 EXTERN L_Handler_DE
 EXTERN L_Handler_NMI
@@ -331,6 +332,18 @@ ISR33_idt EQU $ - IDT_32
     
 ISR34to46_idt EQU $ - IDT_32
     times 13 dq 0x0000          
+
+ISER47to127_idt EQU $ - IDT_32
+    times 81 dq 0x0000
+
+ISER128_idt EQU $ - IDT_32
+;Compuerta de interrupción de system call.
+    dw L_SYS_CALL                   ;Offset 15-0
+    dw CS_SEL                       ;Selector.
+    db 0x00                         ;No usado.
+    db 0xEE                         ;Compuerta de interrupción. DPL = 11
+    dw H_ALTA                       ;Offset 31-16
+
 
 IDT_SIZE_32  EQU $ - IDT_32             ;Tamaño de la IDT.
 
