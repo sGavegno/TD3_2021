@@ -190,10 +190,10 @@ EXTERN __STACK_KERNEL_T3_END_FIS
 EXTERN __STACK_KERNEL_T3_LIN
 EXTERN __STACK_KERNEL_T3_END_LIN
 
-EXTERN __STACK_KERNEL_T4_FIS
-EXTERN __STACK_KERNEL_T4_END_FIS
-EXTERN __STACK_KERNEL_T4_LIN
-EXTERN __STACK_KERNEL_T4_END_LIN
+EXTERN __STACK_KERNEL_T0_FIS
+EXTERN __STACK_KERNEL_T0_END_FIS
+EXTERN __STACK_KERNEL_T0_LIN
+EXTERN __STACK_KERNEL_T0_END_LIN
 
 
 EXTERN kernel_init
@@ -659,6 +659,24 @@ habilitar_paginacion:
     call carga_paginacion_ROM
     add esp,20
 
+;Pila Kernel
+    push 0x03
+    push 0x03
+    push __STACK_KERNEL_T0_FIS
+    push __STACK_KERNEL_T0_LIN
+    push __CR3_kernel           
+    call carga_paginacion_ROM
+    add esp,20
+
+;Pila Tarea 0
+    push 0x07
+    push 0x07
+    push __STACK_tarea0_FIS
+    push __STACK_tarea0_LIN
+    push __CR3_tarea2            
+    call carga_paginacion_ROM
+    add esp,20 
+
 ;Tabla de Dígitos                            
     push 0x07
     push 0x07
@@ -732,8 +750,8 @@ habilitar_paginacion:
 ;Pila Kernel
     push 0x03
     push 0x03
-    push __STACK_KERNEL_T1_FIS
-    push __STACK_KERNEL_T1_LIN
+    push __STACK_KERNEL_FIS
+    push __STACK_KERNEL_LIN
     push __CR3_tarea1           
     call carga_paginacion_ROM
     add esp,20
@@ -885,8 +903,8 @@ habilitar_paginacion:
 ;Pila Kernel
     push 0x03
     push 0x03
-    push __STACK_KERNEL_T2_FIS
-    push __STACK_KERNEL_T2_LIN
+    push __STACK_KERNEL_FIS
+    push __STACK_KERNEL_LIN
     push __CR3_tarea2           
     call carga_paginacion_ROM
     add esp,20
@@ -1021,8 +1039,8 @@ habilitar_paginacion:
 ;Pila Kernel
     push 0x03
     push 0x03
-    push __STACK_KERNEL_T3_FIS
-    push __STACK_KERNEL_T3_LIN
+    push __STACK_KERNEL_FIS
+    push __STACK_KERNEL_LIN
     push __CR3_tarea3           
     call carga_paginacion_ROM
     add esp,20
@@ -1111,7 +1129,7 @@ init_TSS:
     ;ESP2
     mov [eax+0x14], dword(__STACK_TAREA1_LIN_END) 
     ;SS2
-    mov [eax+0x18], dword(DS_SEL_11) 
+    mov [eax+0x18], dword(DS_SEL_11+3) 
     ;CR3
     mov [eax+0x1C], dword(__CR3_tarea1)
     ;EIP
@@ -1222,7 +1240,7 @@ init_TSS:
     ;ESP2
     mov [eax+0x14], dword(__STACK_TAREA3_LIN_END) 
     ;SS2
-    mov [eax+0x18], dword(DS_SEL_11) 
+    mov [eax+0x18], dword(DS_SEL_11+3) 
     ;CR3
     mov [eax+0x1C], dword(__CR3_tarea3)
     ;EIP
@@ -1375,7 +1393,7 @@ init_TSS:
     ;Bitmap E/S
     mov [eax+0x64], dword(0) 
 
-    xchg bx,bx
+;    xchg bx,bx
 
     mov ax, TSS_SEL
     ltr ax

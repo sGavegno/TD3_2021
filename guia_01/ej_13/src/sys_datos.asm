@@ -15,6 +15,7 @@ GLOBAL CANTIDAD_TECLAS
 
 GLOBAL tarea_actual 
 GLOBAL tarea_siguiente
+GLOBAL tarea0_first
 
 GLOBAL Nuevo_Stack
 
@@ -52,6 +53,8 @@ CANTIDAD_TECLAS dw 0x00
 
 tarea_actual db 0
 tarea_siguiente db 0
+
+tarea0_first db 0
 
 dir_phy_dinamica            dd 0x0A000000       ; Dir. Phy. dinámica para salvar el #PF
 

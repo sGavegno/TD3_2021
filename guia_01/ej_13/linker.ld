@@ -64,8 +64,8 @@ ENTRY (reset)
     __STACK_KERNEL_T3_FIS      = 0x1FFF6000;               /* stak de 4k */
     __STACK_KERNEL_T3_END_FIS  = 0x1FFF6FFF;
 
-    __STACK_KERNEL_T4_FIS      = 0x1FFF7000;               /* stak de 4k */
-    __STACK_KERNEL_T4_END_FIS  = 0x1FFF7FFF;
+    __STACK_KERNEL_T0_FIS      = 0x1FFF7000;               /* stak de 4k */
+    __STACK_KERNEL_T0_END_FIS  = 0x1FFF7FFF;
 
     __STACK_TAREA1_FIS       = 0x1FFF0000;               /* stak de 4k */
     __STACK_TAREA1_END_FIS   = 0x1FFF0FFF;
@@ -127,8 +127,8 @@ ENTRY (reset)
     __STACK_KERNEL_T3_LIN      = 0x1FFF6000;               /* stak de 4k */
     __STACK_KERNEL_T3_END_LIN  = 0x1FFF6FFF;
 
-    __STACK_KERNEL_T4_LIN      = 0x1FFF7000;               /* stak de 4k */
-    __STACK_KERNEL_T4_END_LIN  = 0x1FFF7FFF;
+    __STACK_KERNEL_T0_LIN      = 0x1FFF7000;               /* stak de 4k */
+    __STACK_KERNEL_T0_END_LIN  = 0x1FFF7FFF;
 
 
     __STACK_TAREA1_LIN           = 0x0078F000;               /* stak de 4k */

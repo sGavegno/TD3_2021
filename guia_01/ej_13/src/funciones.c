@@ -169,6 +169,25 @@ __attribute__(( section(".funciones"))) byte convertir_ASCII (byte caracter)
     escribir_mensaje_VGA("-----------------------------------------", 0, 0, ASCII_TRUE);
     escribir_mensaje_VGA("Ej.13 -  NIVELES DE PRIVILEGIO - TD3 2021", 1, 0, ASCII_TRUE);
     escribir_mensaje_VGA("-----------------------------------------", 2, 0, ASCII_TRUE);
+
+    escribir_mensaje_VGA(" |||||| ||  || |||||| ||||||   ", 4, 0, ASCII_TRUE);
+    escribir_mensaje_VGA(" ||  || ||  ||   ||   ||  ||   ", 5, 0, ASCII_TRUE);
+    escribir_mensaje_VGA(" |||||| ||  ||   ||   ||  ||        ", 6, 0, ASCII_TRUE);
+    escribir_mensaje_VGA(" ||     ||  ||   ||   ||  ||    ", 7, 0, ASCII_TRUE);
+    escribir_mensaje_VGA(" ||     ||||||   ||   ||||||        ", 8, 0, ASCII_TRUE);
+    escribir_mensaje_VGA("                                      ", 9, 0, ASCII_TRUE);
+    escribir_mensaje_VGA(" |||||| ||      ||||||   ||  || ||||||   ", 10, 0, ASCII_TRUE);
+    escribir_mensaje_VGA(" ||     ||      ||  ||   ||  || ||       ", 11, 0, ASCII_TRUE);
+    escribir_mensaje_VGA(" |||||| ||      ||  ||   ||  || ||||||  ", 12, 0, ASCII_TRUE);
+    escribir_mensaje_VGA(" ||     ||      ||  ||   ||  || ||      ", 13, 0, ASCII_TRUE);
+    escribir_mensaje_VGA(" |||||| ||||||  |||||||| |||||| ||||||  ", 14, 0, ASCII_TRUE);
+    escribir_mensaje_VGA("                                     ", 15, 0, ASCII_TRUE);
+    escribir_mensaje_VGA(" ||     |||||| ||||||             ", 16, 0, ASCII_TRUE);
+    escribir_mensaje_VGA(" ||     ||     ||                ", 17, 0, ASCII_TRUE);
+    escribir_mensaje_VGA(" ||     |||||| ||||||            ", 18, 0, ASCII_TRUE);
+    escribir_mensaje_VGA(" ||     ||     ||                ", 19, 0, ASCII_TRUE);
+    escribir_mensaje_VGA(" |||||| |||||| ||||||           ", 20, 0, ASCII_TRUE);
+
     escribir_mensaje_VGA("-----------------------------------------", 22, 0, ASCII_TRUE);
     escribir_mensaje_VGA("     Gavegno Sebastian   152.553-0       ", 23, 0, ASCII_TRUE);
     escribir_mensaje_VGA("-----------------------------------------", 24, 0, ASCII_TRUE);

@@ -33,14 +33,15 @@ __attribute__(( section(".text_tarea1"))) void calcular_Promedio(t_datos* table_
 	}
 	if(div > 0)
 	{
+		//asm("xchg %bx, %bx"); 
 		prom_p->prom = division_64(prom_p->Suma, div);
 	}
 }
 
 __attribute__(( section(".text_tarea1")))qword division_64(qword sumaprom, word div)
 {
-    static byte i=0;
-    static qword resultado64,aux;         //sumaprom/div  
+    __attribute__(( section(".datos_tarea1")))static byte i=0;
+    __attribute__(( section(".datos_tarea1")))static qword resultado64,aux;         //sumaprom/div  
     resultado64=0;
     aux=0;    
     for(i=0;i<64;i++)

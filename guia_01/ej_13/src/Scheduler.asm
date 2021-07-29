@@ -7,6 +7,8 @@ EXTERN return_Scheduler
 EXTERN tarea_actual 
 EXTERN tarea_siguiente
 
+EXTERN tarea0_first
+
 EXTERN Nuevo_Stack
 
 EXTERN contador_1
@@ -40,7 +42,6 @@ EXTERN FLAG_TAREA_3
 ;------------------------------VARIABLES GLOBALES-----------------------------------------
 GLOBAL Scheduler
 
-
 ;--------------------------------DEFINE------------------------------------------
 %define TAREA_0     0
 %define TAREA_1     1
@@ -66,13 +67,13 @@ Scheduler:
     inc byte [contador_3]
 
     cmp byte [contador_1], Timer_T1
-    je Time_500ms
+    jae Time_500ms
 
     cmp byte [contador_2], Timer_T2
-    je Time_100ms
+    jae Time_100ms
 
     cmp byte [contador_3], Timer_T3
-    je Time_200ms
+    jae Time_200ms
 
     mov byte [tarea_siguiente], TAREA_0
 
@@ -112,6 +113,7 @@ return_cargar_contexto:
 
 fin_Scheduler:
     POPAD
+
     jmp return_Scheduler
 
 
@@ -140,111 +142,145 @@ return_guardar_tarea3:
 guardar_tarea0:
 
     ;Registros Generales
-    mov [__TSS_tarea0 + 0x28], eax ;Guardo EAX
-    mov [__TSS_tarea0 + 0x2C], ecx ;Guardo ECX
-    mov [__TSS_tarea0 + 0x30], edx ;Guardo EDX
-    mov [__TSS_tarea0 + 0x34], ebx ;Guardo EBX
-    ;mov [__TSS_tarea0 + 0x38], esp ;Guardo ESP
-    mov [__TSS_tarea0 + 0x3C], ebp ;Guardo EBP 
-    mov [__TSS_tarea0 + 0x40], esi ;Guardo ESI
-    mov [__TSS_tarea0 + 0x44], edi ;Guardo EDI
+    mov [__TSS_tarea0 + 0x28], eax      ;Guardo EAX
+    mov [__TSS_tarea0 + 0x2C], ecx      ;Guardo ECX
+    mov [__TSS_tarea0 + 0x30], edx      ;Guardo EDX
+    mov [__TSS_tarea0 + 0x34], ebx      ;Guardo EBX
+    ;mov [__TSS_tarea0 + 0x38], esp      ;Guardo ESP
+    mov [__TSS_tarea0 + 0x3C], ebp      ;Guardo EBP 
+    mov [__TSS_tarea0 + 0x40], esi      ;Guardo ESI
+    mov [__TSS_tarea0 + 0x44], edi      ;Guardo EDI
 
     ;Registros de Segmento
-    mov [__TSS_tarea0 + 0x48], es  ;Guardo ES
-    ;mov [__TSS_tarea0 + 0x4C], cs   ;Guardo CS        
-    ;mov [__TSS_tarea0 + 0x50], ss ;Guardo SS
-    mov [__TSS_tarea0 + 0x54], ds  ;Guardo DS   
-    mov [__TSS_tarea0 + 0x58], fs  ;Guardo FS       
-    mov [__TSS_tarea0 + 0x5C], gs  ;Guardo GS   
+    mov [__TSS_tarea0 + 0x48], es       ;Guardo ES
+    ;mov [__TSS_tarea0 + 0x4C], cs       ;Guardo CS        
+    ;mov [__TSS_tarea0 + 0x50], ss      ;Guardo SS
+    mov [__TSS_tarea0 + 0x54], ds       ;Guardo DS   
+    mov [__TSS_tarea0 + 0x58], fs       ;Guardo FS       
+    mov [__TSS_tarea0 + 0x5C], gs       ;Guardo GS   
 
-    mov eax, cr3                    ;Guardo CR3
+    mov eax, cr3                        ;Guardo CR3
     mov [__TSS_tarea0 + 0x1C], eax
-xchg bx,bx
-mov eax, 0
+;xchg bx,bx
+;mov eax, 0
     ;Registros del Stack
-    mov eax, [esp]                  ;Guardo EIP
+    pop eax                             ;al hacer el pop vacio la pila para que no cresca por siempre
+;    mov eax, [esp]                     ;Guardo EIP
     mov [__TSS_tarea0 + 0x20], eax  
-    mov eax, [esp + 4]           ;Guardo CS
+    pop eax
+;    mov eax, [esp + 4]                 ;Guardo CS
     mov [__TSS_tarea0 + 0x4C], eax  
-    mov eax, [esp + 8]           ;Guardo EFLAGS
+    pop eax
+;    mov eax, [esp + 8]                 ;Guardo EFLAGS
     mov [__TSS_tarea0 + 0x24], eax  
 
-    mov [__TSS_tarea0 + 0x04], esp  ;Guardo ESP0
-    mov [__TSS_tarea0 + 0x08], ss   ;Guardo SS0
+    mov eax, [tarea0_first]
+    cmp eax, 1
+    jne first
+
+    pop eax                       
+    mov [__TSS_tarea2 + 0x14], eax
+    pop eax                       
+    mov [__TSS_tarea2 + 0x18], eax
+    jmp no_first
+
+first:
+    mov eax, 1
+    mov [tarea0_first], eax
+
+no_first:
+    mov [__TSS_tarea0 + 0x04], esp      ;Guardo ESP0
+    mov [__TSS_tarea0 + 0x08], ss       ;Guardo SS0
 
     jmp return_guardar_tarea0
 
 guardar_tarea1:
 
     ;Registros Generales
-    mov [__TSS_tarea1 + 0x28], eax ;Guardo EAX
-    mov [__TSS_tarea1 + 0x2C], ecx ;Guardo ECX
-    mov [__TSS_tarea1 + 0x30], edx ;Guardo EDX
-    mov [__TSS_tarea1 + 0x34], ebx ;Guardo EBX
-    ;mov [__TSS_tarea1 + 0x38], esp ;Guardo ESP
-    mov [__TSS_tarea1 + 0x3C], ebp ;Guardo EBP 
-    mov [__TSS_tarea1 + 0x40], esi ;Guardo ESI
-    mov [__TSS_tarea1 + 0x44], edi ;Guardo EDI
+    mov [__TSS_tarea1 + 0x28], eax      ;Guardo EAX
+    mov [__TSS_tarea1 + 0x2C], ecx      ;Guardo ECX
+    mov [__TSS_tarea1 + 0x30], edx      ;Guardo EDX
+    mov [__TSS_tarea1 + 0x34], ebx      ;Guardo EBX
+    ;mov [__TSS_tarea1 + 0x38], esp      ;Guardo ESP
+    mov [__TSS_tarea1 + 0x3C], ebp      ;Guardo EBP 
+    mov [__TSS_tarea1 + 0x40], esi      ;Guardo ESI
+    mov [__TSS_tarea1 + 0x44], edi      ;Guardo EDI
 
     ;Registros de Segmento
-    mov [__TSS_tarea1 + 0x48], es  ;Guardo ES
-    ;mov [__TSS_tarea1 + 0x4C], cs   ;Guardo CS        
-    ;mov [__TSS_tarea1 + 0x50], ss ;Guardo SS
-    mov [__TSS_tarea1 + 0x54], ds  ;Guardo DS   
-    mov [__TSS_tarea1 + 0x58], fs  ;Guardo FS       
-    mov [__TSS_tarea1 + 0x5C], gs  ;Guardo GS   
+    mov [__TSS_tarea1 + 0x48], es       ;Guardo ES
+    ;mov [__TSS_tarea1 + 0x4C], cs        ;Guardo CS        
+    ;mov [__TSS_tarea1 + 0x50], ss      ;Guardo SS
+    mov [__TSS_tarea1 + 0x54], ds       ;Guardo DS   
+    mov [__TSS_tarea1 + 0x58], fs       ;Guardo FS       
+    mov [__TSS_tarea1 + 0x5C], gs       ;Guardo GS   
 
-    mov eax, cr3                    ;Guardo CR3
+    mov eax, cr3                        ;Guardo CR3
     mov [__TSS_tarea1 + 0x1C], eax
-xchg bx,bx
-mov eax, 1
+;xchg bx,bx
+;mov eax, 1
     ;Registros del Stack
-    mov eax, [esp + 12]                  ;Guardo EIP
+    add esp, 12                         ;sumo 12 porque tengo guardados el EIP, CS y EFLAGS del SYSCALL
+    pop eax                             ;al hacer el pop vacio la pila para que no cresca por siempre
+;    mov eax, [esp + 12]                ;Guardo EIP
     mov [__TSS_tarea1 + 0x20], eax  
-    mov eax, [esp + 16]           ;Guardo CS
+    pop eax
+;    mov eax, [esp + 16]                ;Guardo CS
     mov [__TSS_tarea1 + 0x4C], eax  
-    mov eax, [esp + 20]           ;Guardo EFLAGS
+    pop eax
+;    mov eax, [esp + 20]                ;Guardo EFLAGS
     mov [__TSS_tarea1 + 0x24], eax  
+    pop eax                             ;Guardo ESP2      
+    mov [__TSS_tarea1 + 0x14], eax
+    pop eax                             ;Guardo SS2      
+    mov [__TSS_tarea1 + 0x18], eax
 
-    mov [__TSS_tarea1 + 0x04], esp  ;Guardo ESP0
-    mov [__TSS_tarea1 + 0x08], ss   ;Guardo SS0
+    mov [__TSS_tarea1 + 0x04], esp      ;Guardo ESP0
+    mov [__TSS_tarea1 + 0x08], ss       ;Guardo SS0
 
     jmp return_guardar_tarea1
 
 guardar_tarea2:
 
     ;Registros Generales
-    mov [__TSS_tarea2 + 0x28], eax ;Guardo EAX
-    mov [__TSS_tarea2 + 0x2C], ecx ;Guardo ECX
-    mov [__TSS_tarea2 + 0x30], edx ;Guardo EDX
-    mov [__TSS_tarea2 + 0x34], ebx ;Guardo EBX
-    ;mov [__TSS_tarea2 + 0x38], esp ;Guardo ESP
-    mov [__TSS_tarea2 + 0x3C], ebp ;Guardo EBP 
-    mov [__TSS_tarea2 + 0x40], esi ;Guardo ESI
-    mov [__TSS_tarea2 + 0x44], edi ;Guardo EDI
+    mov [__TSS_tarea2 + 0x28], eax      ;Guardo EAX
+    mov [__TSS_tarea2 + 0x2C], ecx      ;Guardo ECX
+    mov [__TSS_tarea2 + 0x30], edx      ;Guardo EDX
+    mov [__TSS_tarea2 + 0x34], ebx      ;Guardo EBX
+    ;mov [__TSS_tarea2 + 0x38], esp      ;Guardo ESP
+    mov [__TSS_tarea2 + 0x3C], ebp      ;Guardo EBP 
+    mov [__TSS_tarea2 + 0x40], esi      ;Guardo ESI
+    mov [__TSS_tarea2 + 0x44], edi      ;Guardo EDI
 
     ;Registros de Segmento
-    mov [__TSS_tarea2 + 0x48], es  ;Guardo ES
-    ;mov [__TSS_tarea2 + 0x4C], cs ;Guardo CS        
-    ;mov [__TSS_tarea2 + 0x50], ss ;Guardo SS
-    mov [__TSS_tarea2 + 0x54], ds  ;Guardo DS   
-    mov [__TSS_tarea2 + 0x58], fs  ;Guardo FS       
-    mov [__TSS_tarea2 + 0x5C], gs  ;Guardo GS   
+    mov [__TSS_tarea2 + 0x48], es       ;Guardo ES
+    ;mov [__TSS_tarea2 + 0x4C], cs      ;Guardo CS        
+    ;mov [__TSS_tarea2 + 0x50], ss      ;Guardo SS
+    mov [__TSS_tarea2 + 0x54], ds       ;Guardo DS   
+    mov [__TSS_tarea2 + 0x58], fs       ;Guardo FS       
+    mov [__TSS_tarea2 + 0x5C], gs       ;Guardo GS   
 
-    mov eax, cr3                    ;Guardo CR3
+    mov eax, cr3                        ;Guardo CR3
     mov [__TSS_tarea2 + 0x1C], eax
-xchg bx,bx
-mov eax, 2
+;xchg bx,bx
+;mov eax, 2
     ;Registros del Stack
-    mov eax, [esp + 12]             ;Guardo EIP
+    add esp, 12                         ;sumo 12 porque tengo guardados el EIP, CS y EFLAGS del SYSCALL
+    pop eax                             ;al hacer el pop vacio la pila para que no cresca por siempre
+;    mov eax, [esp + 12]                ;Guardo EIP
     mov [__TSS_tarea2 + 0x20], eax  
-    mov eax, [esp + 16]             ;Guardo CS
+    pop eax                             ;Guardo CS
+;    mov eax, [esp + 16]
     mov [__TSS_tarea2 + 0x4C], eax  
-    mov eax, [esp + 20]             ;Guardo EFLAGS
-    mov [__TSS_tarea2 + 0x24], eax  
+    pop eax                             ;Guardo EFLAGS
+;    mov eax, [esp + 20]            
+    mov [__TSS_tarea2 + 0x24], eax 
+    pop eax                             ;Guardo ESP2      
+    mov [__TSS_tarea2 + 0x14], eax
+    pop eax                             ;Guardo SS2      
+    mov [__TSS_tarea2 + 0x18], eax
 
-    mov [__TSS_tarea2 + 0x04], esp  ;Guardo ESP0
-    mov [__TSS_tarea2 + 0x08], ss   ;Guardo SS0
+    mov [__TSS_tarea2 + 0x04], esp      ;Guardo ESP0
+    mov [__TSS_tarea2 + 0x08], ss       ;Guardo SS0
 
     FXSAVE &__MMX_tarea2
 
@@ -253,37 +289,42 @@ mov eax, 2
 guardar_tarea3:
 
     ;Registros Generales
-    mov [__TSS_tarea3 + 0x28], eax ;Guardo EAX
-    mov [__TSS_tarea3 + 0x2C], ecx ;Guardo ECX
-    mov [__TSS_tarea3 + 0x30], edx ;Guardo EDX
-    mov [__TSS_tarea3 + 0x34], ebx ;Guardo EBX
-    ;mov [__TSS_tarea3 + 0x38], esp ;Guardo ESP
-    mov [__TSS_tarea3 + 0x3C], ebp ;Guardo EBP 
-    mov [__TSS_tarea3 + 0x40], esi ;Guardo ESI
-    mov [__TSS_tarea3 + 0x44], edi ;Guardo EDI
+    mov [__TSS_tarea3 + 0x28], eax      ;Guardo EAX
+    mov [__TSS_tarea3 + 0x2C], ecx      ;Guardo ECX
+    mov [__TSS_tarea3 + 0x30], edx      ;Guardo EDX
+    mov [__TSS_tarea3 + 0x34], ebx      ;Guardo EBX
+    ;mov [__TSS_tarea3 + 0x38], esp      ;Guardo ESP
+    mov [__TSS_tarea3 + 0x3C], ebp      ;Guardo EBP 
+    mov [__TSS_tarea3 + 0x40], esi      ;Guardo ESI
+    mov [__TSS_tarea3 + 0x44], edi      ;Guardo EDI
 
     ;Registros de Segmento
-    mov [__TSS_tarea3 + 0x48], es  ;Guardo ES
-    ;mov [TSS_tarea3 + 0x4C], cs   ;Guardo CS        
-    ;mov [__TSS_tarea3 + 0x50], ss ;Guardo SS
-    mov [__TSS_tarea3 + 0x54], ds  ;Guardo DS   
-    mov [__TSS_tarea3 + 0x58], fs  ;Guardo FS       
-    mov [__TSS_tarea3 + 0x5C], gs  ;Guardo GS   
+    mov [__TSS_tarea3 + 0x48], es       ;Guardo ES
+    ;mov [TSS_tarea3 + 0x4C], cs        ;Guardo CS        
+    ;mov [__TSS_tarea3 + 0x50], ss      ;Guardo SS
+    mov [__TSS_tarea3 + 0x54], ds       ;Guardo DS   
+    mov [__TSS_tarea3 + 0x58], fs       ;Guardo FS       
+    mov [__TSS_tarea3 + 0x5C], gs       ;Guardo GS   
 
-    mov eax, cr3                    ;Guardo CR3
+    mov eax, cr3                        ;Guardo CR3
     mov [__TSS_tarea3 + 0x1C], eax
-xchg bx,bx
-mov eax, 3
-    ;Registros del Stack
-    mov eax, [esp + 12]                  ;Guardo EIP
+;xchg bx,bx
+;mov eax, 3
+    ;Registros del Stack                ;sumo 12 porque tengo guardados el EIP, CS y EFLAGS del SYSCALL
+    add esp, 12                         ;al hacer el pop vacio la pila para que no cresca por siempre 
+    pop eax                             ;Guardo EIP               
     mov [__TSS_tarea3 + 0x20], eax  
-    mov eax, [esp + 16]           ;Guardo CS
+    pop eax                             ;Guardo CS        
     mov [__TSS_tarea3 + 0x4C], eax  
-    mov eax, [esp + 20]           ;Guardo EFLAGS
-    mov [__TSS_tarea3 + 0x24], eax  
+    pop eax                             ;Guardo EFLAGS       
+    mov [__TSS_tarea3 + 0x24], eax 
+    pop eax                             ;Guardo ESP2      
+    mov [__TSS_tarea3 + 0x14], eax
+    pop eax                             ;Guardo SS2      
+    mov [__TSS_tarea3 + 0x18], eax
 
-    mov [__TSS_tarea3 + 0x04], esp  ;Guardo ESP0
-    mov [__TSS_tarea3 + 0x08], ss   ;Guardo SS0
+    mov [__TSS_tarea3 + 0x04], esp      ;Guardo ESP0
+    mov [__TSS_tarea3 + 0x08], ss       ;Guardo SS0
 
     FXSAVE &__MMX_tarea3
 
@@ -314,7 +355,7 @@ cargar_tarea0:
     mov byte [tarea_actual], TAREA_0
 ;cambiar CR3 para que apunte a la tabla de paginacion de la tarea_x
     mov eax,__CR3_tarea0
-    mov cr3,eax                ;Apuntar a directorio de paginas de la tarea_x
+    mov cr3,eax                          ;Apuntar a directorio de paginas de la tarea_x
 
     ;Cargo los registros de segmento
     mov eax, [__TSS_tarea0 + 0x48]       ;Recupero es
@@ -340,6 +381,7 @@ cargar_tarea0:
 
     ;cargo el stack 
     mov eax, [__TSS_tarea0 + 0x18]      ;Recupero SS2
+    add eax, 3                          ;cargo el RPL al selector
     push eax
     mov eax, [__TSS_tarea0 + 0x14]      ;Recupero ESP2
     push eax
@@ -366,22 +408,22 @@ cargar_tarea0:
     jmp return_cargar_tarea0
 
 cargar_tarea1:
-xchg bx,bx
-mov eax, 1
+;xchg bx,bx
+;mov eax, 1
 
     mov byte [tarea_actual], TAREA_1
 ;cambiar CR3 para que apunte a la tabla de paginacion de la tarea_x
     mov eax,__CR3_tarea1
-    mov cr3,eax                ;Apuntar a directorio de paginas de la tarea_x
+    mov cr3,eax                         ;Apuntar a directorio de paginas de la tarea_x
 
     ;Cargo los registros de segmento
-    mov eax, [__TSS_tarea1 + 0x48]       ;Recupero es
+    mov eax, [__TSS_tarea1 + 0x48]      ;Recupero es
     mov es, eax 
-    mov eax, [__TSS_tarea1 + 0x54]       ;Recupero ds
+    mov eax, [__TSS_tarea1 + 0x54]      ;Recupero ds
     mov ds, eax
-    mov eax, [__TSS_tarea1 + 0x58]       ;Recupero fs
+    mov eax, [__TSS_tarea1 + 0x58]      ;Recupero fs
     mov fs, eax
-    mov eax, [__TSS_tarea1 + 0x5C]       ;Recupero gs
+    mov eax, [__TSS_tarea1 + 0x5C]      ;Recupero gs
     mov gs, eax
     
     ;mov esp, [__TSS_tarea1 + 0x38]
@@ -398,14 +440,13 @@ mov eax, 1
 
     ;cargo el stack 
     mov eax, [__TSS_tarea1 + 0x18]      ;Recupero SS2
-    add eax, 3                          ;cargo el RPL al selector
+;    add eax, 3                          ;cargo el RPL al selector
     push eax
     mov eax, [__TSS_tarea1 + 0x14]      ;Recupero ESP2
     push eax
     mov eax, [__TSS_tarea1 + 0x24]      ;Recupero EFLAGS
     push eax
     mov eax, [__TSS_tarea1 + 0x4C]      ;Recupero CS
-    add eax, 3                          ;cargo el RPL al selector
     push eax
     mov eax, [__TSS_tarea1 + 0x20]      ;Recupero EIP
     push eax
@@ -426,8 +467,8 @@ mov eax, 1
     jmp return_cargar_tarea1
 
 cargar_tarea2:
-xchg bx,bx
-mov eax, 2
+;xchg bx,bx
+;mov eax, 2
     mov byte [tarea_actual], TAREA_2
 ;cambiar CR3 para que apunte a la tabla de paginacion de la tarea_x
     mov eax,__CR3_tarea2
@@ -462,7 +503,7 @@ mov eax, 2
 
     ;cargo el stack 
     mov eax, [__TSS_tarea2 + 0x18]      ;Recupero SS2
-    ;add eax, 3                          ;cargo el RPL al selector
+;    add eax, 3                          ;cargo el RPL al selector
     push eax
     mov eax, [__TSS_tarea2 + 0x14]      ;Recupero ESP2
     push eax
@@ -489,8 +530,8 @@ mov eax, 2
     jmp return_cargar_tarea2
     
 cargar_tarea3:
-xchg bx,bx
-mov eax, 3
+;xchg bx,bx
+;mov eax, 3
     mov byte [tarea_actual], TAREA_3
 ;cambiar CR3 para que apunte a la tabla de paginacion de la tarea_x
     mov eax,__CR3_tarea3
@@ -525,7 +566,7 @@ mov eax, 3
 
     ;cargo el stack 
     mov eax, [__TSS_tarea3 + 0x18]      ;Recupero SS2
-    add eax, 3                          ;cargo el RPL al selector
+;    add eax, 3                          ;cargo el RPL al selector
     push eax
     mov eax, [__TSS_tarea3 + 0x14]      ;Recupero ESP2
     push eax

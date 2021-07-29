@@ -185,9 +185,14 @@ Handler_Teclado:
 
 	;xchg bx,bx
     xor eax, eax
-    mov byte eax, [BUFFER_TECLADO + 18] ;cantidad de datos en el buffer
-    cmp eax, 0x10                       ;Tabla completa
+    mov eax, [CANTIDAD_TECLAS]
+    add eax, 1
+    mov [CANTIDAD_TECLAS], eax
+    cmp eax, 0x11                       ;Tabla completa
     jne detectar_numeros
+
+    mov eax, 0
+    mov [CANTIDAD_TECLAS], eax
 
     push dword BUFFER_TECLADO
     push dword PUNTERO_TABLA_DIGITO

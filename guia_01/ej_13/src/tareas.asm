@@ -49,9 +49,9 @@ FLAG_TAREA_1 db 0
 
 section .datos_tarea1
 
-section .rodata_tarea1
-
 PROMEDIO_TABLA_DIGITOS  resb 40
+
+section .rodata_tarea1
 
 section .stak_tarea1
 
@@ -60,7 +60,7 @@ inicio_stak_tarea1  resb 0x1000                ;stak de 4k
 section .text_tarea1
 
 tarea_1:
-xchg bx,bx
+;xchg bx,bx
     call ejecutar_tarea_1
 
     mov esi, __VIDEO_LIN                ;en esi tengo la direccion fuente
@@ -99,7 +99,7 @@ inicio_stak_tarea2  resb 0x1000                ;stak de 4k
 section .text_tarea2
 
 tarea_2:
-;    xchg bx,bx
+;xchg bx,bx
     call ejecutar_tarea_2
 
     mov esi, __VIDEO_LIN                ;en esi tengo la direccion fuente
@@ -134,7 +134,7 @@ inicio_stak_tarea3  resb 0x1000                ;stak de 4k
 section .text_tarea3
 
 tarea_3:
-    xchg bx,bx
+;xchg bx,bx
     call ejecutar_tarea_3
 
     mov esi, __VIDEO_LIN                ;en esi tengo la direccion fuente
