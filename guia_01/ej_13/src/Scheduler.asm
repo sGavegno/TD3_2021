@@ -179,9 +179,9 @@ guardar_tarea0:
     jne first
 
     pop eax                       
-    mov [__TSS_tarea2 + 0x14], eax
+    mov [__TSS_tarea2 + 0x14], eax      ;Guardo ESP2
     pop eax                       
-    mov [__TSS_tarea2 + 0x18], eax
+    mov [__TSS_tarea2 + 0x18], eax      ;Guardo SS2
     jmp no_first
 
 first:

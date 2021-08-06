@@ -19,7 +19,7 @@
 00000000000i[      ]   Sound support: no
 00000000000i[      ]   USB support: UHCI OHCI
 00000000000i[      ]   VGA extension support: vbe
-00000000000i[MEM0  ] allocated memory at 0x7f0cc0f00010. after alignment, vector=0x7f0cc0f01000
+00000000000i[MEM0  ] allocated memory at 0x7f6d4dec1010. after alignment, vector=0x7f6d4dec2000
 00000000000i[MEM0  ] 1024,00MB
 00000000000i[MEM0  ] mem block size = 0x00020000, blocks=8192
 00000000000i[MEM0  ] rom at 0xffff0000/65536 ('./bin/mi_rom.bin')
@@ -29,7 +29,7 @@
 00000000000i[DEV   ] PIIX3 PCI-to-ISA bridge present at device 1, function 0
 00000000000i[PLUGIN] init_dev of 'cmos' plugin device by virtual method
 00000000000i[CMOS  ] Using local time for initial clock
-00000000000i[CMOS  ] Setting initial clock to: Wed Jul 28 17:07:44 2021 (time0=1627517264)
+00000000000i[CMOS  ] Setting initial clock to: Fri Aug  6 14:00:42 2021 (time0=1628283642)
 00000000000i[PLUGIN] init_dev of 'dma' plugin device by virtual method
 00000000000i[DMA   ] channel 4 used by cascade
 00000000000i[PLUGIN] init_dev of 'pic' plugin device by virtual method
@@ -146,25 +146,30 @@
 00000000000i[XGUI  ] charmap update. Font is 9 x 16
 00000000497i[PIDE  ] new BM-DMA address: 0x4000
 00000000664i[UHCI  ] new base address: 0x4020
-00007723900i[XGUI  ] charmap update. Font is 9 x 16
-22929280266i[CPU0  ] CPU is in protected mode (halted)
-22929280266i[CPU0  ] CS.mode = 32 bit
-22929280266i[CPU0  ] SS.mode = 32 bit
-22929280266i[CPU0  ] EFER   = 0x00000000
-22929280266i[CPU0  ] | EAX=00000020  EBX=00001100  ECX=00e80000  EDX=00000008
-22929280266i[CPU0  ] | ESP=1fff8ff7  EBP=1fff8fff  ESI=00e80fa0  EDI=03012000
-22929280266i[CPU0  ] | IOPL=0 id vip vif ac vm rf nt of df IF tf sf zf af PF cf
-22929280266i[CPU0  ] | SEG sltr(index|ti|rpl)     base    limit G D
-22929280266i[CPU0  ] |  CS:0008( 0001| 0|  0) 00000000 ffffffff 1 1
-22929280266i[CPU0  ] |  DS:0010( 0002| 0|  0) 00000000 ffffffff 1 1
-22929280266i[CPU0  ] |  SS:0010( 0002| 0|  0) 00000000 ffffffff 1 1
-22929280266i[CPU0  ] |  ES:0010( 0002| 0|  0) 00000000 ffffffff 1 1
-22929280266i[CPU0  ] |  FS:0010( 0002| 0|  0) 00000000 ffffffff 1 1
-22929280266i[CPU0  ] |  GS:0010( 0002| 0|  0) 00000000 ffffffff 1 1
-22929280266i[CPU0  ] | EIP=01220013 (01220013)
-22929280266i[CPU0  ] | CR0=0xe0000011 CR2=0x00000000
-22929280266i[CPU0  ] | CR3=0x00010000 CR4=0x00000000
-22929280266d[PCI   ] Exit
-22929280266i[CMOS  ] Last time is 1627517722 (Wed Jul 28 17:15:22 2021)
-22929280266i[XGUI  ] Exit
-22929280266i[SIM   ] quit_sim called with exit code 0
+00007667400i[XGUI  ] charmap update. Font is 9 x 16
+00017139800i[CPU0  ] [17139800] Stopped on MAGIC BREAKPOINT
+00018808920i[CPU0  ] [18808920] Stopped on MAGIC BREAKPOINT
+00033832555i[CPU0  ] [33832555] Stopped on MAGIC BREAKPOINT
+00035501716i[CPU0  ] [35501716] Stopped on MAGIC BREAKPOINT
+00050525357i[CPU0  ] [50525357] Stopped on MAGIC BREAKPOINT
+00050525361i[CPU0  ] CPU is in protected mode (active)
+00050525361i[CPU0  ] CS.mode = 32 bit
+00050525361i[CPU0  ] SS.mode = 32 bit
+00050525361i[CPU0  ] EFER   = 0x00000000
+00050525361i[CPU0  ] | EAX=0000f2f1  EBX=00000019  ECX=00000000  EDX=00000107
+00050525361i[CPU0  ] | ESP=1fff5fcb  EBP=00792ff7  ESI=01210000  EDI=01430000
+00050525361i[CPU0  ] | IOPL=0 id vip vif ac vm rf nt of df IF tf sf ZF af PF cf
+00050525361i[CPU0  ] | SEG sltr(index|ti|rpl)     base    limit G D
+00050525361i[CPU0  ] |  CS:0008( 0001| 0|  0) 00000000 ffffffff 1 1
+00050525361i[CPU0  ] |  DS:0023( 0004| 0|  3) 00000000 ffffffff 1 1
+00050525361i[CPU0  ] |  SS:0010( 0002| 0|  0) 00000000 ffffffff 1 1
+00050525361i[CPU0  ] |  ES:0023( 0004| 0|  3) 00000000 ffffffff 1 1
+00050525361i[CPU0  ] |  FS:0023( 0004| 0|  3) 00000000 ffffffff 1 1
+00050525361i[CPU0  ] |  GS:0023( 0004| 0|  3) 00000000 ffffffff 1 1
+00050525361i[CPU0  ] | EIP=001002d7 (001002d7)
+00050525361i[CPU0  ] | CR0=0xe0000011 CR2=0x00000000
+00050525361i[CPU0  ] | CR3=0x02010000 CR4=0x00000000
+00050525361d[PCI   ] Exit
+00050525361i[CMOS  ] Last time is 1628283643 (Fri Aug  6 14:00:43 2021)
+00050525361i[XGUI  ] Exit
+00050525361i[SIM   ] quit_sim called with exit code 0

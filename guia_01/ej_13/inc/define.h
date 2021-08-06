@@ -43,6 +43,7 @@ typedef struct buff
 typedef struct t_datos
 {
     qword tabla[CANT_TABLA];
+    word  indice;
 }t_datos;
 
 typedef struct promedio

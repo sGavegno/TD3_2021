@@ -2,6 +2,10 @@
 
 ;-------------------------------VARIABLES EXTERNAS---------------------------------------
 EXTERN  CS_SEL
+EXTERN DS_no_P
+
+
+EXTERN Mover_Punto
 
 EXTERN Scheduler
 EXTERN tarea_promedio
@@ -27,6 +31,7 @@ EXTERN buffer_Push
 EXTERN buffer_Pop
 EXTERN buffer_Clear
 EXTERN cargar_tabla
+EXTERN borrar_tabla
 
 EXTERN tarea_actual
 
@@ -45,6 +50,11 @@ EXTERN dir_lineal_page_fault
 EXTERN dir_phy_dinamica
 EXTERN __CR3_kernel
 
+
+EXTERN __TSS_tarea3
+EXTERN tarea_3_falla_AC 
+EXTERN IDT_32
+EXTERN escribir_mensaje_VGA
 ;------------------------------VARIABLES GLOBALES-----------------------------------------
 GLOBAL return_Scheduler
 
@@ -142,6 +152,7 @@ L_Handler_XM equ (Handler_XM - OFFSET_HANDLER)
 %define TECLA_X     0x2D
 %define TECLA_Y     0x15
 %define TECLA_Z     0x2C
+%define TECLA_Backspace     0x0E
 
 %define TAREA_0     0
 %define TAREA_1     1
@@ -185,24 +196,27 @@ Handler_Teclado:
 
 	;xchg bx,bx
     xor eax, eax
-    mov eax, [CANTIDAD_TECLAS]
+    mov word eax, [CANTIDAD_TECLAS]
+    cmp eax, 0x10                       ;Tabla completa
+    jae T_ENTER
+
     add eax, 1
     mov [CANTIDAD_TECLAS], eax
-    cmp eax, 0x11                       ;Tabla completa
-    jne detectar_numeros
-
-    mov eax, 0
-    mov [CANTIDAD_TECLAS], eax
-
-    push dword BUFFER_TECLADO
-    push dword PUNTERO_TABLA_DIGITO
-    call cargar_tabla
-    add esp,8
-
-    jmp Teclado_fin
 
 detectar_numeros:
 ;Detecto los numeros
+    cmp bl, TECLA_U
+    je T_U
+
+    cmp bl, TECLA_I
+    je T_I
+
+    cmp bl, TECLA_S
+    je T_S
+
+    cmp bl, TECLA_A
+    je T_A
+
     cmp bl, TECLA_1
     je T_1 
 
@@ -233,9 +247,51 @@ detectar_numeros:
     cmp bl, TECLA_0
     je T_0 
 
+    cmp bl, TECLA_Backspace
+    je T_Backspace 
+
     cmp bl, TECLA_ENTER
     je T_ENTER 
-;
+
+T_U:                    ;Genera #UD
+    ;xchg bx,bx
+    UD2
+    jmp Teclado_fin
+
+T_I:                    ;Genera #DF
+    ;xchg bx, bx
+    mov edi,IDT_32  ; Borro la primer entrada de la IDT #DE
+    mov ecx,0x01      
+    xor eax,eax           
+    rep stosd   
+
+    xor     ebx, ebx        
+    pop     eax
+    div     ebx  
+
+    jmp Teclado_fin
+
+T_S:                    ;Genera #SS
+    ;xchg bx, bx
+    mov ax,DS_no_P
+    mov ss,ax
+    jmp Teclado_fin
+
+T_A:                    ;Genera #AC
+    ;xchg bx, bx
+    xor eax, eax
+    mov eax,cr0
+    or eax, 1 << 18             ; CR0.AC = 1
+    mov cr0,eax
+
+    xor eax, eax
+    mov eax, __TSS_tarea3
+    mov [eax+0x24], dword(0x40202) ;EFLAGS bit 18 Alignment Check en 1
+    mov [eax+0x20], dword(tarea_3_falla_AC) ;EIP     
+    sti
+    
+    jmp Teclado_fin
+
 T_1:
     push 0x01
     push dword BUFFER_TECLADO
@@ -316,8 +372,20 @@ T_0:
 
     jmp Teclado_fin
 
+T_Backspace:
+    xor eax, eax
+    mov  [CANTIDAD_TECLAS], ax
+
+    push dword PUNTERO_TABLA_DIGITO
+    call borrar_tabla
+    add esp,4
+    jmp Teclado_fin
+
 T_ENTER:
 	
+    xor eax, eax
+    mov  [CANTIDAD_TECLAS], ax
+
     push dword BUFFER_TECLADO
     push dword PUNTERO_TABLA_DIGITO
     call cargar_tabla
@@ -435,11 +503,11 @@ sys_print_VGA:
     je print_VGA_qword
 
 print_VGA_byte:
-
+    jmp SYS_CALL_FIN
 print_VGA_word:
-
+    jmp SYS_CALL_FIN
 print_VGA_dword:
-
+    jmp SYS_CALL_FIN
 print_VGA_qword:
     push ecx
     push edx    
@@ -450,16 +518,17 @@ print_VGA_qword:
     jmp SYS_CALL_FIN
 
 sys_hlt:
-
+    
     hlt
     jmp sys_hlt
-;    add esp, 12
+
 SYS_CALL_FIN:
 
     IRET
 
 ;-----------------------------------HANDLER EXCEPCIONES--------------------------------------------
 Handler_DE:
+    xchg bx, bx
     mov dl,0xFF
     hlt
 
@@ -480,6 +549,7 @@ Handler_BR:
     hlt
 
 Handler_UD:
+    xchg bx, bx
     mov dl,0x06
     hlt
 
@@ -498,13 +568,11 @@ Handler_NM:
     jmp fin_Handler_NM
 
 cargar_contexto_Tarea2:
-    mov eax, __MMX_tarea2
-    FXRSTOR [eax]
+    FXRSTOR &__MMX_tarea2
     jmp fin_Handler_NM
 
 cargar_contexto_Tarea3:
-    mov eax, __MMX_tarea3
-    FXRSTOR [eax]
+    FXRSTOR &__MMX_tarea3
     jmp fin_Handler_NM
 
 fin_Handler_NM:
@@ -512,6 +580,7 @@ fin_Handler_NM:
     iret
 
 Handler_DF:
+    xchg bx, bx
     mov dl,0x08
     hlt
 
@@ -524,6 +593,7 @@ Handler_NP:
     hlt
 
 Handler_SS:
+    xchg bx, bx
     mov dl,0x0C
     hlt
 
@@ -553,7 +623,6 @@ xchg bx,bx
 
 pag_no_presente:
 write_access:
-
     ;---------------------------------------------------
     ; -> -----------Guardo VMA de falla y Dir. Fisica en GPRs
     ;----------para poder re-paginar con la paginacion apagada-----------------
@@ -591,9 +660,8 @@ write_access:
 ;   INVLPG [dir_lineal_page_fault]
 
 end_handler_PF:
-    popad                       ; Tomo valores de registros guardados.
+    popad                       
     pop eax
-;xchg bx,bx
     sti                         ; Habilito interrupciones.
     IRET
 
@@ -602,6 +670,7 @@ Handler_MF:
     hlt
 
 Handler_AC:
+    xchg bx, bx
     mov dl,0x11
     hlt
 

@@ -33,6 +33,7 @@ GLOBAL DS_SEL
 GLOBAL CS_SEL_11
 GLOBAL DS_SEL_11
 GLOBAL TSS_SEL
+GLOBAL DS_no_P
 GLOBAL _gdtr32
 GLOBAL _idtr32
 
@@ -48,7 +49,7 @@ GLOBAL __TSS_tarea2
 GLOBAL __TSS_tarea3
 GLOBAL __TSS_tarea0
 
-
+GLOBAL IDT_32
 ;-------------------------------------SECTION-------------------------------------------
 
 SECTION .sys_tables
@@ -95,6 +96,14 @@ TSS_SEL equ $-GDT_32          ;Base 0x00001000 Limite 0x00000067
     db  10001001b                       ;P=1 / DPL=00 / bit3=1 / B=0 / bit0 = 1
     db  00000000b                       ;G=0 / Limite(bits 19:16)
     db  0                               ;Base del segmento(bits 31-24)    
+
+DS_no_P equ $-GDT_32          ;segmento no presente, solo se usa para generar la falla
+    dw  0xFFFF                          
+    dw  0                               
+    db  0                               
+    db  0x12                            
+    db  0xCF                            
+    db  0x00                             
 
 GDT_SIZE_32 equ $-GDT_32
 

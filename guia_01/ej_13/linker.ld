@@ -10,6 +10,7 @@ ENTRY (reset)
     __CR3_tarea3            = 0x03010000;
 
     __TSS_kernel            = 0x00001000;
+/*
     __TSS_tarea0            = 0x00001100;
     __TSS_tarea1            = 0x00001200;
     __TSS_tarea2            = 0x00001300;
@@ -17,6 +18,13 @@ ENTRY (reset)
 
     __MMX_tarea2            = 0x00001500;
     __MMX_tarea3            = 0x00001600;
+*/
+    __TSS_tarea0            = 0x00002000;
+    __TSS_tarea1            = 0x00003000;
+    __TSS_tarea2            = 0x00004000;
+    __MMX_tarea2            = 0x00004100;
+    __TSS_tarea3            = 0x00005000;
+    __MMX_tarea3            = 0x00005100;
 
    /*--------------Direccion Fisica-----------------*/
     __SYS_TABLES_FIS        = 0x00000000;

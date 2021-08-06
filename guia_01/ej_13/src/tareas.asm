@@ -36,6 +36,7 @@ GLOBAL SUMA2_TABLA_DIGITOS
 GLOBAL SUMA3_TABLA_DIGITOS
 
 
+GLOBAL tarea_3_falla_AC
 ;--------------------------------DEFINE------------------------------------------
 
 
@@ -150,6 +151,15 @@ tarea_3_end:
     mov eax, SYS_H                 ;system call de halted
     int 0x80
     jmp tarea_3
+
+
+tarea_3_falla_AC:       ;Solo se usa para generar la falla de AC
+    
+    mov dword[0x01530007],0xF 
+
+    mov eax, SYS_H                 ;system call de halted
+    int 0x80
+    jmp tarea_3_falla_AC
 
 ;-------------------------------------TAREA 4-------------------------------------------
 section .bss_tarea0

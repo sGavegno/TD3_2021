@@ -623,6 +623,42 @@ habilitar_paginacion:
     call carga_paginacion_ROM
     add esp,20
 
+;Tablas de sistema TSS de la tarea
+    push 0x03                               ;Atributo tabla de pagina
+    push 0x03                               ;Atributo descriptor de pagina
+    push __TSS_tarea0                       ;Direccion Fisica
+    push __TSS_tarea0                       ;Direccion Lineal
+    push __CR3_kernel                       
+    call carga_paginacion_ROM
+    add esp,20
+
+;Tablas de sistema TSS de la tarea
+    push 0x03                               ;Atributo tabla de pagina
+    push 0x03                               ;Atributo descriptor de pagina
+    push __TSS_tarea1                       ;Direccion Fisica
+    push __TSS_tarea1                       ;Direccion Lineal
+    push __CR3_kernel                       
+    call carga_paginacion_ROM
+    add esp,20
+
+;Tablas de sistema TSS de la tarea
+    push 0x03                               ;Atributo tabla de pagina
+    push 0x03                               ;Atributo descriptor de pagina
+    push __TSS_tarea2                       ;Direccion Fisica
+    push __TSS_tarea2                       ;Direccion Lineal
+    push __CR3_kernel                       
+    call carga_paginacion_ROM
+    add esp,20
+
+;Tablas de sistema TSS de la tarea
+    push 0x03                               ;Atributo tabla de pagina
+    push 0x03                               ;Atributo descriptor de pagina
+    push __TSS_tarea3                       ;Direccion Fisica
+    push __TSS_tarea3                       ;Direccion Lineal
+    push __CR3_kernel                       
+    call carga_paginacion_ROM
+    add esp,20
+
 ;Tablas de Paginación
     push 0x03                             
     push 0x03
@@ -720,6 +756,15 @@ habilitar_paginacion:
     call carga_paginacion_ROM
     add esp,20
 
+;Tablas de sistema TSS de la tarea
+    push 0x03                               ;Atributo tabla de pagina
+    push 0x03                               ;Atributo descriptor de pagina
+    push __TSS_tarea1                       ;Direccion Fisica
+    push __TSS_tarea1                       ;Direccion Lineal
+    push __CR3_tarea1                       
+    call carga_paginacion_ROM
+    add esp,20
+
 ;Video                                          
     push 0x03
     push 0x03
@@ -758,7 +803,7 @@ habilitar_paginacion:
 
 ;TEXT Tarea 1
     push 0x05
-    push 0x05
+    push 0x03
     push __TEXT_TAREA1_FIS
     push __TEXT_TAREA1_LIN
     push __CR3_tarea1           
@@ -767,7 +812,7 @@ habilitar_paginacion:
 
 ;RODATA Tarea 1
     push 0x05
-    push 0x05
+    push 0x03
     push __RODATA_TAREA1_FIS
     push __RODATA_TAREA1_LIN
     push __CR3_tarea1           
@@ -864,6 +909,15 @@ habilitar_paginacion:
     call carga_paginacion_ROM
     add esp,20
 
+;Tablas de sistema TSS de la tarea 2
+    push 0x03                               ;Atributo tabla de pagina
+    push 0x03                               ;Atributo descriptor de pagina
+    push __TSS_tarea2                       ;Direccion Fisica
+    push __TSS_tarea2                       ;Direccion Lineal
+    push __CR3_tarea2                       
+    call carga_paginacion_ROM
+    add esp,20
+
 ;Tablas de Paginación
     push 0x03
     push 0x03
@@ -911,7 +965,7 @@ habilitar_paginacion:
 
 ;TEXT Tarea 2
     push 0x05
-    push 0x05
+    push 0x03
     push __TEXT_TAREA2_FIS
     push __TEXT_TAREA2_LIN
     push __CR3_tarea2           
@@ -920,7 +974,7 @@ habilitar_paginacion:
 
 ;RODATA Tarea 2
     push 0x05
-    push 0x05
+    push 0x03
     push __RODATA_TAREA2_FIS
     push __RODATA_TAREA2_LIN
     push __CR3_tarea2           
@@ -1009,6 +1063,15 @@ habilitar_paginacion:
     call carga_paginacion_ROM
     add esp,20
 
+;Tablas de sistema TSS de la tarea
+    push 0x03                               ;Atributo tabla de pagina
+    push 0x03                               ;Atributo descriptor de pagina
+    push __TSS_tarea3                       ;Direccion Fisica
+    push __TSS_tarea3                       ;Direccion Lineal
+    push __CR3_tarea3                       
+    call carga_paginacion_ROM
+    add esp,20
+
 ;Tablas de Paginación
     push 0x03
     push 0x03
@@ -1047,7 +1110,7 @@ habilitar_paginacion:
 
 ;TEXT Tarea 3
     push 0x05
-    push 0x05
+    push 0x03
     push __TEXT_TAREA3_FIS
     push __TEXT_TAREA3_LIN
     push __CR3_tarea3           
@@ -1056,7 +1119,7 @@ habilitar_paginacion:
 
 ;RODATA Tarea 3
     push 0x05
-    push 0x05
+    push 0x03
     push __RODATA_TAREA3_FIS
     push __RODATA_TAREA3_LIN
     push __CR3_tarea3           

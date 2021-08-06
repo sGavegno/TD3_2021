@@ -10,7 +10,7 @@ byte buffer_Pop(buff*);
 void buffer_Clear(buff*);
 
 void cargar_tabla(t_datos* ,buff*);
-
+void borrar_tabla(t_datos*);
 //------------------VGA---------------------
 void escribir_mensaje_VGA (char* , byte , byte , byte );
 void escribir_caracter_VGA (char , byte , byte , byte );
