@@ -58,7 +58,7 @@ inicio:
     mov eax,cr0	                        ;copio el contenido del registro de control 0 a eax
     or  eax,1	                        ;pongo el bit 0 a 1
     mov cr0,eax	                        ;pongo el valor de eax en cr0 (activo modo protegido)
-    ;xchg bx,bx                          ;magic beackpoin
+                              ;magic beackpoin
 
 
     jmp dword CS_SEL_16:modo_prot + DIR_LINEAL_ROM

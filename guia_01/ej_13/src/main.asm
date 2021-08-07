@@ -28,7 +28,7 @@ kernel_init:
     
     call borrar_pantalla
 
-    ; -> Escribo la pantalla con mensaje fijo.
+    ;Escribo la pantalla con mensaje fijo.
     push __VIDEO_LIN
     call msg_bienvenida_VGA                     
     add esp,4

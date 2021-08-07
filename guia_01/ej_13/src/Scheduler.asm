@@ -161,8 +161,7 @@ guardar_tarea0:
 
     mov eax, cr3                        ;Guardo CR3
     mov [__TSS_tarea0 + 0x1C], eax
-;xchg bx,bx
-;mov eax, 0
+
     ;Registros del Stack
     pop eax                             ;al hacer el pop vacio la pila para que no cresca por siempre
 ;    mov eax, [esp]                     ;Guardo EIP
@@ -179,9 +178,9 @@ guardar_tarea0:
     jne first
 
     pop eax                       
-    mov [__TSS_tarea2 + 0x14], eax      ;Guardo ESP2
+    mov [__TSS_tarea0 + 0x14], eax      ;Guardo ESP2
     pop eax                       
-    mov [__TSS_tarea2 + 0x18], eax      ;Guardo SS2
+    mov [__TSS_tarea0 + 0x18], eax      ;Guardo SS2
     jmp no_first
 
 first:
@@ -216,8 +215,7 @@ guardar_tarea1:
 
     mov eax, cr3                        ;Guardo CR3
     mov [__TSS_tarea1 + 0x1C], eax
-;xchg bx,bx
-;mov eax, 1
+
     ;Registros del Stack
     add esp, 12                         ;sumo 12 porque tengo guardados el EIP, CS y EFLAGS del SYSCALL
     pop eax                             ;al hacer el pop vacio la pila para que no cresca por siempre
@@ -261,8 +259,7 @@ guardar_tarea2:
 
     mov eax, cr3                        ;Guardo CR3
     mov [__TSS_tarea2 + 0x1C], eax
-;xchg bx,bx
-;mov eax, 2
+
     ;Registros del Stack
     add esp, 12                         ;sumo 12 porque tengo guardados el EIP, CS y EFLAGS del SYSCALL
     pop eax                             ;al hacer el pop vacio la pila para que no cresca por siempre
@@ -308,8 +305,7 @@ guardar_tarea3:
 
     mov eax, cr3                        ;Guardo CR3
     mov [__TSS_tarea3 + 0x1C], eax
-;xchg bx,bx
-;mov eax, 3
+
     ;Registros del Stack                ;sumo 12 porque tengo guardados el EIP, CS y EFLAGS del SYSCALL
     add esp, 12                         ;al hacer el pop vacio la pila para que no cresca por siempre 
     pop eax                             ;Guardo EIP               
@@ -351,7 +347,6 @@ return_cargar_tarea3:
     jmp return_cargar_contexto
 
 cargar_tarea0:
-;xchg bx,bx
     mov byte [tarea_actual], TAREA_0
 ;cambiar CR3 para que apunte a la tabla de paginacion de la tarea_x
     mov eax,__CR3_tarea0
@@ -408,9 +403,6 @@ cargar_tarea0:
     jmp return_cargar_tarea0
 
 cargar_tarea1:
-;xchg bx,bx
-;mov eax, 1
-
     mov byte [tarea_actual], TAREA_1
 ;cambiar CR3 para que apunte a la tabla de paginacion de la tarea_x
     mov eax,__CR3_tarea1
@@ -467,8 +459,6 @@ cargar_tarea1:
     jmp return_cargar_tarea1
 
 cargar_tarea2:
-;xchg bx,bx
-;mov eax, 2
     mov byte [tarea_actual], TAREA_2
 ;cambiar CR3 para que apunte a la tabla de paginacion de la tarea_x
     mov eax,__CR3_tarea2
@@ -530,8 +520,6 @@ cargar_tarea2:
     jmp return_cargar_tarea2
     
 cargar_tarea3:
-;xchg bx,bx
-;mov eax, 3
     mov byte [tarea_actual], TAREA_3
 ;cambiar CR3 para que apunte a la tabla de paginacion de la tarea_x
     mov eax,__CR3_tarea3

@@ -4,11 +4,8 @@
 
 __attribute__(( section(".text_tarea1"))) void ejecutar_tarea_1(void)
 {
-
-	calcular_Promedio(&PUNTERO_TABLA_DIGITO, &PROMEDIO_TABLA_DIGITOS);
- 
-	//escribir_Nro64_VGA(&__VIDEO_LIN, &PROMEDIO_TABLA_DIGITOS, 0, 64);
-
+	//calcular_Promedio(&PUNTERO_TABLA_DIGITO, &PROMEDIO_TABLA_DIGITOS);
+	calcular_Promedio(&PUNTERO_TABLA_DIGITO_T1, &PROMEDIO_TABLA_DIGITOS);
 }
 
 __attribute__(( section(".text_tarea1"))) void calcular_Promedio(t_datos* table_p, promedio* prom_p)

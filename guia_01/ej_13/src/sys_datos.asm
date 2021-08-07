@@ -38,8 +38,8 @@ USE32
 
 section .tables_digito
 
-PUNTERO_TABLA_DIGITO resb 8*25   ;mi tabla puede cargar hasta 25 numeros de 64bits
-
+PUNTERO_TABLA_DIGITO resb 8*25 + 2  ;mi tabla puede cargar hasta 25 numeros de 64bits 
+                                    ;+ 2 por el indice de tamaño word
 ;-------------------------------VARIABLES inicializadas---------------------------------------
 section .datos         
 

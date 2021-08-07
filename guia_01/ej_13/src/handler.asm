@@ -49,7 +49,7 @@ EXTERN error_code_PF
 EXTERN dir_lineal_page_fault
 EXTERN dir_phy_dinamica
 EXTERN __CR3_kernel
-
+EXTERN __CR3_tarea3
 
 EXTERN __TSS_tarea3
 EXTERN tarea_3_falla_AC 
@@ -60,6 +60,7 @@ GLOBAL return_Scheduler
 
 GLOBAL SYS_H
 GLOBAL SYS_R
+GLOBAL SYS_C
 GLOBAL SYS_P
 GLOBAL SYS_P_VGA
 
@@ -162,8 +163,9 @@ L_Handler_XM equ (Handler_XM - OFFSET_HANDLER)
 
 SYS_H       EQU     0
 SYS_R       EQU     1
-SYS_P       EQU     2
-SYS_P_VGA   EQU     3
+SYS_C       EQU     2
+SYS_P       EQU     3
+SYS_P_VGA   EQU     4
 ;-------------------------------------SECTION-----------------------------------------------------
 USE32
 
@@ -176,7 +178,6 @@ Handler_Timer:
     MOV al, 0x20                        ;Envío End of Interrupt al PIC.
     OUT 0x20, al
 
-    ;xchg bx,bx	
     jmp Scheduler
 return_Scheduler:
 
@@ -194,7 +195,7 @@ Handler_Teclado:
     AND al, al
     JS Teclado_fin                      ;Si se suelta al tecla no hago nada
 
-	;xchg bx,bx
+	
     xor eax, eax
     mov word eax, [CANTIDAD_TECLAS]
     cmp eax, 0x10                       ;Tabla completa
@@ -254,42 +255,45 @@ detectar_numeros:
     je T_ENTER 
 
 T_U:                    ;Genera #UD
-    ;xchg bx,bx
+    
     UD2
     jmp Teclado_fin
 
 T_I:                    ;Genera #DF
-    ;xchg bx, bx
+
     mov edi,IDT_32  ; Borro la primer entrada de la IDT #DE
     mov ecx,0x01      
     xor eax,eax           
     rep stosd   
 
     xor     ebx, ebx        
-    pop     eax
+;    pop     eax
     div     ebx  
 
     jmp Teclado_fin
 
 T_S:                    ;Genera #SS
-    ;xchg bx, bx
     mov ax,DS_no_P
     mov ss,ax
     jmp Teclado_fin
 
 T_A:                    ;Genera #AC
-    ;xchg bx, bx
     xor eax, eax
     mov eax,cr0
     or eax, 1 << 18             ; CR0.AC = 1
     mov cr0,eax
 
+    mov ebx, cr3                ;cambio el CR3 para poder cargar la TSS de la tarea 3
+    mov eax, __CR3_tarea3
+    mov cr3, eax
+
     xor eax, eax
     mov eax, __TSS_tarea3
     mov [eax+0x24], dword(0x40202) ;EFLAGS bit 18 Alignment Check en 1
     mov [eax+0x20], dword(tarea_3_falla_AC) ;EIP     
-    sti
     
+    mov cr3, ebx                ;Recupero CR3
+
     jmp Teclado_fin
 
 T_1:
@@ -398,16 +402,16 @@ Teclado_fin:
     OUT 0x20, al
     POPAD                               ;Restauro registros de uso general.
     IRET                                ;Fin de la interrupción.
-
-Handler_Teclado_END:
     
-
+;En eax se fuarda el flag para que la syscall sepa que debe hacer
 SYS_CALL:
-
     sti
 
     cmp eax, SYS_R
     je sys_read
+
+    cmp eax, SYS_C
+    je sys_copy
 
     cmp eax, SYS_P
     je sys_print
@@ -418,8 +422,11 @@ SYS_CALL:
     cmp eax, SYS_H
     je sys_hlt
 
+;parametros de sys_read
+;ebx indica el tamaño a leer
+;esi indica el lugar de memoria a leer
+;edx:eax registros donde se guarda el contenido leido
 sys_read:
-
     cmp ebx, 1 
     je read_byte
 
@@ -449,10 +456,32 @@ read_dword:
 
 ;64bits
 read_qword:
+    xor edx, edx
+    xor eax, eax
     mov dword eax, [esi]
     mov dword edx, [esi + 4]            ;parte alta 
     jmp SYS_CALL_FIN
 
+;parametros de sys_copy
+;ebx indica el tamaño a leer ( no se implemento)
+;esi indica el lugar de memoria a leer
+;edi indica el lugar de memoria a escribir
+;ecx indica la cantidad de memoria que se copia
+sys_copy:
+copia:
+    mov eax, [esi]
+    mov edx, [esi+4]
+    mov [edi], eax
+    mov [edi+4], edx
+    add esi, 8
+    add edi, 8
+    loop copia
+    jmp SYS_CALL_FIN
+
+;parametros de sys_print
+;ebx indica el tamaño a escribir
+;edi indica el lugar de memoria a escribir
+;edx:ecx contiene lo que se quiere escribir 
 sys_print:
 
     cmp ebx, 1 
@@ -488,6 +517,12 @@ print_qword:
     mov dword [edi + 4], edx            ;parte alta 
     jmp SYS_CALL_FIN
 
+;parametros de sys_print_VGA
+;ebx indica el tamaño a imprimir en pantalla (se implemento solo el qword)
+;esi indica la direccion fuente
+;edi indica la direccion destino
+;edx indica la fila
+;ecx indica la columna
 sys_print_VGA:
 
     cmp ebx, 1
@@ -518,12 +553,10 @@ print_VGA_qword:
     jmp SYS_CALL_FIN
 
 sys_hlt:
-    
     hlt
     jmp sys_hlt
 
 SYS_CALL_FIN:
-
     IRET
 
 ;-----------------------------------HANDLER EXCEPCIONES--------------------------------------------

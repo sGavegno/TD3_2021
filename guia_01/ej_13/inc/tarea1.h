@@ -3,6 +3,7 @@
 #include "../inc/define.h"
 
 /* ---------------EXTERN---------------------------- */
+extern long unsigned PUNTERO_TABLA_DIGITO_T1;
 
 //-----tarea 1------
 extern long unsigned PROMEDIO_TABLA_DIGITOS;
