@@ -1,15 +1,26 @@
-CC = gcc
-OFLAGS = -o
-CFLAGS = -c
-OUTPUT = ejecutable.exe
-SOURCE = ej2_2
+SCRPATH = ./scr
+OBJPATH = ./obj
 
-all:
-	$(CC) $(SOURCE).c $(CFLAGS)
-	$(CC) $(SOURCE).o $(OFLAGS) $(OUTPUT)	
+CC = gcc
+OFLAGS = -lm -o   
+CFLAGS = -c -Wall
+OUTPUT = ejecutable.exe
+SOURCE = funciones.c main.c
+OBJETO = main.o funciones.o 
+
+
+all: $(OBJETO) 
+	$(CC) $(OBJETO) $(OFLAGS) $(OUTPUT)	
+
+funciones.o: $(SCRPATH)/funciones.c
+	$(CC) $< $(CFLAGS)
+
+main.o: $(SCRPATH)/main.c
+	$(CC) $< $(CFLAGS)
 
 run:	
 	./$(OUTPUT) $(arg)
+
 clean:
 
 	rm *.o *.exe
