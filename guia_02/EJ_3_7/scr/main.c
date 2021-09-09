@@ -10,6 +10,9 @@ int pid;
 int i;
 
 	signal(SIGCHLD, SIGCHLD_handler);
+	signal(SIGTERM, SIGTERM_handler);
+	signal(SIGUSR1, SIGUSR1_handler);
+	signal(SIGINT, SIGINT_handler);
 
 	for(i=0;i<10;i++) 
     {
@@ -21,10 +24,8 @@ int i;
 			printf("Proceso hijo ID=%d y mi padre es %d\n\rVariable = %d\r\n", getpid(), getppid(),var);
 						
 			sleep(5);
-			//exit(0);
-			kill(getpid(), SIGKILL);
-			//kill(getpid(),SIGCHLD);
-			
+			exit(0);
+			//kill(getpid(), SIGKILL);			
         }
 		else if(pid < 0)
 		{
@@ -38,7 +39,7 @@ int i;
 		printf("Proceso padre ID = %d, Variable = %d \n\r", getpid(), var);
 		
 		sleep(20);
-		//kill(getppid(),SIGCHLD);
+		printf("Muere el padre ID = %d\n\r", getpid());
 	}
 
 	return(0);
