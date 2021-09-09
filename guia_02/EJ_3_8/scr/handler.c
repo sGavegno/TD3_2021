@@ -18,10 +18,10 @@ void SIGTERM_handler(int sig)
 
 void SIGUSR1_handler(int sig)
 {
-int pid;
+int pid,i;
 static int cantPid=0;
 
-    if(cantPid < 10)
+    if(cantPid < 5)
     {
         pid = fork();
         cantPid++;
@@ -29,14 +29,20 @@ static int cantPid=0;
     if(pid == 0)
     {
 		//Código del hijo
-		printf("Proceso hijo ID=%d\r\n", getpid());
-				
-		sleep(5);
-		exit(0);		
+
+        for(i=0; i < 5; i++)
+        {
+            printf("Proceso hijo ID=%d, mi parde es ID=%d, var=%d\r\n", getpid(), getppid(),i);
+            sleep(5);
+        }
+
+        kill(getpid(), SIGKILL);
+		//exit(0);		
     }
 }
 
 void SIGINT_handler(int sig)
 {
     printf("Soy inmortal %d\r\n", getpid());
+    sleep(1);
 }

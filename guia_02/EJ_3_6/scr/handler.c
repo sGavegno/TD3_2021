@@ -32,6 +32,4 @@ static int cantPid=0;
 		sleep(60);
 		exit(0);		
     }
-
-
 }

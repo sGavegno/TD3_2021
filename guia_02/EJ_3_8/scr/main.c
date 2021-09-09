@@ -31,8 +31,7 @@ int i;
     //Código del padre
 	printf("Proceso padre ID = %d, Variable = %d \n\r", getpid(), var);
 		
-	//sleep(30);
-	wait(NULL);
+	sleep(30);
 	printf("Muere el padre ID = %d\n\r", getpid());
 
 	return(0);
