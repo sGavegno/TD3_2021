@@ -1,11 +1,11 @@
-SCRPATH = ./scr
+SCRPATH = ./src
 OBJPATH = ./obj
 
 CC = gcc
 OFLAGS = -lm -o   
 CFLAGS = -c -Wall
 OUTPUT = ejecutable.exe
-OBJETO = main.o handler.o
+OBJETO = main.o handler.o init.o
 
 
 all: $(OBJETO) 
@@ -17,8 +17,10 @@ main.o: $(SCRPATH)/main.c
 handler.o: $(SCRPATH)/handler.c
 	$(CC) $< $(CFLAGS)
 
+init.o: $(SCRPATH)/init.c
+	$(CC) $< $(CFLAGS)
 run:	
-	./$(OUTPUT)
+	./$(OUTPUT) $(arg)
 
 clean:
 

@@ -1,39 +1,37 @@
 
-#include "../inc/define.h"
+//#include "../inc/define.h"
 #include "../inc/handler.h"
-
+#include "../inc/init.h"
 
 //-- Variables Globales --
 int pid;
+int var = 0;
 
 //-- MAIN --
 int main (int argc, char *argv[]) 
 {
-int var = 0;
 int i;
-int CANTCHLD;
+int CANTCHLD = 0;
+
+	init_signal();
 
 	if(argc > 1)
 	{
 		CANTCHLD = (int)*argv[1] - '0'; 
 	}
 
-	signal(SIGCHLD, SIGCHLD_handler);
-	signal(SIGTERM, SIGTERM_handler);
-	signal(SIGUSR1, SIGUSR1_handler);
-	signal(SIGINT, SIGINT_handler);
-
-	for(i=0;i<10;i++) 
+	for(i = 0; i < CANTCHLD; i++) 
     {
-		kill(getpid(), SIGUSR1);
+		pid = fork();
 
-		if(pid == 0)
+    	if(pid == 0)
     	{
 			//Código del hijo
-        	for(i=0; i < 5; i++)
+        	for(i=0; i < cantVar; i++)
        		{
-            	printf("Proceso hijo ID=%d, mi parde es ID=%d, var=%d\r\n", getpid(), getppid(),i);
-            	sleep(5);
+            	printf("Proceso hijo ID=%d, mi parde es ID=%d, mi grupo ID=%d, var=%d\r\n", getpid(), getppid(), getpgrp(),var);
+            	kill(getpid(), SIGUSR1);
+				sleep(10);
         	}
         	kill(getpid(), SIGKILL);
 			//exit(0);		
@@ -43,7 +41,8 @@ int CANTCHLD;
     //Código del padre
 	printf("Proceso padre ID = %d, Variable = %d \n\r", getpid(), var);
 		
-	sleep(360);
+	wait(NULL);
+	
 	printf("Muere el padre ID = %d\n\r", getpid());
 
 	return(0);

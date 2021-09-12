@@ -5,3 +5,5 @@
 #include <sys/wait.h>
 #include <sys/types.h>
 
+#define cantVar     5
+
