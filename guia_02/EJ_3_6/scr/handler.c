@@ -28,7 +28,7 @@ static int cantPid=0;
     {
 		//Código del hijo
 		printf("Proceso hijo ID=%d\r\n", getpid());
-				
+		
 		sleep(60);
 		exit(0);		
     }
