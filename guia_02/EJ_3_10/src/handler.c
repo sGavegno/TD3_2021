@@ -6,11 +6,8 @@
 int FLAG_KILL_PADRE = 0;
 
 int pid = 1;
-int var = 0, varP = 0;
 int cantchld = 0;
 
-int idchld[MAXCHLD];
-FILE *pFile;				//--Puntero al archivo --
 
 void SIGCHLD_handler(int sig)
 {
@@ -35,7 +32,7 @@ void SIGUSR1_handler(int sig)
 	if(pid == 0)
     {
 		//Código del hijo
-        var++;
+
     }
 	else if(pid > 0)
 	{

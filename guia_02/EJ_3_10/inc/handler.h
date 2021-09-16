@@ -3,9 +3,8 @@
 
 
 extern int pid;
-extern int var, varP;
 extern int cantchld;
-extern int idchld[];
+extern int idchld[MAXCHLD];
 extern char exitwhile;
 extern int FLAG_KILL_PADRE;
 extern int FLAG_CLOSE;

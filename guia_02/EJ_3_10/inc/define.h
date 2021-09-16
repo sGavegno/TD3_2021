@@ -8,4 +8,4 @@
 #include <sys/types.h>
 
 #define cantVar     2
-#define MAXCHLD    5
+#define MAXCHLD    2
