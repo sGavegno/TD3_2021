@@ -67,7 +67,7 @@ int main(int argc, char *argv[])
 			{
 				exitwhile = 0;
 			}
-			sleep(10);
+			sleep(5);
 
 			break;
 
@@ -81,7 +81,7 @@ int main(int argc, char *argv[])
 			write(pipebuff[1], &sizebufHijo, 1);  /* ENVIO LONGITUD DEL BUFFER */
 			write(pipebuff[1], buf, sizebufHijo); /* ENVIO BUFFER */
 			//printf("Proceso hijo ID=%d, mi padre es ID=%d, mi grupo ID=%d, var=%d\r\n", getpid(), getppid(), getpgrp(),var);
-			sleep(10);
+			//sleep(5);
 
 			break;
 
