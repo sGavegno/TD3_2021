@@ -8,6 +8,9 @@ extern int pid2;
 extern int FLAG_SIG1;
 extern int FLAG_SIG2;
 
+extern int FLAG_CHILD_READ;
+
+
 //-------------Variables Globales-------------
 int FLAG_KILL_PADRE = 0;
 
@@ -35,10 +38,11 @@ void SIGUSR1_handler(int sig)
     {
         //codigo del hijo1
         printf("Hijo ID=%d SIGUSR1\r\n", getpid());
+        FLAG_CHILD_READ = 1;
     }
     else
     {
-        printf("envio señal al hijo %d SIGUSR1 ID=%d\r\n", pid2, getpid());
+        printf("Envio señal al hijo %d SIGUSR1 Padre ID=%d\r\n", pid2, getpid());
         FLAG_SIG1 = 1;
     }
 
@@ -51,13 +55,13 @@ void SIGUSR2_handler(int sig)
     {
         //codigo del hijo2
         printf("Hijo ID=%d SIGUSR2\r\n", getpid());
+        FLAG_CHILD_READ = 1;
     }
     else
     {
-        printf("envio señal al hijo %d SIGUSR2 ID=%d\r\n", pid2, getpid());
+        printf("Envio señal al hijo %d SIGUSR2 Padre ID=%d\r\n", pid2, getpid());
         FLAG_SIG2 = 1;
     }
-
 }
 
 void SIGINT_handler(int sig)
