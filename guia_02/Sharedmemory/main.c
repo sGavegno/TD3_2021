@@ -21,6 +21,20 @@ union semun
 struct sembuf p = {0, -1, SEM_UNDO}; // Estructura para tomar el semáforo
 struct sembuf v = {0, +1, SEM_UNDO}; // Estructura para liberar el semáforo
 
+void SIGCHLD_handler(int sig)
+{
+pid_t deadchild = 1;
+    while (deadchild > 0)
+    {
+        deadchild = waitpid(-1, NULL, WNOHANG);
+        if(deadchild > 0)
+        {
+            printf("Murio el hijo ID=%d\r\n", deadchild);
+        }
+    }
+}
+
+
 int main()
 {
     void *addr = (void *)0;
@@ -44,6 +58,8 @@ int main()
     }
 
     addr = shmat(shmid, NULL, 0); //addr apunta a la memoria compartida
+
+    signal(SIGCHLD, SIGCHLD_handler);
 
     pid = fork();
 
@@ -72,8 +88,8 @@ int main()
             }
             printf("\nIngrese string:\n");
 
-            gets(addr+i);
-
+            gets(addr);
+            
             //printf("writing to segment: \"%s\"\n", argv[1]);
             //strncpy(addr, argv[1], SHM_SIZE);
 
@@ -106,6 +122,7 @@ int main()
             sleep(rand() % 2);
         }
         shmdt(addr); //Separo la memoria del proceso
+        exit(0);
     }
 
     wait(NULL);
