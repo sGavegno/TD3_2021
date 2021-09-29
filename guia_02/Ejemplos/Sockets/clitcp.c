@@ -42,7 +42,7 @@ int main(int argc, char *argv[])
           perror("Error en connect");
           exit(1);
         }
-    
+
         // Envia el mensaje
         send(s, argv[3], strlen(argv[3])+1, 0);
         printf("\n\n->Enviando: %s, a: %s en el puerto: %s \n",argv[3], argv[1], argv[2]);

@@ -97,6 +97,7 @@ int main(int argc, char *argv[])
       close(s);
       exit(1);
     }
+
     if (pid == 0)
     {       // Proceso hijo.
       ProcesarCliente(s_aux, &datosCliente, atoi(argv[1]));

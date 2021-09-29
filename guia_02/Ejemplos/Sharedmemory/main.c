@@ -58,17 +58,15 @@ int main()
     }
 
     addr = shmat(shmid, NULL, 0); //addr apunta a la memoria compartida
-
-    signal(SIGCHLD, SIGCHLD_handler);
-
-    pid = fork();
-
     if (addr == (char *)(-1))
     {
         perror("shmat");
         exit(1);
     }
+    
+    signal(SIGCHLD, SIGCHLD_handler);
 
+    pid = fork();
     srand(pid); // Inicializa generador de numeros random. Podria haberle pasado cualquier número.
     if (pid < 0)
     {
