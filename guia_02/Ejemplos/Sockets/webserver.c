@@ -108,8 +108,7 @@ int main(int argc, char *argv[])
   }
 }
 
-void ProcesarCliente(int s_aux, struct sockaddr_in *pDireccionCliente,
-                     int puerto)
+void ProcesarCliente(int s_aux, struct sockaddr_in *pDireccionCliente, int puerto)
 {
   char bufferComunic[4096];
   char ipAddr[20];
@@ -128,8 +127,7 @@ void ProcesarCliente(int s_aux, struct sockaddr_in *pDireccionCliente,
     perror("Error en recv");
     exit(1);
   }
-  printf("* Recibido del navegador Web %s:%d:\n%s\n",
-         ipAddr, Port, bufferComunic);
+  printf("* Recibido del navegador Web %s:%d:\n%s\n", ipAddr, Port, bufferComunic);
   
   // Obtener la temperatura desde la ruta.
   if (memcmp(bufferComunic, "GET /", 5) == 0)
@@ -168,8 +166,7 @@ void ProcesarCliente(int s_aux, struct sockaddr_in *pDireccionCliente,
           "Connection: Closed\n\n%s",
           strlen(HTML), HTML);
 
-  printf("* Enviado al navegador Web %s:%d:\n%s\n",
-         ipAddr, Port, bufferComunic);
+  printf("* Enviado al navegador Web %s:%d:\n%s\n", ipAddr, Port, bufferComunic);
   
   // Envia el mensaje al cliente
   if (send(s_aux, bufferComunic, strlen(bufferComunic), 0) == -1)

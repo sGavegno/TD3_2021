@@ -20,16 +20,10 @@
 #include <sys/select.h>
 #include <sys/sendfile.h>
 
-#define MAX_CONN 10 //Nro maximo de conexiones en espera
-
 // Define SHARED MEMORY
 #define SHARED_SIZE             4096
 
 #define KEY 0x1111
-
-
-struct sembuf p = {0, -1, SEM_UNDO}; // Estructura para tomar el semáforo
-struct sembuf v = {0, +1, SEM_UNDO}; // Estructura para liberar el semáforo
 
 union semun
 {
@@ -48,6 +42,19 @@ struct MPU6050_REGS
     uint16_t gyro_yout;
     uint16_t gyro_zout;
 };
+
+struct confServer {
+    int conexiones_actuales;    // en configuracion.cfg = a
+    int backlog;                // en configuracion.cfg = b
+    int conexiones_max;         // en configuracion.cfg = c
+    int muestreo;               // en configuracion.cfg = m
+    //int X_HardOffset;           // en configuracion.cfg = x
+    //int Y_HardOffset;           // en configuracion.cfg = y
+    //float sensor_period;        // en configuracion.cfg = f 
+};
+
+
+void ProcesarCliente(int s_aux, struct sockaddr_in *pDireccionCliente, int puerto);
 
 // Signal handlers.
 void SIGINT_handler(int signbr);

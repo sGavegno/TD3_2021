@@ -1,0 +1,4 @@
+
+
+
+int leerConfServer(void);
