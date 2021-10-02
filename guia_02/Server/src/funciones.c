@@ -6,7 +6,7 @@
 
 #include "../inc/ServidorWeb.h"
 
-extern struct confServer configuracionServer;
+extern struct confServer *configuracionServer;
 extern int semaforoID;
 
 extern struct sembuf p; // Estructura para tomar el semáforo
@@ -26,7 +26,7 @@ int leerConfServer(void)
     char rVal;
 
     //-- Abro el archivo como lectura --
-    pFile = fopen("../Configuracion.cfg", "r");
+    pFile = fopen("Configuracion.cfg", "r");
     if (pFile == NULL)
     {
         //-- Error al abrir el archivo --
@@ -63,9 +63,10 @@ int leerConfServer(void)
     char buffer[10];
     int BUFFindex = 0;
     struct confServer auxconfServer;
-
+       
     for (i = 0; i < lSize; i++)
     {
+        
         switch (pMem[i])
         {
         case 'a':
@@ -73,6 +74,7 @@ int leerConfServer(void)
             break;
         case 'b':
             Parametro = 'b';
+            
             break;
         case 'c':
             Parametro = 'c';
@@ -82,7 +84,7 @@ int leerConfServer(void)
             break;
         case '=':
             break;
-        case '\0':
+        case '\n':
             switch (Parametro)
             {
             case 'a':
@@ -105,14 +107,15 @@ int leerConfServer(void)
             break;
 
         default:
-            buffer[BUFFindex];
+            buffer[BUFFindex] = pMem[i];
             BUFFindex++;
             break;
         }
     }
 
+    //otro semaforo configID
     semop(semaforoID, &p, 1); //Tomo el semaforo
-    memcpy(&configuracionServer, &auxconfServer, sizeof(struct confServer));
+    memcpy(configuracionServer, &auxconfServer, sizeof(struct confServer));
     semop(semaforoID, &v, 1); //Libero el semaforo
 
     //-- Cierro el archivo --
