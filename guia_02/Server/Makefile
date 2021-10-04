@@ -1,25 +1,37 @@
-SRCPATH = ./src
-OBJPATH = ./obj
+SRCPATH = ./src/
+OBJPATH = ./obj/
+COMPATH = ./comons/
 
 CC = gcc
 OFLAGS = -lm -o   
 CFLAGS = -c -Wall
 OUTPUT = ServidorWeb.exe
-OBJETO = ServidorWeb.o funciones.o
-
+OBJETO = $(OBJPATH)ServidorWeb.o $(OBJPATH)funciones.o $(OBJPATH)configuracion.o $(OBJPATH)config.o $(OBJPATH)string.o $(OBJPATH)dictionary.o
 
 all: $(OBJETO) 
 	$(CC) $(OBJETO) $(OFLAGS) $(OUTPUT)	
 
-ServidorWeb.o: $(SRCPATH)/ServidorWeb.c
-	$(CC) $< $(CFLAGS)
+$(OBJPATH)ServidorWeb.o: $(SRCPATH)ServidorWeb.c
+	$(CC) $< $(CFLAGS) -o $@
 
-funciones.o: $(SRCPATH)/funciones.c
-	$(CC) $< $(CFLAGS)
+$(OBJPATH)funciones.o: $(SRCPATH)funciones.c
+	$(CC) $< $(CFLAGS) -o $@
 
+$(OBJPATH)configuracion.o: $(SRCPATH)configuracion.c
+	$(CC) $< $(CFLAGS) -o $@
+
+$(OBJPATH)config.o: $(COMPATH)config.c 
+	$(CC) $< $(CFLAGS) -o $@
+
+$(OBJPATH)string.o: $(COMPATH)string.c 
+	$(CC) $< $(CFLAGS) -o $@
+
+$(OBJPATH)dictionary.o: $(COMPATH)collections/dictionary.c
+	$(CC) $< $(CFLAGS) -o $@
+	
 run:	
 	./$(OUTPUT) $(arg)
 
 clean:
 
-	rm *.o *.exe
+	rm ./obj/*.o *.exe 

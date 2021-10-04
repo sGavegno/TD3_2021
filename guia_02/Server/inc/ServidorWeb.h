@@ -22,9 +22,10 @@
 
 // Define SHARED MEMORY
 #define SHARED_SIZE             4096
-#define MARGEN_DATOS            128
 
-#define KEY 0x1245
+#define KEY_SENSOR   0x1245
+#define KEY_CONFIG   0x1232
+
 
 union semun
 {
@@ -54,23 +55,20 @@ struct MPU6050_REGS
     uint16_t gyro_zout;
 };
 
-
 struct confServer {
-    int conexiones_actuales;    // en configuracion.cfg = a
-    int backlog;                // en configuracion.cfg = b
-    int conexiones_max;         // en configuracion.cfg = c
-    int muestreo;               // en configuracion.cfg = m
-    //int X_HardOffset;           // en configuracion.cfg = x
-    //int Y_HardOffset;           // en configuracion.cfg = y
-    //float sensor_period;        // en configuracion.cfg = f 
+    int conexiones_max;         
+    int backlog;                
+    int muestreo;
+    int conexiones;               
 };
 
 void ManejadorSensor(void);
 void ProcesarCliente(int s_aux, struct sockaddr_in *pDireccionCliente, int puerto);
-
+void ManejadorConfiguracion(void);
 // Signal handlers.
 void SIGINT_handler(int signbr);
 void SIGUSR1_handler(int signbr);
+void SIGUSR2_handler(int signbr);
 void SIGCHLD_handler(int signbr);
 
 // Signal handlers sensor
