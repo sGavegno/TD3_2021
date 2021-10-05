@@ -66,10 +66,10 @@ void ManejadorSensor(void);
 void ProcesarCliente(int s_aux, struct sockaddr_in *pDireccionCliente, int puerto);
 void ManejadorConfiguracion(void);
 // Signal handlers.
-void SIGINT_handler(int signbr);
-void SIGUSR1_handler(int signbr);
-void SIGUSR2_handler(int signbr);
-void SIGCHLD_handler(int signbr);
+void SIGINT_handler(int sig);
+void SIGUSR1_handler(int sig);
+void SIGUSR2_handler(int sig);
+void SIGCHLD_handler(int sig);
 
 // Signal handlers sensor
 void SIGINT_handler_Sensor(int signbr);

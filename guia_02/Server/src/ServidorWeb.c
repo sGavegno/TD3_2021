@@ -29,6 +29,7 @@ int main(int argc, char *argv[])
     void *sharMemSensor = (void *)0;
     void *sharMemConfig = (void *)0;
     struct timeval timeout;
+    int auxBacklog = 0, auxConexMAX = 0, auxConexiones = 0;
 
     if (argc != 2)
     {
@@ -77,7 +78,7 @@ int main(int argc, char *argv[])
         shmdt(sharMemConfig);                    //Separo la memoria de la configuracion del proceso
         shmctl(sharMemIdSensor, IPC_RMID, NULL); //Cierro la Shared Memory del sensor
         shmctl(sharMemIdConfig, IPC_RMID, NULL); //Cierro la Shared Memory de la configuracion
-        exit(12);
+        exit(1);
     }
 
     //Creacion del semaforo para la configuracion
@@ -90,7 +91,7 @@ int main(int argc, char *argv[])
         shmdt(sharMemConfig);                    //Separo la memoria de la configuracion del proceso
         shmctl(sharMemIdSensor, IPC_RMID, NULL); //Cierro la Shared Memory del sensor
         shmctl(sharMemIdConfig, IPC_RMID, NULL); //Cierro la Shared Memory de la configuracion
-        exit(12);
+        exit(1);
     }
 
     printf("|*******************************************************\n");
@@ -151,7 +152,6 @@ int main(int argc, char *argv[])
 
     printf("\nIngrese en el navegador http://192.168.17.128:%s\n", argv[1]);
 
-    int auxBacklog = 0;
     // Indicar que el socket encole hasta backlog pedidos de conexion simultaneas.
     semop(semaforoConfig, &tomar, 1); //Tomo el semaforo
     auxBacklog = configuracionServer->backlog;
@@ -228,91 +228,87 @@ int main(int argc, char *argv[])
         struct sockaddr_in datosCliente;
         int nbr_fds;
         fd_set readfds;
-        int auxConexMAX = 0, auxConexiones = 0;
 
-        //AGREGAR CHEQUEO DE CANTIDAD DE CONEXIONES ABIERTAS
-        //CON EL MAXIMO PERMITIDO
-        semop(semaforoConfig, &tomar, 1); //Tomo el semaforo
-        auxConexMAX = configuracionServer->conexiones_max;
-        auxConexiones = configuracionServer->conexiones;
-        semop(semaforoConfig, &liberar, 1); //Libreo el semaforo
-        while (!FLAG_CONEXION)
+        /********************************************************************************
+                    Pregunto por la cantidad de conexiones
+           y limito nuevas conexiones si alcanze el maximo permitido
+*********************************************************************************/
+        semop(semaforoConfig, &tomar, 1);                  //Tomo el semaforo
+        auxConexMAX = configuracionServer->conexiones_max; //Cantidad de conexiomes permitidas
+        auxConexiones = configuracionServer->conexiones;   //conexiones actuales
+        semop(semaforoConfig, &liberar, 1);                //Libreo el semaforo
+
+        if (auxConexiones < auxConexMAX)
         {
-            if (auxConexiones < auxConexMAX)
+            // Crear la lista de "file descriptors" que vamos a escuchar
+            FD_ZERO(&readfds);
+
+            // Especificamos el socket, podria haber mas.
+            FD_SET(sock, &readfds);
+
+            timeout.tv_sec = 1;
+            timeout.tv_usec = 0;
+
+            //Si no hay clientes, el servidor no debe ser bloqueado por accept().
+            //Con select () un temporizador espera nuevos datos en el socket,
+            //si no hay datos en el socket el servidor se salta de accept ().
+            nbr_fds = select(sock + 1, &readfds, NULL, NULL, &timeout);
+            if ((nbr_fds < 0) && (errno != EINTR))
             {
-                FLAG_CONEXION = true;
+                perror("select");
             }
-        }
-        FLAG_CONEXION = false;
-
-        // Crear la lista de "file descriptors" que vamos a escuchar
-        FD_ZERO(&readfds);
-
-        // Especificamos el socket, podria haber mas.
-        FD_SET(sock, &readfds);
-
-        timeout.tv_sec = 1;
-        timeout.tv_usec = 0;
-
-        //Si no hay clientes, el servidor no debe ser bloqueado por accept().
-        //Con select () un temporizador espera nuevos datos en el socket,
-        //si no hay datos en el socket el servidor se salta de accept ().
-        nbr_fds = select(sock + 1, &readfds, NULL, NULL, &timeout);
-        if ((nbr_fds < 0) && (errno != EINTR))
-        {
-            perror("select");
-        }
-        if (!FD_ISSET(sock, &readfds))
-        {
-            continue;
-        }
-        if (nbr_fds > 0)
-        {
-            // La funcion accept rellena la estructura address con
-            // informacion del cliente y pone en longDirec la longitud
-            // de la estructura.
-            longDirec = sizeof(datosCliente);
-            sock_aux = accept(sock, (struct sockaddr *)&datosCliente, &longDirec);
-            if (sock_aux < 0)
+            if (!FD_ISSET(sock, &readfds))
             {
-                perror("Error en accept");
-                semctl(semaforoSensor, 0, IPC_RMID);     //Cierro el semaforo del sensor
-                shmdt(sharMemSensor);                    //Separo la memoria del sensor del proceso
-                shmctl(sharMemIdSensor, IPC_RMID, NULL); //Cierro la Shared Memory del sensor
-                semctl(semaforoConfig, 0, IPC_RMID);     //Cierro el semaforo de la configuracion
-                shmdt(sharMemConfig);                    //Separo la memoria de la configuracion del proceso
-                shmctl(sharMemIdConfig, IPC_RMID, NULL); //Cierro la Shared Memory de la configuracion
-                close(sock);
-                exit(1);
+                continue;
             }
-
-            clientePID = fork();
-            if (clientePID < 0)
+            if (nbr_fds > 0)
             {
-                perror("No se puede crear un nuevo proceso mediante fork");
-                close(sock);
-                exit(1);
+                // La funcion accept rellena la estructura address con
+                // informacion del cliente y pone en longDirec la longitud
+                // de la estructura.
+                longDirec = sizeof(datosCliente);
+                sock_aux = accept(sock, (struct sockaddr *)&datosCliente, &longDirec);
+                if (sock_aux < 0)
+                {
+                    perror("Error en accept");
+                    semctl(semaforoSensor, 0, IPC_RMID);     //Cierro el semaforo del sensor
+                    shmdt(sharMemSensor);                    //Separo la memoria del sensor del proceso
+                    shmctl(sharMemIdSensor, IPC_RMID, NULL); //Cierro la Shared Memory del sensor
+                    semctl(semaforoConfig, 0, IPC_RMID);     //Cierro el semaforo de la configuracion
+                    shmdt(sharMemConfig);                    //Separo la memoria de la configuracion del proceso
+                    shmctl(sharMemIdConfig, IPC_RMID, NULL); //Cierro la Shared Memory de la configuracion
+                    close(sock);
+                    exit(1);
+                }
+
+                clientePID = fork();
+                if (clientePID < 0)
+                {
+                    perror("No se puede crear un nuevo proceso mediante fork");
+                    close(sock);
+                    exit(1);
+                }
+                if (clientePID == 0)
+                {                                     // Proceso hijo.
+                    semop(semaforoConfig, &tomar, 1); //Tomo el semaforo
+                    configuracionServer->conexiones++;
+                    semop(semaforoConfig, &liberar, 1); //Libreo el semaforo
+
+                    printf("|*******************************************************\n");
+                    printf("|                                                       \n");
+                    printf("|Proceso Cliente ID = %d                                \n", getpid());
+                    printf("|                                                       \n");
+                    printf("|*******************************************************\n");
+                    ProcesarCliente(sock_aux, &datosCliente, atoi(argv[1]));
+
+                    semop(semaforoConfig, &tomar, 1); //Tomo el semaforo
+                    configuracionServer->conexiones--;
+                    semop(semaforoConfig, &liberar, 1); //Libreo el semaforo
+
+                    exit(0);
+                }
+                close(sock_aux); // El proceso padre debe cerrar el socket que usa el hijo.
             }
-            if (clientePID == 0)
-            {                                     // Proceso hijo.
-                semop(semaforoConfig, &tomar, 1); //Tomo el semaforo
-                configuracionServer->conexiones++;
-                semop(semaforoConfig, &liberar, 1); //Libreo el semaforo
-
-                printf("|*******************************************************\n");
-                printf("|                                                       \n");
-                printf("|Proceso Cliente ID = %d                                \n", getpid());
-                printf("|                                                       \n");
-                printf("|*******************************************************\n");
-                ProcesarCliente(sock_aux, &datosCliente, atoi(argv[1]));
-
-                semop(semaforoConfig, &tomar, 1); //Tomo el semaforo
-                configuracionServer->conexiones--;
-                semop(semaforoConfig, &liberar, 1); //Libreo el semaforo
-
-                exit(0);
-            }
-            close(sock_aux); // El proceso padre debe cerrar el socket que usa el hijo.
         }
     }
 
@@ -397,6 +393,13 @@ void ProcesarCliente(int s_aux, struct sockaddr_in *pDireccionCliente, int puert
     close(s_aux);
 }
 
+/**
+ * @fn void ManejadorSensor(void)
+ * @brief 
+ * @details 
+ * @param void
+ * @return void
+**/
 void ManejadorSensor(void)
 {
     srand(300); // Inicializa generador de numeros random. Podria haberle pasado cualquier número.
@@ -420,6 +423,13 @@ void ManejadorSensor(void)
     return;
 }
 
+/**
+ * @fn void ManejadorConfiguracion(void)
+ * @brief 
+ * @details 
+ * @param void
+ * @return void
+**/
 void ManejadorConfiguracion(void)
 {
 
@@ -437,29 +447,64 @@ void ManejadorConfiguracion(void)
     }
 }
 
-void SIGINT_handler_Sensor(int signbr)
+/**
+ * @fn void SIGINT_handler_Sensor(int sig)
+ * @brief 
+ * @details 
+ * @param sig
+ * @return void
+**/
+void SIGINT_handler_Sensor(int sig)
 {
     FLAG_EXIT = true;
     printf("SIGINT sensor ID=%d\r\n", getpid());
 }
 
-void SIGINT_handler(int signbr)
+/**
+ * @fn void SIGINT_handler(int sig)
+ * @brief 
+ * @details 
+ * @param sig
+ * @return void
+**/
+void SIGINT_handler(int sig)
 {
     FLAG_EXIT = true;
     printf("SIGINT ID=%d\r\n", getpid());
 }
 
-void SIGUSR1_handler(int signbr)
+/**
+ * @fn void SIGUSR1_handler(int sig)
+ * @brief 
+ * @details 
+ * @param sig
+ * @return void
+**/
+void SIGUSR1_handler(int sig)
 {
 }
 
-void SIGUSR2_handler(int signbr)
+/**
+ * @fn void SIGUSR2_handler(int sig)
+ * @brief 
+ * @details 
+ * @param sig
+ * @return void
+**/
+void SIGUSR2_handler(int sig)
 {
     FLAG_CONF = true;
     //actualizar configuracion
     return;
 }
 
+/**
+ * @fn void SIGCHLD_handler(int sig)
+ * @brief 
+ * @details 
+ * @param sig
+ * @return void
+**/
 void SIGCHLD_handler(int sig)
 {
     pid_t deadchild = 1;
