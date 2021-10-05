@@ -4,7 +4,7 @@
 #define BACKLOG_DEFAULT         20
 #define MUESTREO_SENSOR         2
 
-#define CONFIG_RUTA             "./Config/Configuracion.cfg"
+#define CONFIG_RUTA             "./Config/Servidor.cfg"
 
 
 void configuracion_init( struct confServer *serverConf);

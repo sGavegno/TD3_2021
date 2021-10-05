@@ -26,22 +26,11 @@
 #define KEY_SENSOR   0x1245
 #define KEY_CONFIG   0x1232
 
-
 union semun
 {
     int val;
     struct semid_ds *buf;
     unsigned short *array;
-};
-
-struct calibValues {
-    bool firstCalibFlag;
-    int16_t X_min; 
-    int16_t Y_min; 
-    int16_t Z_min; 
-    int16_t X_max; 
-    int16_t Y_max; 
-    int16_t Z_max; 
 };
 
 struct MPU6050_REGS
