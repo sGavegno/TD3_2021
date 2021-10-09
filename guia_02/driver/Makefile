@@ -1,8 +1,9 @@
-obj-m := device-driver.o
+obj-m := driver-i2c.o
 KERNELDIR := /lib/modules/$( shell uname -r)/build
 PWD := $( shell pwd)
+
 all:
-make -C $( KERNELDIR ) M= $( PWD )
+	make -C $(KERNELDIR) M= $(PWD)
+
 clean:
-rm -rf *.o core .depend .*.cmd *.mod.c *.mod *.ko .tmp_versions modules.*
-Module*
+	rm -rf *.o core .depend .*.cmd *.mod.c *.mod *.ko .tmp_versions modules.* Module*

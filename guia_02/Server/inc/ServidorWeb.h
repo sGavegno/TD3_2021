@@ -26,16 +26,21 @@
 #define KEY_SENSOR   0x1245
 #define KEY_CONFIG   0x1232
 
-union semun
-{
+union semun {
     int val;
     struct semid_ds *buf;
     unsigned short *array;
     struct seminfo  *__buf;
 };
 
-struct MPU6050_REGS
-{
+typedef struct confServer {
+    int conexiones_max;         
+    int backlog;                
+    int muestreo;
+    int conexiones;               
+}config_t;
+
+typedef struct MPU6050_REGS { 
     uint16_t accel_xout;
     uint16_t accel_yout;
     uint16_t accel_zout;
@@ -43,14 +48,7 @@ struct MPU6050_REGS
     uint16_t gyro_xout;
     uint16_t gyro_yout;
     uint16_t gyro_zout;
-};
-
-struct confServer {
-    int conexiones_max;         
-    int backlog;                
-    int muestreo;
-    int conexiones;               
-};
+} sensor_t;
 
 void ManejadorSensor(void);
 void ProcesarCliente(int s_aux, struct sockaddr_in *pDireccionCliente, int puerto);

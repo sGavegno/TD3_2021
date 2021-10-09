@@ -7,7 +7,7 @@
 #include "../inc/ServidorWeb.h"
 #include "../inc/funciones.h"
 
-extern struct confServer *configuracionServer;
+extern config_t *configuracionServer;
 extern int semaforoID;
 extern int semaforoSensor, semaforoConfig;
 

@@ -3,6 +3,8 @@
 #include "../inc/funciones.h"
 #include "../inc/configuracion.h"
 
+
+
 /*---------------------FLAGS-------------------*/
 bool FLAG_CONEXION = false;
 bool FLAG_CONF = false;
@@ -10,8 +12,8 @@ bool FLAG_EXIT = false;
 
 /*---------------Variables Globales----------------*/
 int semaforoSensor, semaforoConfig;
-struct confServer *configuracionServer;
-struct MPU6050_REGS *SensorData;
+config_t *configuracionServer;
+sensor_t *SensorData;
 struct sembuf tomar = {0, -1, SEM_UNDO};   // Estructura para tomar el semáforo
 struct sembuf liberar = {0, +1, SEM_UNDO}; // Estructura para liberar el semáforo
 
@@ -66,8 +68,8 @@ int main(int argc, char *argv[])
     }
 
     //Apunto directamente a la SharedMemory
-    SensorData = (struct MPU6050_REGS *)sharMemSensor;
-    configuracionServer = (struct confServer *)sharMemConfig;
+    SensorData = (sensor_t *)sharMemSensor;
+    configuracionServer = (config_t *)sharMemConfig;
 
     //Creacion del semaforo para el sensor
     if (crear_semaforo(&semaforoSensor, KEY_SENSOR) < 0)
@@ -402,23 +404,79 @@ void ProcesarCliente(int s_aux, struct sockaddr_in *pDireccionCliente, int puert
 **/
 void ManejadorSensor(void)
 {
+    static int indiceIN = 0, indiceOUT = 0;
+    static sensor_t auxSensor[100];
+    sensor_t auxSensorData;
+    int auxMuestreo = 0, i = 0;
+
     srand(300); // Inicializa generador de numeros random. Podria haberle pasado cualquier número.
 
     printf("Manejador del Sensor\n");
 
     while (!FLAG_EXIT)
     {
+        semop(semaforoConfig, &tomar, 1); //Tomo el semaforo
+        auxMuestreo = configuracionServer->muestreo;
+        semop(semaforoConfig, &liberar, 1); //Libreo el semaforo
+
+        auxSensor[indiceIN].accel_xout = rand();
+        auxSensor[indiceIN].accel_yout = rand();
+        auxSensor[indiceIN].accel_zout = rand();
+        auxSensor[indiceIN].temp_out = rand();
+        auxSensor[indiceIN].gyro_xout = rand();
+        auxSensor[indiceIN].gyro_yout = rand();
+        auxSensor[indiceIN].gyro_zout = rand();
+
+        if (indiceIN < 99)
+        {
+            indiceOUT = indiceIN;
+            indiceIN++;
+        }
+        else
+        {
+            indiceOUT = 99;
+            indiceIN = 0;
+        }
+
+        for (i = 0; i < auxMuestreo; i++)
+        {
+            auxSensorData.accel_xout += auxSensor[indiceOUT].accel_xout;
+            auxSensorData.accel_yout += auxSensor[indiceOUT].accel_yout;
+            auxSensorData.accel_zout += auxSensor[indiceOUT].accel_zout;
+            auxSensorData.temp_out += auxSensor[indiceOUT].temp_out;
+            auxSensorData.gyro_xout += auxSensor[indiceOUT].gyro_xout;
+            auxSensorData.gyro_yout += auxSensor[indiceOUT].gyro_yout;
+            auxSensorData.gyro_zout += auxSensor[indiceOUT].gyro_zout;
+
+            if (indiceOUT > 0)
+            {
+                indiceOUT--;
+            }
+            else
+            {
+                indiceOUT = 99;
+            }
+
+            auxSensorData.accel_xout = auxSensorData.accel_xout / auxMuestreo;
+            auxSensorData.accel_yout = auxSensorData.accel_yout / auxMuestreo;
+            auxSensorData.accel_zout = auxSensorData.accel_zout / auxMuestreo;
+            auxSensorData.temp_out = auxSensorData.temp_out / auxMuestreo;
+            auxSensorData.gyro_xout = auxSensorData.gyro_xout / auxMuestreo;
+            auxSensorData.gyro_yout = auxSensorData.gyro_yout / auxMuestreo;
+            auxSensorData.gyro_zout = auxSensorData.gyro_zout / auxMuestreo;
+        }
+
         semop(semaforoSensor, &tomar, 1); //Tomo el semaforo
-        SensorData->accel_xout = rand();
-        SensorData->accel_yout = rand();
-        SensorData->accel_zout = rand();
-        SensorData->temp_out = rand();
-        SensorData->gyro_xout = rand();
-        SensorData->gyro_yout = rand();
-        SensorData->gyro_zout = rand();
+        SensorData->accel_xout = auxSensorData.accel_xout;
+        SensorData->accel_yout = auxSensorData.accel_yout;
+        SensorData->accel_zout = auxSensorData.accel_zout;
+        SensorData->temp_out = auxSensorData.temp_out;
+        SensorData->gyro_xout = auxSensorData.gyro_xout;
+        SensorData->gyro_yout = auxSensorData.gyro_yout;
+        SensorData->gyro_zout = auxSensorData.gyro_zout;
         semop(semaforoSensor, &liberar, 1); //Libreo el semaforo
 
-        sleep(0.001);
+        sleep(0.01);
     }
     return;
 }

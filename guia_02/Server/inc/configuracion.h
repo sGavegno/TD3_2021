@@ -7,5 +7,5 @@
 #define CONFIG_RUTA             "./Config/Servidor.cfg"
 
 
-void configuracion_init( struct confServer *serverConf);
-void configuracion_reload(struct confServer *serverConf);
+void configuracion_init( config_t *serverConf);
+void configuracion_reload( config_t *serverConf);

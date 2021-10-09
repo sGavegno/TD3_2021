@@ -8,7 +8,7 @@
 #include "../inc/ServidorWeb.h"
 #include "../inc/configuracion.h"
 
-void configuracion_init(struct confServer *serverConf)
+void configuracion_init(config_t *serverConf)
 {
     t_config *config;
 
@@ -63,7 +63,7 @@ void configuracion_init(struct confServer *serverConf)
     printf("|*******************************************************\n");
 }
 
-void configuracion_reload(struct confServer *serverConf)
+void configuracion_reload( config_t *serverConf)
 {
     t_config *config;
 
