@@ -20,9 +20,12 @@
 #include <sys/select.h>
 #include <sys/sendfile.h>
 
-void leer_Sensor(void)
+#include "../inc/ServidorWeb.h"
+
+sensor_t leer_Sensor(void)
 {
 int fd;
+sensor_t aux;
 
   fd = open ("/dev/driverI2C", O_RDWR);
   if (fd < 0)
@@ -31,4 +34,9 @@ int fd;
     exit(1);
   }
 
+  read("/dev/driverI2C", &aux, sizeof(sensor_t));
+
+  close(fd);
+
+  return aux;
 }

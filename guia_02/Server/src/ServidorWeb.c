@@ -419,6 +419,8 @@ void ManejadorSensor(void)
         auxMuestreo = configuracionServer->muestreo;
         semop(semaforoConfig, &liberar, 1); //Libreo el semaforo
 
+//      auxSensor[indiceIN] = leer_Sensor();
+
         auxSensor[indiceIN].accel_xout = rand();
         auxSensor[indiceIN].accel_yout = rand();
         auxSensor[indiceIN].accel_zout = rand();

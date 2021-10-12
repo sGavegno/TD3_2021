@@ -1,4 +1,4 @@
-obj-m := driver-i2c.o
+obj-m := I2Cdriver.o
 KERNELDIR := /lib/modules/$( shell uname -r)/build
 PWD := $( shell pwd)
 
