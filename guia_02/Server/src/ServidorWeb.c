@@ -3,8 +3,6 @@
 #include "../inc/funciones.h"
 #include "../inc/configuracion.h"
 
-
-
 /*---------------------FLAGS-------------------*/
 bool FLAG_CONEXION = false;
 bool FLAG_CONF = false;
@@ -408,10 +406,17 @@ void ManejadorSensor(void)
     static sensor_t auxSensor[100];
     sensor_t auxSensorData;
     int auxMuestreo = 0, i = 0;
-
+    static int sen_fd;
     srand(300); // Inicializa generador de numeros random. Podria haberle pasado cualquier número.
 
     printf("Manejador del Sensor\n");
+
+    sen_fd = open("/dev/urandom", O_RDWR);
+    if (sen_fd < 0)
+    {
+        perror("No puedo abrir urandom");
+        exit(1);
+    }
 
     while (!FLAG_EXIT)
     {
@@ -419,8 +424,11 @@ void ManejadorSensor(void)
         auxMuestreo = configuracionServer->muestreo;
         semop(semaforoConfig, &liberar, 1); //Libreo el semaforo
 
-//      auxSensor[indiceIN] = leer_Sensor();
+        //auxSensor[indiceIN] = leer_Sensor();
 
+        read(sen_fd, &auxSensor[indiceIN], sizeof(sensor_t));
+
+        /*
         auxSensor[indiceIN].accel_xout = rand();
         auxSensor[indiceIN].accel_yout = rand();
         auxSensor[indiceIN].accel_zout = rand();
@@ -428,6 +436,7 @@ void ManejadorSensor(void)
         auxSensor[indiceIN].gyro_xout = rand();
         auxSensor[indiceIN].gyro_yout = rand();
         auxSensor[indiceIN].gyro_zout = rand();
+        */
 
         if (indiceIN < 99)
         {
@@ -478,8 +487,10 @@ void ManejadorSensor(void)
         SensorData->gyro_zout = auxSensorData.gyro_zout;
         semop(semaforoSensor, &liberar, 1); //Libreo el semaforo
 
-        sleep(0.01);
+        sleep(0.01); //ver scl frecuencia del sensor
     }
+
+    close(sen_fd);
     return;
 }
 

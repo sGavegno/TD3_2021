@@ -16,12 +16,16 @@
 #include <linux/fs.h>
 #include <linux/cdev.h>
 
+#include <i2c/smbus.h>
+
 #include <stdio.h>
 #include <stdlib.h>
 
 #define FIRST_MINOR 0
 #define NBR_DEV 1
 #define BUF_SIZE 20
+
+//https://linuxtv.org/downloads/v4l-dvb-internals/device-drivers/i2c.html
 
 //device specific structure//
 struct I2C_MPU6050_dev
@@ -114,7 +118,7 @@ ssize_t I2C_MPU6050_read(struct file *file, char __user *userbuff, size_t tamano
     addr = i2c_smbus_read_byte_data(client, 0x75); //reading WHO_AM_I register
     printk("who am I register slave address=%x\n", addr);
     memset(kbuffer, '\0', BUF_SIZE);
-    while (j < 15)
+    while (j < 15) //usar tamaño
     {
         kbuffer[j] = i2c_smbus_read_byte_data(client, command++); //SMBUS read command
         printk("data at %d-%d\n", j, kbuffer[j]);
