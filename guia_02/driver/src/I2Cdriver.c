@@ -4,9 +4,9 @@
 *   Detalles: Driver para la lectura del sensor MPU6050 por medio de I2C
 */
 
-#include "./inc/I2Cdriver.h"
-#include "./inc/MPU6050.h"
-#include "./inc/BBB_reg_I2C.h"
+#include "../inc/I2Cdriver.h"
+#include "../inc/MPU6050.h"
+#include "../inc/BBB_reg_I2C.h"
 
 
 /*  ID table */
