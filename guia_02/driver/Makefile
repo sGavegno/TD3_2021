@@ -1,5 +1,6 @@
-obj-m := I2Cdriver.o
-KERNELDIR := /lib/modules/$( shell uname -r)/build
+obj-m := ./src/I2Cdriver.o
+
+KERNELDIR := /lib/modules/$(shell uname -r)/build
 PWD := $( shell pwd)
 
 all:

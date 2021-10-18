@@ -16,12 +16,16 @@
 //#include <linux/fs.h>
 //#include <linux/cdev.h>
 //
+//#include <i2c/smbus.h>
+//
 //#include <stdio.h>
 //#include <stdlib.h>
 //
 //#define FIRST_MINOR 0
 //#define NBR_DEV 1
 //#define BUF_SIZE 20
+//
+////https://linuxtv.org/downloads/v4l-dvb-internals/device-drivers/i2c.html
 //
 ////device specific structure//
 //struct I2C_MPU6050_dev
@@ -78,15 +82,19 @@
 //
 //int I2C_MPU6050_open(struct inode *inode, struct file *file)
 //{
-//
+//    struct I2C_MPU6050_dev *dev = filep->private_data = container_of(inode->i_cdev, struct I2C_MPU6050_dev, cdev);
+//    struct i2c_client *client = dev->client;
+//    printk("Funcion open\n");
 //    printk(KERN_ALERT "Open!!\n");
 //    return 0;
 //}
 //
 //int I2C_MPU6050_release(struct inode *inode, struct file *file)
 //{
-//
-//    printk(KERN_ALERT "Close!!\n");
+//    printk("Cerrar funcion called\n");
+//    struct I2C_MPU6050_dev *dev = filep->private_data;
+//    struct i2c_client *client = dev->client;
+//    dev_info(&client->dev, "Cerrar funcion called");
 //    return 0;
 //}
 //
@@ -97,9 +105,35 @@
 //
 //ssize_t I2C_MPU6050_read(struct file *file, char __user *userbuff, size_t tamano, loff_t *offset)
 //{
+//    int j = 0, addr;
+//    int command = 0x3B; //reading from ACCEL_XOUT_H
+//
+//    printk("In read function\n");
+//
+//    struct I2C_MPU6050_dev *dev = filep->private_data;
+//    struct i2c_client *client = dev->client;
+//
+//    i2c_smbus_write_byte_data(client, 0x6B, 0x00); //configuring PWR_MGMT_1 register
+//
+//    addr = i2c_smbus_read_byte_data(client, 0x75); //reading WHO_AM_I register
+//    printk("who am I register slave address=%x\n", addr);
+//    memset(kbuffer, '\0', BUF_SIZE);
+//    while (j < 15) //usar tamaño
+//    {
+//        kbuffer[j] = i2c_smbus_read_byte_data(client, command++); //SMBUS read command
+//        printk("data at %d-%d\n", j, kbuffer[j]);
+//        j++;
+//    }
+//
+//    if (copy_to_user(userbuff, kbuffer, BUF_SIZE)) //copying data to user
+//        return -EFAULT;
 //
 //    return 0;
 //}
+//
+///*  ID table */
+//static struct i2c_device_id MPU6050_id[] = {
+//    {"MPU6050", 0}};
 //
 ///*
 //* Función para verificar que el dispositivo esté presente dentro del platform-bus, se reservan los recursos de hardware
@@ -108,15 +142,77 @@
 //*/
 //int I2C_MPU6050_probe(struct i2c_client *client, const struct i2c_device_id *id)
 //{
+//    int retval;
+//    struct I2C_MPU6050_dev *dev;
+//    //int command=0x3B;
 //
+//    printk("In probe function\n");
+//    dev_info(&client->dev, "MPU6050 device probed");
+//
+//    dev = devm_kzalloc(&client->dev, sizeof(*dev), GFP_KERNEL); //allocating memory for struct dev
+//    if (!dev)
+//    {
+//        dev_err(&client->dev, "Failed to allocate memory for private data\n");
+//        return -ENOMEM;
+//    }
+//
+//    dev_info(&client->dev, "Allocated memory for private data\n");
+//
+//    i2c_set_clientdata(client, dev);
+//    dev->client = client;
+//
+//    cdev_init(&dev->cdev, &I2C_MPU6050_ops);
+//
+//    retval = cdev_add(&dev->cdev, I2C_MPU6050, 1);
+//    if (retval)
+//    {
+//        dev_err(&client->dev, "Falla Cdev_Add");
+//        return retval;
+//    }
+//
+//    dev_info(&client->dev, "Added cdev Structure\n");
+//
+//    I2C_MPU6050_device = device_create(I2C_MPU6050_clase, NULL, I2C_MPU6050, NULL, "I2C_MPU6050"); //creating a device
+//    if (I2C_MPU6050_device == NULL)
+//    {
+//        dev_err(&client->dev, "Falla al crear ddvice");
+//        cdev_del(&dev->cdev);
+//        return retval;
+//    }
+//
+//    dev_info(&client->dev, "Device creado\n");
+//
+//    printk("WHO M I=%x\n", i2c_smbus_read_byte_data(client, 0x75)); //Slave address=0x68
+//
+//    i2c_smbus_write_byte_data(client, 0x6B, 0x02);
+//    printk("power management register=%d\n", i2c_smbus_read_byte_data(client, 0x6B));
+//    i2c_smbus_write_byte_data(client, 0x19, 0x07);
+//    printk("SMPLRT_DIV register=%d\n", i2c_smbus_read_byte_data(client, 0x19));
+//    i2c_smbus_write_byte_data(client, 0x1B, 0x08);
+//    printk("GYRO_CONFIG register=%d\n", i2c_smbus_read_byte_data(client, 0x1B));
+//    i2c_smbus_write_byte_data(client, 0x1C, 0x00);
+//    printk("ACCEL_CONFIG register=%d\n", i2c_smbus_read_byte_data(client, 0x1C));
+//
+//    return 0;
 //}
 //
+////remove function
 ///*
 //* Función para remover un dispositivo dentro del platform-bus
 //*/
 //int I2C_MPU6050_remove(struct i2c_client *client)
 //{
-// 
+//    struct I2C_MPU6050_dev *dev;
+//
+//    dev = i2c_get_clientdata(client);
+//    dev_info(&client->dev, "Remove function called\n");
+//
+//    device_destroy(I2C_MPU6050_clase, I2C_MPU6050);
+//    dev_info(&client->dev, "Device destroyed\n");
+//
+//    cdev_del(&dev->cdev);
+//    dev_info(&client->dev, "Cdev deleted\n");
+//    dev_info(&client->dev, "I2C_MPU6050 device removed");
 //    return 0;
 //}
 //
@@ -147,7 +243,50 @@
 //    sudo insmod driver-i2c.ko
 //    lsmod | grep driver-i2c  --> me dice los modulos que tengo instalados. con grep filtro 
 //*/
+//static int I2C_MPU6050_init(void)
+//{
+//    int ret;
+//    printk("Init Fuction\n");
 //
+//    alloc_chrdev_region(&I2C_MPU6050, 0, 1, "I2C_MPU6050");
+//
+//    I2C_MPU6050_clase = class_create(THIS_MODULE, "I2C_MPU6050");
+//    if (I2C_MPU6050_clase < 0)
+//    {
+//        unregister_chrdev_region(I2C_MPU6050, NBR_DEV);
+//        exit(1);
+//    }
+//    ret = i2c_add_driver(&I2C_MPU6050_driver);
+//    if (ret)
+//    {
+//        printk("Failed to add the i2c driver\n");
+//        class_destroy(I2C_MPU6050_clase);
+//        unregister_chrdev_region(I2C_MPU6050, 1);
+//        return ret;
+//    }
+//    printk("I2C driver added\n");
+//    return 0;
+//}
+//
+///*
+//    desintalacion del driver
+//    sudo rmmod driver-i2c
+//*/
+//static void I2C_MPU6050_exit(void)
+//{
+//    printk("Exit\n");
+//    i2c_del_driver(&I2C_MPU6050_driver);
+//    printk("I2C driver deleted\n");
+//    class_destroy(I2C_MPU6050_clase);
+//    printk("Class destroyed\n");
+//    unregister_chrdev_region(I2C_MPU6050, 1);
+//    printk("Unregistered Char Device\n");
+//}
+//
+//module_init(I2C_MPU6050_init);
+//module_exit(I2C_MPU6050_exit);
+//
+///*
 //static int I2C_MPU6050_init(void)
 //{
 //    int i;
@@ -211,10 +350,6 @@
 //    return 0;
 //}
 //
-///*
-//    desintalacion del driver
-//    sudo rmmod driver-i2c
-//*/
 //static void I2C_MPU6050_exit(void)
 //{
 //    kfree(I2C_MPU6050_driver);
@@ -224,12 +359,5 @@
 //    unregister_chrdev_region(I2C_MPU6050, NBR_DEV);
 //}
 //
-//module_init(I2C_MPU6050_init);
-//module_exit(I2C_MPU6050_exit);
 //
-//
-//
-//
-//
-//
-//
+//*/
