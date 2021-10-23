@@ -16,9 +16,8 @@
 #include <linux/types.h>                        // typedefs varios
 #include <linux/slab.h>				// kmalloc
 #include <linux/ioctl.h>
-
-#include <stdio.h>
-#include <stdlib.h>
+#include <linux/i2c.h>
+#include <linux/i2c-dev.h>
 
 /*-------------DEFINE-------------*/
 #define FIRST_MINOR 0
@@ -26,9 +25,26 @@
 #define BUF_SIZE 20
 
 
-#define ID    	        "*"
+#define ID    	        "SG"
 #define CLASS_NAME      "I2Cdriver_class"
 #define COMPATIBLE      "I2Cdriver"
+
+#define XRDY			0
+#define ARDY			1
+#define RRDY			2
+
+#define NONE			0
+#define CHIPID        	        _IO('N', 0x44)
+#define STD_CONFIG		_IO('N', 0x45)
+#define OPRES_CONFIG	        _IO('N', 0x46)
+#define OTEMP_CONFIG	        _IO('N', 0x47)
+#define GET_CONFIG		_IO('N', 0x48)
+#define RESET			_IO('N', 0x49)
+#define GET_PRES		_IO('N', 0x4A)
+#define GET_TEMP		_IO('N', 0x4B)
+#define GET_MEDICIONES 	        _IO('N', 0x4C)
+#define GET_CALIB		_IO('N', 0x4E)
+
 
 static struct {
 	dev_t I2C_MPU6050;
@@ -38,8 +54,24 @@ static struct {
         struct device *I2C_MPU6050_device;
 }dev;
 
-/*
-static struct I2C_MPU6050_driver
+static struct {
+	int cnt_rx;
+	int buff_rx_len;
+	int data_rx;
+
+	int cnt_tx;
+	int buff_tx_len;
+	int data_tx;
+
+	int status;
+	int config;
+	int accion;
+
+	char * buff_rx;
+	char * buff_tx;
+} data_i2c;
+
+static struct I2C_MPU6050_datos
 {
     uint16_t accel_xout;
     uint16_t accel_yout;
@@ -48,21 +80,24 @@ static struct I2C_MPU6050_driver
     uint16_t gyro_xout;
     uint16_t gyro_yout;
     uint16_t gyro_zout;
-} I2C_MPU6050_driver;
-*/
+} I2C_MPU6050_datos;
+
 
 /*------------------Prototipos------------------*/
 int I2C_MPU6050_open(struct inode *inode, struct file *file);
 int I2C_MPU6050_release(struct inode *inode, struct file *file);
 ssize_t I2C_MPU6050_write(struct file *file, const char __user *userbuff, size_t tamano, loff_t *offset);
 ssize_t I2C_MPU6050_read(struct file *file, char __user *userbuff, size_t tamano, loff_t *offset);
-int I2C_MPU6050_probe(struct i2c_client *client, const struct i2c_device_id *id);
-int I2C_MPU6050_remove(struct i2c_client *client);
+irqreturn_t i2c_irq_handler(int irq, void *dev_id, struct pt_regs *regs);
+
+int I2C_MPU6050_probe(struct platform_device *i2c_pd);
+int I2C_MPU6050_remove(struct platform_device *i2c_pd);
 static int __init I2C_MPU6050_init(void);
 static void __exit I2C_MPU6050_exit(void);
 
 
-static char *I2C_MPU6050_devnode(struct device *dev, umode_t *mode);
+static int I2C_MPU6050_devnode(struct device *dev, struct kobj_uevent_env *env);
+//static int I2C_MPU6050_devnode(struct device *dev, umode_t *mode);
 
 struct file_operations I2C_MPU6050_ops =
 {

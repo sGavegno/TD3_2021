@@ -12,6 +12,10 @@
 #define CTRL_MODULE_UART1_CTSN                  0x00000978 //pin 20 = sda  (page1461)
 #define CTRL_MODULE_UART1_RTSN                  0x0000097C //pin 19 = scl  (page1461)
 #define CTRL_MODULE_UART1_MASK                  0x0000007F
+
+#define CTRL_MODULE_I2C_SDA                     0x00000988 //pin 20 = sda
+#define CTRL_MODULE_I2C_SLC                     0x0000098C //pin 19 = scl
+
 //Habilita capacidad de pines (page 1515) 
 // Reserved | Fast | Reciever Enable | Pullup Selected | Pullup/pulldown enable | I2C2_SCL
 #define CTRL_MODULE_I2C_PINMODE                 0x00000023 // 0010 0011b 
