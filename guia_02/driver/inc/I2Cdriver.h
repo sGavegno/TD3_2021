@@ -24,25 +24,25 @@
 #define CANT_DISP 1
 #define BUF_SIZE 20
 
-
 #define ID    	        "SG"
 #define CLASS_NAME      "I2Cdriver_class"
 #define COMPATIBLE      "I2Cdriver"
+#define NOMBRE			COMPATIBLE
 
 #define XRDY			0
 #define ARDY			1
 #define RRDY			2
 
 #define NONE			0
-#define CHIPID        	        _IO('N', 0x44)
+#define CHIPID        	_IO('N', 0x44)
 #define STD_CONFIG		_IO('N', 0x45)
-#define OPRES_CONFIG	        _IO('N', 0x46)
-#define OTEMP_CONFIG	        _IO('N', 0x47)
+#define OPRES_CONFIG	_IO('N', 0x46)
+#define OTEMP_CONFIG	_IO('N', 0x47)
 #define GET_CONFIG		_IO('N', 0x48)
 #define RESET			_IO('N', 0x49)
 #define GET_PRES		_IO('N', 0x4A)
 #define GET_TEMP		_IO('N', 0x4B)
-#define GET_MEDICIONES 	        _IO('N', 0x4C)
+#define GET_MEDICIONES 	_IO('N', 0x4C)
 #define GET_CALIB		_IO('N', 0x4E)
 
 
@@ -51,7 +51,7 @@ static struct {
 
 	struct cdev *I2C_MPU6050_cdev;
 	struct class *I2C_MPU6050_clase;
-        struct device *I2C_MPU6050_device;
+    struct device *I2C_MPU6050_device;
 }dev;
 
 static struct {
@@ -71,8 +71,7 @@ static struct {
 	char * buff_tx;
 } data_i2c;
 
-static struct I2C_MPU6050_datos
-{
+static struct {
     uint16_t accel_xout;
     uint16_t accel_yout;
     uint16_t accel_zout;
@@ -80,8 +79,7 @@ static struct I2C_MPU6050_datos
     uint16_t gyro_xout;
     uint16_t gyro_yout;
     uint16_t gyro_zout;
-} I2C_MPU6050_datos;
-
+} datosI2C;
 
 /*------------------Prototipos------------------*/
 int I2C_MPU6050_open(struct inode *inode, struct file *file);

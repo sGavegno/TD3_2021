@@ -406,7 +406,7 @@ void ManejadorSensor(void)
     static sensor_t auxSensor[100];
     sensor_t auxSensorData;
     int auxMuestreo = 0, i = 0;
-    static int sen_fd;
+    static int sen_fd, sen_fd1;
     srand(300); // Inicializa generador de numeros random. Podria haberle pasado cualquier número.
 
     printf("Manejador del Sensor\n");
@@ -414,9 +414,17 @@ void ManejadorSensor(void)
     sen_fd = open("/dev/urandom", O_RDWR);
     if (sen_fd < 0)
     {
-        perror("No puedo abrir urandom");
+        perror("No puedo abrir urandom\n");
         exit(1);
     }
+
+    sen_fd1 = open("/dev/I2Cdriver", O_RDWR);
+    if (sen_fd1 < 0)
+    {
+        perror("No puedo abrir I2Cdriver\n");
+        exit(1);
+    }
+    close(sen_fd1);
 
     while (!FLAG_EXIT)
     {
