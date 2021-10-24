@@ -1,6 +1,7 @@
 SRCPATH = ./src/
 OBJPATH = ./obj/
 COMPATH = ./comons/
+PUERTO = 10101
 
 CC = gcc
 OFLAGS = -lm -o   
@@ -30,7 +31,7 @@ $(OBJPATH)dictionary.o: $(COMPATH)collections/dictionary.c
 	$(CC) $< $(CFLAGS) -o $@
 	
 run:	
-	./$(OUTPUT) $(arg)
+	./$(OUTPUT) $(PUERTO)
 
 clean:
 
