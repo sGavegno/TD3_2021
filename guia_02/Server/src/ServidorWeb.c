@@ -404,7 +404,7 @@ void ManejadorSensor(void)
 {
     static int indiceIN = 0, indiceOUT = 0;
     static sensor_t auxSensor[100];
-    sensor_t auxSensorData;
+    sensor_t auxSensorData, auxData;
     int auxMuestreo = 0, i = 0;
     static int sen_fd, sen_fd1;
     srand(300); // Inicializa generador de numeros random. Podria haberle pasado cualquier número.
@@ -414,7 +414,7 @@ void ManejadorSensor(void)
     sen_fd = open("/dev/urandom", O_RDWR);
     if (sen_fd < 0)
     {
-        perror("No puedo abrir urandom\n");
+        perror("No puedo abrir urandom");
         exit(1);
     }
 
@@ -424,8 +424,28 @@ void ManejadorSensor(void)
         perror("No puedo abrir I2Cdriver\n");
         exit(1);
     }
+    printf("|*******************************************************\n");
+    printf("                    ANTES DEL READ\n");    
+    printf("Acelerometro X  : %d\n", auxData.accel_xout);
+    printf("Acelerometro Y  : %d\n", auxData.accel_yout);
+    printf("Acelerometro Z  : %d\n", auxData.accel_zout);
+    printf("Temperatura     : %d\n", auxData.temp_out);
+    printf("Giroscopio X    : %d\n", auxData.gyro_xout);
+    printf("Giroscopio Y    : %d\n", auxData.gyro_yout);
+    printf("Giroscopio Z    : %d\n", auxData.gyro_zout);
+    printf("|*******************************************************\n");
+    read(sen_fd1, &auxData, sizeof(sensor_t));
+    printf("|*******************************************************\n");
+    printf("                    DESPUES DEL READ\n");
+    printf("Acelerometro X  : %d\n", auxData.accel_xout);
+    printf("Acelerometro Y  : %d\n", auxData.accel_yout);
+    printf("Acelerometro Z  : %d\n", auxData.accel_zout);
+    printf("Temperatura     : %d\n", auxData.temp_out);
+    printf("Giroscopio X    : %d\n", auxData.gyro_xout);
+    printf("Giroscopio Y    : %d\n", auxData.gyro_yout);
+    printf("Giroscopio Z    : %d\n", auxData.gyro_zout);
+    printf("|*******************************************************\n");
     close(sen_fd1);
-
     while (!FLAG_EXIT)
     {
         semop(semaforoConfig, &tomar, 1); //Tomo el semaforo
