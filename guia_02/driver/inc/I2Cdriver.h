@@ -29,22 +29,8 @@
 #define COMPATIBLE      "I2Cdriver"
 #define NOMBRE			COMPATIBLE
 
-#define XRDY			0
-#define ARDY			1
-#define RRDY			2
-
-#define NONE			0
-#define CHIPID        	_IO('N', 0x44)
-#define STD_CONFIG		_IO('N', 0x45)
-#define OPRES_CONFIG	_IO('N', 0x46)
-#define OTEMP_CONFIG	_IO('N', 0x47)
-#define GET_CONFIG		_IO('N', 0x48)
-#define RESET			_IO('N', 0x49)
-#define GET_PRES		_IO('N', 0x4A)
-#define GET_TEMP		_IO('N', 0x4B)
-#define GET_MEDICIONES 	_IO('N', 0x4C)
-#define GET_CALIB		_IO('N', 0x4E)
-
+#define Tx_MODO_LECTURA 0
+#define Tx_MODO_ESCRITURA 1
 
 static struct {
 	dev_t I2C_MPU6050;
@@ -53,23 +39,6 @@ static struct {
 	struct class *I2C_MPU6050_clase;
     struct device *I2C_MPU6050_device;
 }dev;
-
-static struct {
-	int cnt_rx;
-	int buff_rx_len;
-	int data_rx;
-
-	int cnt_tx;
-	int buff_tx_len;
-	int data_tx;
-
-	int status;
-	int config;
-	int accion;
-
-	char * buff_rx;
-	char * buff_tx;
-} data_i2c;
 
 static struct {
     uint16_t accel_xout;
@@ -93,6 +62,9 @@ int I2C_MPU6050_remove(struct platform_device *i2c_pd);
 static int __init I2C_MPU6050_init(void);
 static void __exit I2C_MPU6050_exit(void);
 
+void initMPU6050(void);
+void MPU6050_writebyte(uint8_t registro, uint8_t data, uint8_t modo);
+uint8_t MPU6050_readbyte(void);
 
 static int I2C_MPU6050_devnode(struct device *dev, struct kobj_uevent_env *env);
 //static int I2C_MPU6050_devnode(struct device *dev, umode_t *mode);
@@ -105,7 +77,6 @@ struct file_operations I2C_MPU6050_ops =
         .read = I2C_MPU6050_read,
         .write = I2C_MPU6050_write
 };
-
 
 MODULE_LICENSE("Dual BSD/GPL");
 MODULE_AUTHOR("Gavegno Sebastian");

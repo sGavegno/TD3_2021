@@ -366,9 +366,9 @@ void ProcesarCliente(int s_aux, struct sockaddr_in *pDireccionCliente, int puert
             "<p> accel_Yout = %d</p>"
             "<p> accel_Zout = %d</p>"
             "<p> temp_out   = %d</p>"
-            "<p> gyro_xout  = %d</p>"
-            "<p> gyro_xout  = %d</p>"
-            "<p> gyro_xout  = %d</p>",
+            "<p> gyro_Xout  = %d</p>"
+            "<p> gyro_Yout  = %d</p>"
+            "<p> gyro_Zout  = %d</p>",
             encabezadoHTML, SensorData->accel_xout, SensorData->accel_yout, SensorData->accel_zout,
             SensorData->temp_out, SensorData->gyro_xout, SensorData->gyro_yout, SensorData->gyro_zout);
 
@@ -404,48 +404,19 @@ void ManejadorSensor(void)
 {
     static int indiceIN = 0, indiceOUT = 0;
     static sensor_t auxSensor[100];
-    sensor_t auxSensorData, auxData;
+    sensor_t auxSensorData;
     int auxMuestreo = 0, i = 0;
-    static int sen_fd, sen_fd1;
-    srand(300); // Inicializa generador de numeros random. Podria haberle pasado cualquier número.
+    static int sen_fd;
 
     printf("Manejador del Sensor\n");
 
-    sen_fd = open("/dev/urandom", O_RDWR);
+    sen_fd = open("/dev/I2Cdriver", O_RDWR);
     if (sen_fd < 0)
-    {
-        perror("No puedo abrir urandom");
-        exit(1);
-    }
-
-    sen_fd1 = open("/dev/I2Cdriver", O_RDWR);
-    if (sen_fd1 < 0)
     {
         perror("No puedo abrir I2Cdriver\n");
         exit(1);
     }
-    printf("|*******************************************************\n");
-    printf("                    ANTES DEL READ\n");    
-    printf("Acelerometro X  : %d\n", auxData.accel_xout);
-    printf("Acelerometro Y  : %d\n", auxData.accel_yout);
-    printf("Acelerometro Z  : %d\n", auxData.accel_zout);
-    printf("Temperatura     : %d\n", auxData.temp_out);
-    printf("Giroscopio X    : %d\n", auxData.gyro_xout);
-    printf("Giroscopio Y    : %d\n", auxData.gyro_yout);
-    printf("Giroscopio Z    : %d\n", auxData.gyro_zout);
-    printf("|*******************************************************\n");
-    read(sen_fd1, &auxData, sizeof(sensor_t));
-    printf("|*******************************************************\n");
-    printf("                    DESPUES DEL READ\n");
-    printf("Acelerometro X  : %d\n", auxData.accel_xout);
-    printf("Acelerometro Y  : %d\n", auxData.accel_yout);
-    printf("Acelerometro Z  : %d\n", auxData.accel_zout);
-    printf("Temperatura     : %d\n", auxData.temp_out);
-    printf("Giroscopio X    : %d\n", auxData.gyro_xout);
-    printf("Giroscopio Y    : %d\n", auxData.gyro_yout);
-    printf("Giroscopio Z    : %d\n", auxData.gyro_zout);
-    printf("|*******************************************************\n");
-    close(sen_fd1);
+
     while (!FLAG_EXIT)
     {
         semop(semaforoConfig, &tomar, 1); //Tomo el semaforo
@@ -453,18 +424,7 @@ void ManejadorSensor(void)
         semop(semaforoConfig, &liberar, 1); //Libreo el semaforo
 
         //auxSensor[indiceIN] = leer_Sensor();
-
         read(sen_fd, &auxSensor[indiceIN], sizeof(sensor_t));
-
-        /*
-        auxSensor[indiceIN].accel_xout = rand();
-        auxSensor[indiceIN].accel_yout = rand();
-        auxSensor[indiceIN].accel_zout = rand();
-        auxSensor[indiceIN].temp_out = rand();
-        auxSensor[indiceIN].gyro_xout = rand();
-        auxSensor[indiceIN].gyro_yout = rand();
-        auxSensor[indiceIN].gyro_zout = rand();
-        */
 
         if (indiceIN < 99)
         {
@@ -476,7 +436,6 @@ void ManejadorSensor(void)
             indiceOUT = 99;
             indiceIN = 0;
         }
-
         for (i = 0; i < auxMuestreo; i++)
         {
             auxSensorData.accel_xout += auxSensor[indiceOUT].accel_xout;
@@ -505,6 +464,10 @@ void ManejadorSensor(void)
             auxSensorData.gyro_zout = auxSensorData.gyro_zout / auxMuestreo;
         }
 
+            //Convierto a float y lo puedo mostrar en pantalla en User Space
+            auxSensorData.temp_out = ((float)auxSensorData.temp_out) / 340 + 36.53; 
+	       
+
         semop(semaforoSensor, &tomar, 1); //Tomo el semaforo
         SensorData->accel_xout = auxSensorData.accel_xout;
         SensorData->accel_yout = auxSensorData.accel_yout;
@@ -515,7 +478,7 @@ void ManejadorSensor(void)
         SensorData->gyro_zout = auxSensorData.gyro_zout;
         semop(semaforoSensor, &liberar, 1); //Libreo el semaforo
 
-        sleep(0.01); //ver scl frecuencia del sensor
+        sleep(0.5); //ver scl frecuencia del sensor
     }
 
     close(sen_fd);

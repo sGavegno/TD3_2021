@@ -1,5 +1,9 @@
 
 
+#define MPU6050_ADDRESS_AD0_LOW     0x68 // address pin low (GND), default for InvenSense evaluation board
+#define MPU6050_ADDRESS_AD0_HIGH    0x69 // address pin high (VCC)
+#define MPU6050_DEFAULT_ADDRESS     MPU6050_ADDRESS_AD0_LOW
+
 /* Mapa de Registros MPU6050 */
 /*
         Register Name       Addr            Serial    |  Bit7  |  Bit6  |  Bit5  |  Bit4  |  Bit3  |  Bit2  |  Bit1  |  Bit0  |
@@ -141,3 +145,23 @@
 #define FIFO_R_W            0x74            // R/W    |                             FIFO_DATA[7:0]                            |
 #define WHO_AM_I            0x75            // R      |    -   |                     WHO_AM_I[6:1]                   |   -    |
 
+   // Set initial input parameters
+   enum Ascale {
+     AFS_2G = 0,
+     AFS_4G,
+     AFS_8G,
+     AFS_16G
+   };
+
+   enum Gscale {
+     GFS_250DPS = 0,
+     GFS_500DPS,
+     GFS_1000DPS,
+     GFS_2000DPS
+   };
+
+   enum Aaxis {
+     AXIS_X = 1,
+     AXIS_Y,
+     AXIS_Z
+   };

@@ -56,8 +56,8 @@
     #define I2C_OA_VALUE                        0x00000036 // dir random porque no uso multimaster
 #define I2C_SA                                  0x000000AC // Page 4638
     #define I2C_SA_MASK                         0x000001FF
-    #define I2C_SA_ADDRESS                      I2C_SLV0_ADDR
-#define I2C_PSC                                 0x000000B0 // Page 4639, el SystemClock es 48MHz CREO
+    #define I2C_SA_ADDRESS                      MPU6050_DEFAULT_ADDRESS
+#define I2C_PSC                                 0x000000B0 // Page 4639, el SystemClock es 48MHz
     #define I2C_PSC_MASK                        0x000000FF
     #define I2C_PSC_VALUE                       0x00000003 // divided by 3, 48MHz/4 = 12MHz (page4589)
 #define I2C_SCLL                                0x000000B4 // Page 4640
