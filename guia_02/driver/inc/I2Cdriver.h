@@ -32,6 +32,22 @@
 #define Tx_MODO_LECTURA 0
 #define Tx_MODO_ESCRITURA 1
 
+#define XRDY			0
+#define ARDY			1
+#define RRDY			2
+
+#define NONE			0
+#define CHIPID        	_IO('N', 0x44)
+#define STD_CONFIG		_IO('N', 0x45)
+#define OPRES_CONFIG	_IO('N', 0x46)
+#define OTEMP_CONFIG	_IO('N', 0x47)
+#define GET_CONFIG		_IO('N', 0x48)
+#define RESET			_IO('N', 0x49)
+#define GET_PRES		_IO('N', 0x4A)
+#define GET_TEMP		_IO('N', 0x4B)
+#define GET_MEDICIONES 	_IO('N', 0x4C)
+#define GET_CALIB		_IO('N', 0x4E)
+
 static struct {
 	dev_t I2C_MPU6050;
 

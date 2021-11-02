@@ -464,9 +464,16 @@ void ManejadorSensor(void)
             auxSensorData.gyro_zout = auxSensorData.gyro_zout / auxMuestreo;
         }
 
-            //Convierto a float y lo puedo mostrar en pantalla en User Space
+            //Aplico factor de convercion
+            //auxSensorData.accel_xout = (float)auxSensorData.accel_xout * (2 * 9.81 /32768);
+            //auxSensorData.accel_xout = (float)auxSensorData.accel_xout * (2 * 9.81 /32768);
+            //auxSensorData.accel_xout = (float)auxSensorData.accel_xout * (2 * 9.81 /32768);
+
             auxSensorData.temp_out = ((float)auxSensorData.temp_out) / 340 + 36.53; 
 	       
+            //auxSensorData.gyro_xout = (float)auxSensorData.gyro_xout * (250/32768);
+            //auxSensorData.gyro_yout = (float)auxSensorData.gyro_yout * (250/32768);
+            //auxSensorData.gyro_zout = (float)auxSensorData.gyro_zout * (250/32768);
 
         semop(semaforoSensor, &tomar, 1); //Tomo el semaforo
         SensorData->accel_xout = auxSensorData.accel_xout;
@@ -478,7 +485,7 @@ void ManejadorSensor(void)
         SensorData->gyro_zout = auxSensorData.gyro_zout;
         semop(semaforoSensor, &liberar, 1); //Libreo el semaforo
 
-        sleep(0.5); //ver scl frecuencia del sensor
+        sleep(0.1); //ver scl frecuencia del sensor
     }
 
     close(sen_fd);
