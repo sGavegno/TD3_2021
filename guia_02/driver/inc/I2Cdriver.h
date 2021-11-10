@@ -32,6 +32,7 @@
 #define Tx_MODO_LECTURA 0
 #define Tx_MODO_ESCRITURA 1
 
+/*
 #define XRDY			0
 #define ARDY			1
 #define RRDY			2
@@ -47,6 +48,7 @@
 #define GET_TEMP		_IO('N', 0x4B)
 #define GET_MEDICIONES 	_IO('N', 0x4C)
 #define GET_CALIB		_IO('N', 0x4E)
+*/
 
 static struct {
 	dev_t I2C_MPU6050;
@@ -55,16 +57,6 @@ static struct {
 	struct class *I2C_MPU6050_clase;
     struct device *I2C_MPU6050_device;
 }dev;
-
-static struct {
-    uint16_t accel_xout;
-    uint16_t accel_yout;
-    uint16_t accel_zout;
-    int16_t temp_out;
-    uint16_t gyro_xout;
-    uint16_t gyro_yout;
-    uint16_t gyro_zout;
-} datosI2C;
 
 /*------------------Prototipos------------------*/
 int I2C_MPU6050_open(struct inode *inode, struct file *file);
@@ -80,7 +72,10 @@ static void __exit I2C_MPU6050_exit(void);
 
 void initMPU6050(void);
 void MPU6050_writebyte(uint8_t registro, uint8_t data, uint8_t modo);
-uint8_t MPU6050_readbyte(void);
+int8_t MPU6050_readbyte(void);
+
+void MPU6050_writeFIFO(uint8_t registro);
+uint8_t MPU6050_readFIFO(uint16_t cant);
 
 static int I2C_MPU6050_devnode(struct device *dev, struct kobj_uevent_env *env);
 //static int I2C_MPU6050_devnode(struct device *dev, umode_t *mode);
@@ -93,6 +88,7 @@ struct file_operations I2C_MPU6050_ops =
         .read = I2C_MPU6050_read,
         .write = I2C_MPU6050_write
 };
+
 
 MODULE_LICENSE("Dual BSD/GPL");
 MODULE_AUTHOR("Gavegno Sebastian");

@@ -2,6 +2,7 @@
 #include "../inc/ServidorWeb.h"
 #include "../inc/funciones.h"
 #include "../inc/configuracion.h"
+#include "../inc/funcSIMD.h"
 
 /*---------------------FLAGS-------------------*/
 bool FLAG_CONEXION = false;
@@ -14,6 +15,8 @@ config_t *configuracionServer;
 sensor_t *SensorData;
 struct sembuf tomar = {0, -1, SEM_UNDO};   // Estructura para tomar el semáforo
 struct sembuf liberar = {0, +1, SEM_UNDO}; // Estructura para liberar el semáforo
+
+uint32_t cantHijos = 0;
 
 /***********************************************************
 * MAIN                                           
@@ -106,10 +109,6 @@ int main(int argc, char *argv[])
     printf("|                                                       \n");
     printf("|*******************************************************\n");
 
-    /*************************************************************
-*               AGREGAR CONFIGURACION DEL SENSOR?            *
-**************************************************************/
-
     //--------Configuracion del Server----------
     semop(semaforoConfig, &tomar, 1); //Tomo el semaforo
     configuracion_init(configuracionServer);
@@ -150,7 +149,7 @@ int main(int argc, char *argv[])
         exit(1);
     }
 
-    printf("\nIngrese en el navegador http://192.168.17.128:%s\n", argv[1]);
+    printf("\nIngrese en el navegador http://192.168.1.XX:%s\n", argv[1]);
 
     // Indicar que el socket encole hasta backlog pedidos de conexion simultaneas.
     semop(semaforoConfig, &tomar, 1); //Tomo el semaforo
@@ -188,7 +187,7 @@ int main(int argc, char *argv[])
         close(sock);
         exit(1);
     }
-
+    cantHijos++;
     printf("|*******************************************************\n");
     printf("|                                                       \n");
     printf("|Proceso Sensor ID = %d                                 \n", sensorPID);
@@ -215,6 +214,7 @@ int main(int argc, char *argv[])
         close(sock);
         exit(1);
     }
+    cantHijos++;
     printf("|*******************************************************\n");
     printf("|                                                       \n");
     printf("|Proceso Config ID = %d                                 \n", confPID);
@@ -287,7 +287,7 @@ int main(int argc, char *argv[])
                     perror("No se puede crear un nuevo proceso mediante fork");
                     close(sock);
                     exit(1);
-                }
+                }cantHijos++;
                 if (clientePID == 0)
                 {                                     // Proceso hijo.
                     semop(semaforoConfig, &tomar, 1); //Tomo el semaforo
@@ -312,13 +312,30 @@ int main(int argc, char *argv[])
         }
     }
 
-    semctl(semaforoSensor, 0, IPC_RMID);     //Cierro el semaforo del sensor
-    shmdt(sharMemSensor);                    //Separo la memoria del sensor del proceso
-    shmctl(sharMemIdSensor, IPC_RMID, NULL); //Cierro la Shared Memory del sensor
-    semctl(semaforoConfig, 0, IPC_RMID);     //Cierro el semaforo de la configuracion
-    shmdt(sharMemConfig);                    //Separo la memoria de la configuracion del proceso
-    shmctl(sharMemIdConfig, IPC_RMID, NULL); //Cierro la Shared Memory de la configuracion
-    close(sock);
+    // Esperando a que mueran los hijos para luego matar al padre.
+    while(1) 
+    {
+        printf("----------------------------------------------------\n");
+        printf("SERVIDOR: Esperando que mueran los hijos...\n");
+        printf("----------------------------------------------------\n");
+        if(cantHijos == 0)
+        {
+            close(sock);
+            semctl(semaforoSensor, 0, IPC_RMID);     //Cierro el semaforo del sensor
+            shmdt(sharMemSensor);                    //Separo la memoria del sensor del proceso
+            shmctl(sharMemIdSensor, IPC_RMID, NULL); //Cierro la Shared Memory del sensor
+            semctl(semaforoConfig, 0, IPC_RMID);     //Cierro el semaforo de la configuracion
+            shmdt(sharMemConfig);                    //Separo la memoria de la configuracion del proceso
+            shmctl(sharMemIdConfig, IPC_RMID, NULL); //Cierro la Shared Memory de la configuracion
+            
+            printf("----------------------------------------------------\n");
+            printf("SERVIDOR: Murio el padre\n");
+            printf("----------------------------------------------------\n");
+            return 0;
+        }
+        sleep(1);
+    }
+   
 }
 
 /**
@@ -360,15 +377,15 @@ void ProcesarCliente(int s_aux, struct sockaddr_in *pDireccionCliente, int puert
                             "<h1>ServerWeb</h1>");
 
     sprintf(HTML,
-            "%s<p> Esta es una prueba del Servidor Web.</p>"
-            "<p> Valores del sensor: </p>"
-            "<p> accel_Xout = %d</p>"
-            "<p> accel_Yout = %d</p>"
-            "<p> accel_Zout = %d</p>"
-            "<p> temp_out   = %d</p>"
-            "<p> gyro_Xout  = %d</p>"
-            "<p> gyro_Yout  = %d</p>"
-            "<p> gyro_Zout  = %d</p>",
+            "%s<p> Servidor Web.</p>"
+            "<p> Valores del sensor MPU6050: </p>"
+            "<p> accel_Xout = %.02fg </p>"
+            "<p> accel_Yout = %.02fg </p>"
+            "<p> accel_Zout = %.02fg </p>"
+            "<p> temp_out   = %.02f° </p>"
+            "<p> gyro_Xout  = %.02f°/s </p>"
+            "<p> gyro_Yout  = %.02f°/s </p>"
+            "<p> gyro_Zout  = %.02f°/s </p>",
             encabezadoHTML, SensorData->accel_xout, SensorData->accel_yout, SensorData->accel_zout,
             SensorData->temp_out, SensorData->gyro_xout, SensorData->gyro_yout, SensorData->gyro_zout);
 
@@ -402,11 +419,10 @@ void ProcesarCliente(int s_aux, struct sockaddr_in *pDireccionCliente, int puert
 **/
 void ManejadorSensor(void)
 {
-    static int indiceIN = 0, indiceOUT = 0;
-    static sensor_t auxSensor[100];
-    sensor_t auxSensorData;
-    int auxMuestreo = 0, i = 0;
+    sensor_t auxDatos;
+    int auxMuestreo = 0;
     static int sen_fd;
+    uint8_t *bufferMPU6050;
 
     printf("Manejador del Sensor\n");
 
@@ -423,69 +439,24 @@ void ManejadorSensor(void)
         auxMuestreo = configuracionServer->muestreo;
         semop(semaforoConfig, &liberar, 1); //Libreo el semaforo
 
-        //auxSensor[indiceIN] = leer_Sensor();
-        read(sen_fd, &auxSensor[indiceIN], sizeof(sensor_t));
+        bufferMPU6050 = malloc(auxMuestreo * sizeof(sensorMPU_t));
 
-        if (indiceIN < 99)
-        {
-            indiceOUT = indiceIN;
-            indiceIN++;
-        }
-        else
-        {
-            indiceOUT = 99;
-            indiceIN = 0;
-        }
-        for (i = 0; i < auxMuestreo; i++)
-        {
-            auxSensorData.accel_xout += auxSensor[indiceOUT].accel_xout;
-            auxSensorData.accel_yout += auxSensor[indiceOUT].accel_yout;
-            auxSensorData.accel_zout += auxSensor[indiceOUT].accel_zout;
-            auxSensorData.temp_out += auxSensor[indiceOUT].temp_out;
-            auxSensorData.gyro_xout += auxSensor[indiceOUT].gyro_xout;
-            auxSensorData.gyro_yout += auxSensor[indiceOUT].gyro_yout;
-            auxSensorData.gyro_zout += auxSensor[indiceOUT].gyro_zout;
+        read(sen_fd, bufferMPU6050, auxMuestreo*sizeof(sensorMPU_t));
 
-            if (indiceOUT > 0)
-            {
-                indiceOUT--;
-            }
-            else
-            {
-                indiceOUT = 99;
-            }
-
-            auxSensorData.accel_xout = auxSensorData.accel_xout / auxMuestreo;
-            auxSensorData.accel_yout = auxSensorData.accel_yout / auxMuestreo;
-            auxSensorData.accel_zout = auxSensorData.accel_zout / auxMuestreo;
-            auxSensorData.temp_out = auxSensorData.temp_out / auxMuestreo;
-            auxSensorData.gyro_xout = auxSensorData.gyro_xout / auxMuestreo;
-            auxSensorData.gyro_yout = auxSensorData.gyro_yout / auxMuestreo;
-            auxSensorData.gyro_zout = auxSensorData.gyro_zout / auxMuestreo;
-        }
-
-            //Aplico factor de convercion
-            //auxSensorData.accel_xout = (float)auxSensorData.accel_xout * (2 * 9.81 /32768);
-            //auxSensorData.accel_xout = (float)auxSensorData.accel_xout * (2 * 9.81 /32768);
-            //auxSensorData.accel_xout = (float)auxSensorData.accel_xout * (2 * 9.81 /32768);
-
-            auxSensorData.temp_out = ((float)auxSensorData.temp_out) / 340 + 36.53; 
-	       
-            //auxSensorData.gyro_xout = (float)auxSensorData.gyro_xout * (250/32768);
-            //auxSensorData.gyro_yout = (float)auxSensorData.gyro_yout * (250/32768);
-            //auxSensorData.gyro_zout = (float)auxSensorData.gyro_zout * (250/32768);
+        auxDatos = PromedioSIMD( bufferMPU6050, auxMuestreo);
 
         semop(semaforoSensor, &tomar, 1); //Tomo el semaforo
-        SensorData->accel_xout = auxSensorData.accel_xout;
-        SensorData->accel_yout = auxSensorData.accel_yout;
-        SensorData->accel_zout = auxSensorData.accel_zout;
-        SensorData->temp_out = auxSensorData.temp_out;
-        SensorData->gyro_xout = auxSensorData.gyro_xout;
-        SensorData->gyro_yout = auxSensorData.gyro_yout;
-        SensorData->gyro_zout = auxSensorData.gyro_zout;
+        SensorData->accel_xout = auxDatos.accel_xout;
+        SensorData->accel_yout = auxDatos.accel_yout;
+        SensorData->accel_zout = auxDatos.accel_zout;
+        SensorData->temp_out = auxDatos.temp_out;
+        SensorData->gyro_xout = auxDatos.gyro_xout;
+        SensorData->gyro_yout = auxDatos.gyro_yout;
+        SensorData->gyro_zout = auxDatos.gyro_zout;
         semop(semaforoSensor, &liberar, 1); //Libreo el semaforo
 
-        sleep(0.1); //ver scl frecuencia del sensor
+        free(bufferMPU6050);
+        sleep(1);
     }
 
     close(sen_fd);
@@ -582,6 +553,7 @@ void SIGCHLD_handler(int sig)
         deadchild = waitpid(-1, NULL, WNOHANG);
         if (deadchild > 0)
         {
+            cantHijos--;
             printf("Murio el hijo ID=%d\r\n", deadchild);
         }
     }

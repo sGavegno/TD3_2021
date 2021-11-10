@@ -10,10 +10,15 @@
 static void __iomem *cmper_baseAddr, *ctlmod_baseAddr, *i2c2_baseAddr;
 volatile int virq;
 
-uint8_t tx_registro = 0;
-uint8_t tx_modo = 0;
-uint8_t tx_data = 0;
-uint8_t rx_data = 0;
+volatile uint8_t tx_registro = 0;
+volatile uint8_t tx_modo = 0;
+volatile uint8_t tx_data = 0;
+volatile uint8_t rx_data = 0;
+volatile uint16_t rx_cant = 0;
+uint8_t *bufferFIFO;
+
+volatile int8_t buff_FIFO[140];
+
 
 char *MPUpage;
 
@@ -21,7 +26,6 @@ char *MPUpage;
 volatile int queue_cond = 0;
 wait_queue_head_t queue = __WAIT_QUEUE_HEAD_INITIALIZER(queue);
 wait_queue_head_t queue_in = __WAIT_QUEUE_HEAD_INITIALIZER(queue_in);
-wait_queue_head_t queue_ctrlopen = __WAIT_QUEUE_HEAD_INITIALIZER(queue_ctrlopen);
 
 // variables para config
 int Gscale = GFS_250DPS;
@@ -49,13 +53,14 @@ static struct platform_driver I2C_MPU6050_pd = {
 int I2C_MPU6050_open(struct inode *inode, struct file *file)
 {
 	pr_alert("%s: I2C driver open\n", ID);
-
+/*
 	// pido una pagina para usar como espacio lectura (vector)
 	if ((MPUpage = (char *)__get_free_page(GFP_KERNEL)) < 0)
 	{
 		pr_alert("%s: Falla al pedir memoria\n", ID);
 		return -1;
 	}
+	*/
 	pr_alert("%s: I2C driver open exit\n", ID);
 
 	return 0;
@@ -64,112 +69,92 @@ int I2C_MPU6050_open(struct inode *inode, struct file *file)
 int I2C_MPU6050_release(struct inode *inode, struct file *file)
 {
 	pr_alert("%s: I2C driver close\n", ID);
+	/*
 	// libero la pagina que tome para lectura
 	free_page((unsigned long)MPUpage);
+	*/
 	return 0;
 }
 
-ssize_t I2C_MPU6050_write(struct file *file, const char __user *userbuff, size_t tamano, loff_t *offset)
+ssize_t I2C_MPU6050_write(struct file *file, const char __user *userbuff, size_t len, loff_t *offset)
 {
 	pr_alert("%s: I2C driver write\n", ID);
 	return 0;
 }
 
-ssize_t I2C_MPU6050_read(struct file *file, char __user *userbuff, size_t tamano, loff_t *offset)
+ssize_t I2C_MPU6050_read(struct file *file, char __user *userbuff, size_t len, loff_t *offset)
 {
-	uint8_t aux_H, aux_L;
+	//uint8_t aux_H, aux_L;
+	uint16_t countFIFO;
+	uint8_t buffcountFIFO[2];
+	uint32_t i = 0;
+	int16_t auxTem, temp_out;
 
 	pr_alert("%s: I2C driver read\n", ID);
 
-	if (access_ok(VERIFY_WRITE, userbuff, tamano) == 0)
+	if (access_ok(VERIFY_WRITE, userbuff, len) == 0)
 	{
 		pr_alert("%s: Falla buffer de usuario\n", ID);
 		return -1;
 	}
-	//Nunca leer mas del tamaño limite de memoria de datos.
-	if (tamano > sizeof(datosI2C))
+	
+	//Nunca leer mas del tamaño limite de memoria de datos.	1022
+	if (len > 1022)
 	{
-		tamano = sizeof(datosI2C); //Si me pasan un tamaño mayor al de la estructura lo seteo con el maximo
+		len = 1022; //Si me pasan un tamaño mayor al de la estructura lo seteo con el maximo
 	}
-	pr_alert("%sdato: Lectura MPU6050\n", ID);
-	pr_alert("%sdato:----------------------------------------\n", ID);
-	// leo HSB acelerometro
-	MPU6050_writebyte(ACCEL_XOUT_H, 0x00, Tx_MODO_LECTURA);
-	aux_H = MPU6050_readbyte();
-	// leo LSB acelerometro
-	MPU6050_writebyte(ACCEL_XOUT_L, 0x00, Tx_MODO_LECTURA);
-	aux_L = MPU6050_readbyte();
-	// Dato de 16 bits
-	datosI2C.accel_xout = (uint16_t)((aux_H << 8) | aux_L);
-	pr_alert("%sdato: Acelerometro eje X:  %d\n", ID, datosI2C.accel_xout);
+	
+	if (len % 14 != 0)
+	{
+		pr_alert("%s: El tamaño pasado no es multiplo de 14\n", ID);
+		return -1;
+	}
 
-	// leo HSB acelerometro
-	MPU6050_writebyte(ACCEL_YOUT_H, 0x00, Tx_MODO_LECTURA);
-	aux_H = MPU6050_readbyte();
-	// leo LSB acelerometro
-	MPU6050_writebyte(ACCEL_YOUT_L, 0x00, Tx_MODO_LECTURA);
-	aux_L = MPU6050_readbyte();
-	// Dato de 16 bits
-	datosI2C.accel_yout = (uint16_t)((aux_H << 8) | aux_L);
-	pr_alert("%sdato: Acelerometro eje Y:  %d\n", ID, datosI2C.accel_yout);
+	bufferFIFO = (uint8_t *) kmalloc( len * sizeof(uint8_t), GFP_KERNEL);
+	if(bufferFIFO == NULL)
+	{
+		pr_alert("%s: No se pude pedir memoria en Kernel\n", ID);
+		return -1;
+	}
 
-	// leo HSB acelerometro
-	MPU6050_writebyte(ACCEL_ZOUT_H, 0x00, Tx_MODO_LECTURA);
-	aux_H = MPU6050_readbyte();
-	// leo LSB acelerometro
-	MPU6050_writebyte(ACCEL_ZOUT_L, 0x00, Tx_MODO_LECTURA);
-	aux_L = MPU6050_readbyte();
-	// Dato de 16 bits
-	datosI2C.accel_zout = (uint16_t)((aux_H << 8) | aux_L);
-	pr_alert("%sdato: Acelerometro eje Z:  %d\n", ID, datosI2C.accel_zout);
+	//bit 6 FIFO_EN 	a 1
+	//bit 2 FIFO_RESET	a 1
+	MPU6050_writebyte(USER_CTRL, 0x44, Tx_MODO_ESCRITURA);
+	//msleep(10);
+	do
+	{
+		// leo cant de datos FIFO
+		MPU6050_writebyte(FIFO_COUNTH, 0x00, Tx_MODO_LECTURA);
+		buffcountFIFO[0] = MPU6050_readbyte();
 
-	// leo HSB Temperatura
-	MPU6050_writebyte(TEMP_OUT_H, 0x00, Tx_MODO_LECTURA);
-	aux_H = MPU6050_readbyte();
-	// leo LSB Temperatura
-	MPU6050_writebyte(TEMP_OUT_L, 0x00, Tx_MODO_LECTURA);
-	aux_L = MPU6050_readbyte();
-	// Dato de 16 bits
-	datosI2C.temp_out = (uint16_t)((aux_H << 8) | aux_L);
-	pr_alert("%sdato: Temperatura:  %d\n", ID, datosI2C.temp_out);
+		MPU6050_writebyte(FIFO_COUNTL, 0x00, Tx_MODO_LECTURA);
+		buffcountFIFO[1] = MPU6050_readbyte();
+		countFIFO = (uint16_t)((buffcountFIFO[0] << 8) | buffcountFIFO[1]);
+		pr_info("%s: Comparo Tam FIFO %d Tam Lectura %d\n", ID, countFIFO, len);
+	} while (countFIFO < len);
 
-	// leo HSB Gyroscopio
-	MPU6050_writebyte(GYRO_XOUT_H, 0x00, Tx_MODO_LECTURA);
-	aux_H = MPU6050_readbyte();
-	// leo LSB Gyroscopio
-	MPU6050_writebyte(GYRO_XOUT_L, 0x00, Tx_MODO_LECTURA);
-	aux_L = MPU6050_readbyte();
-	// Dato de 16 bits
-	datosI2C.gyro_xout = (uint16_t)((aux_H << 8) | aux_L);
-	pr_alert("%sdato: Gyroscopio eje X:  %d\n", ID, datosI2C.gyro_xout);
+	//rx_cant = len;
+	MPU6050_writebyte(FIFO_R_W, 0x00, Tx_MODO_LECTURA);
+	MPU6050_readFIFO(len);
 
-	// leo HSB Gyroscopio
-	MPU6050_writebyte(GYRO_YOUT_H, 0x00, Tx_MODO_LECTURA);
-	aux_H = MPU6050_readbyte();
-	// leo LSB Gyroscopio
-	MPU6050_writebyte(GYRO_YOUT_L, 0x00, Tx_MODO_LECTURA);
-	aux_L = MPU6050_readbyte();
-	// Dato de 16 bits
-	datosI2C.gyro_yout = (uint16_t)((aux_H << 8) | aux_L);
-	pr_alert("%sdato: Gyroscopio eje Y:  %d\n", ID, datosI2C.gyro_yout);
+	pr_info("\n%s:*****************************************\n", ID);
+	while(i < len)
+	{
+    	auxTem = (uint16_t)(bufferFIFO[i+6] << 8 | bufferFIFO[i+7]);
+	    temp_out = auxTem / 340 + 36;
+	    pr_info("%s:Valor de Temperatura en Driver:    %d°\n", ID, temp_out);
+		i+=14;
+	}
+	pr_info("%s:******************************************\n\n", ID);
+	i=0;
 
-	// leo HSB Gyroscopio
-	MPU6050_writebyte(GYRO_ZOUT_H, 0x00, Tx_MODO_LECTURA);
-	aux_H = MPU6050_readbyte();
-	// leo LSB Gyroscopio
-	MPU6050_writebyte(GYRO_ZOUT_L, 0x00, Tx_MODO_LECTURA);
-	aux_L = MPU6050_readbyte();
-	// Dato de 16 bits
-	datosI2C.gyro_zout = (uint16_t)((aux_H << 8) | aux_L);
-	pr_alert("%sdato: Gyroscopio eje Z:  %d\n", ID, datosI2C.gyro_zout);
-	pr_alert("%sdato: ----------------------------------------\n", ID);
-
-	pr_alert("%s: copy_to_user\n", ID);
-	if (copy_to_user(userbuff, &datosI2C, tamano) > 0) //en copia correcta devuelve 0
+	if (copy_to_user(userbuff, bufferFIFO, len) > 0) //en copia correcta devuelve 0
 	{
 		pr_alert("%s: Falla en copia de buffer de kernel a buffer de usuario\n", ID);
 		return -1;
 	}
+	
+	kfree(bufferFIFO);
 
 	return 0;
 }
@@ -177,6 +162,7 @@ ssize_t I2C_MPU6050_read(struct file *file, char __user *userbuff, size_t tamano
 irqreturn_t i2c_irq_handler(int irq, void *dev_id, struct pt_regs *regs)
 {
 	static uint8_t cont = 0;
+	static uint32_t contRx = 0;
 	uint32_t irq_status;
 	uint32_t reg_valor;
 
@@ -192,22 +178,37 @@ irqreturn_t i2c_irq_handler(int irq, void *dev_id, struct pt_regs *regs)
 
 	if (irq_status & I2C_IRQSTATUS_RRDY)
 	{
-		// leo dato
-		rx_data = ioread8(i2c2_baseAddr + I2C_DATA);
-		pr_alert("%s: IRQ handler source -> RX: %#04x\n", ID, rx_data);
+		if (rx_cant > 1)
+		{
+			bufferFIFO[contRx] = ioread8(i2c2_baseAddr + I2C_DATA);
+            pr_alert("%s: IRQ FIFO handler source -> RX[%d]: 0x%x\n", ID, contRx, bufferFIFO[contRx]);
+			//bufferFIFO[contRx] = rx_data;
+		}
+		else
+		{
+			// leo dato
+			rx_data = ioread8(i2c2_baseAddr + I2C_DATA);
+			pr_alert("%s: IRQ handler source -> RX: 0x%x\n", ID, rx_data);
+		}
+
+		contRx++;
+
+		if (contRx == rx_cant)
+		{	
+			contRx = 0;
+			rx_cant = 0;
+			// desabilito interupcion rx
+			reg_valor = ioread32(i2c2_baseAddr + I2C_IRQENABLE_CLR);
+			reg_valor |= I2C_IRQSTATUS_RRDY;
+			iowrite32(reg_valor, i2c2_baseAddr + I2C_IRQENABLE_CLR);
+			// wake up read
+			queue_cond = 1;
+			wake_up_interruptible(&queue);
+		}
 		// borro flags
 		reg_valor = ioread32(i2c2_baseAddr + I2C_IRQSTATUS);
 		reg_valor |= 0x27;
 		iowrite32(reg_valor, i2c2_baseAddr + I2C_IRQSTATUS);
-
-		// desabilito interupcion rx
-		reg_valor = ioread32(i2c2_baseAddr + I2C_IRQENABLE_CLR);
-		reg_valor |= I2C_IRQSTATUS_RRDY;
-		iowrite32(reg_valor, i2c2_baseAddr + I2C_IRQENABLE_CLR);
-
-		// wake up read
-		queue_cond = 1;
-		wake_up_interruptible(&queue);
 	}
 
 	if (irq_status & I2C_IRQSTATUS_XRDY)
@@ -216,7 +217,7 @@ irqreturn_t i2c_irq_handler(int irq, void *dev_id, struct pt_regs *regs)
 		{
 			if (cont > 0)
 			{
-				pr_alert("%s: IRQ handler source -> TX_dato: %#04x\n", ID, tx_data);
+				pr_alert("%s: IRQ handler source -> TX_dato: 0x%x\n", ID, tx_data);
 				// escribo dato
 				iowrite8(tx_data, i2c2_baseAddr + I2C_DATA);
 				cont = 0;
@@ -229,11 +230,11 @@ irqreturn_t i2c_irq_handler(int irq, void *dev_id, struct pt_regs *regs)
 				// wake up write
 				queue_cond = 1;
 				wake_up(&queue_in); //ininterumpible
-				//wake_up_interruptible(&queue);
+									//wake_up_interruptible(&queue);
 			}
 			else
 			{
-				pr_alert("%s: IRQ handler source -> TX_reg: %#04x\n", ID, tx_registro);
+				pr_alert("%s: IRQ handler source -> TX_reg: 0x%x\n", ID, tx_registro);
 				// write registro
 				iowrite8(tx_registro, i2c2_baseAddr + I2C_DATA);
 				cont++;
@@ -241,13 +242,13 @@ irqreturn_t i2c_irq_handler(int irq, void *dev_id, struct pt_regs *regs)
 		}
 		if (tx_modo == Tx_MODO_LECTURA)
 		{
-			pr_alert("%s: IRQ handler source -> TX_reg: %#04x\n", ID, tx_registro);
+			pr_alert("%s: IRQ handler source -> TX_reg: 0x%x\n", ID, tx_registro);
 			// escribo registro
 			iowrite8(tx_registro, i2c2_baseAddr + I2C_DATA);
 			// wake up write
 			queue_cond = 1;
 			wake_up(&queue_in); //ininterumpible
-			//wake_up_interruptible(&queue);
+								//wake_up_interruptible(&queue);
 		}
 
 		// Borro flags
@@ -341,18 +342,24 @@ int I2C_MPU6050_probe(struct platform_device *i2c_pd)
 	iowrite32(0x00, i2c2_baseAddr + I2C_CON);
 	// config prescaler a 12MHz
 	iowrite32(0x03, i2c2_baseAddr + I2C_PSC); //Prescaler de 3 -> div 4
+	//iowrite32(0x01, i2c2_baseAddr + I2C_PSC); //Prescaler de 1 -> div 4
 
-	// config SCL
-	iowrite32(0x08, i2c2_baseAddr + I2C_SCLL); // SCL_LOW = (SCLL + 7)* 1 / 12Mhz =  1,25uS   (MPU6050 -> MAX 2,5 us - MIN 0,6us)
-	iowrite32(0x14, i2c2_baseAddr + I2C_SCLH); // SCL_HIGH = (SCLH + 7)* 1 / 12Mhz = 1,666666us (MPU6050 -> MAX 2,5 us - MIN 1,3us)
+	// config SCL	MAX 400khz
+	// Velocidad calculada = 100Khz
+	//iowrite32(0x35, i2c2_baseAddr + I2C_SCLL); //(1/12)*(SCLL+7) = 5uS
+	//iowrite32(0x37, i2c2_baseAddr + I2C_SCLH); //(1/12)*(SCLH+5) = 5uS
+	// Velocidad calculada = 342Khz
+	iowrite32(0x08, i2c2_baseAddr + I2C_SCLL); //(1/12)*(SCLL+7) =  1,25uS
+	iowrite32(0x14, i2c2_baseAddr + I2C_SCLH); //(1/12)*(SCLH+5) = 1,666666us
 
-	// set a random own address
-	//iowrite32(0x77, i2c2_baseAddr + I2C_OA);
+	// Direccion propia (OWN ADDRESS)	direccion cualquiera
+	iowrite32(0x95, i2c2_baseAddr + I2C_OA);
 
 	// slave address -> MPU6050
 	iowrite32(MPU6050_DEFAULT_ADDRESS, i2c2_baseAddr + I2C_SA);
 
 	// config registro -> ENABLE & MASTER & RX & STOP
+	//iowrite32(0x8400, i2c2_baseAddr + I2C_CON);
 	iowrite32(0x8000, i2c2_baseAddr + I2C_CON);
 
 	// inicializacion IMU MPU6050
@@ -494,14 +501,29 @@ void initMPU6050(void)
 	// get stable time source
 	MPU6050_writebyte(PWR_MGMT_1, 0x01, Tx_MODO_ESCRITURA); // Set clock source to be PLL with x-axis gyroscope reference, bits 2:0 = 001
 
+	// Configure Gyro and Accelerometer
+	// Disable FSYNC and set accelerometer and gyro bandwidth to 44 and 42 Hz, respectively;
+	// DLPF_CFG = bits 2:0 = 010; this sets the sample rate at 1 kHz for both
+	MPU6050_writebyte(CONFIG, 0x03, Tx_MODO_ESCRITURA);
+
 	// Set sample rate = gyroscope output rate/(1 + SMPLRT_DIV)
-	MPU6050_writebyte(SMPLRT_DIV, 0x04, Tx_MODO_ESCRITURA); // Use a 200 Hz sample rate
+	MPU6050_writebyte(SMPLRT_DIV, 0x64, Tx_MODO_ESCRITURA); // Use a 10 Hz sample rate 100ms
 
 	// Set gyroscope configuration
-	MPU6050_writebyte(GYRO_CONFIG, 0x00, Tx_MODO_ESCRITURA); // Set full scale range for the gyro
+	//MPU6050_writebyte(GYRO_CONFIG, 0x00, Tx_MODO_ESCRITURA);
+	MPU6050_writebyte(GYRO_CONFIG, 0x00, Tx_MODO_LECTURA);
+    aux = MPU6050_readbyte();
+	MPU6050_writebyte(GYRO_CONFIG, aux & ~0xE0, Tx_MODO_ESCRITURA);
+	MPU6050_writebyte(GYRO_CONFIG, aux & ~0x18, Tx_MODO_ESCRITURA);
+	MPU6050_writebyte(GYRO_CONFIG, aux | Gscale << 3, Tx_MODO_ESCRITURA);
 
 	// Set accelerometer configuration
-	MPU6050_writebyte(ACCEL_CONFIG, 0x18, Tx_MODO_ESCRITURA); // Set full scale range for the accelerometer
+	//MPU6050_writebyte(ACCEL_CONFIG, 0x00, Tx_MODO_ESCRITURA);
+	MPU6050_writebyte(ACCEL_CONFIG, 0x00, Tx_MODO_LECTURA);
+    aux = MPU6050_readbyte();
+	MPU6050_writebyte(ACCEL_CONFIG, aux & ~0xE0, Tx_MODO_ESCRITURA);
+	MPU6050_writebyte(ACCEL_CONFIG, aux & ~0x18, Tx_MODO_ESCRITURA);
+	MPU6050_writebyte(ACCEL_CONFIG, aux | Ascale << 3, Tx_MODO_ESCRITURA);
 
 	// Configure Interrupts and Bypass Enable
 	// Set interrupt pin active high, push-pull, and clear on read of INT_STATUS,
@@ -512,7 +534,72 @@ void initMPU6050(void)
 	// Enable data ready (bit 0) interrupt
 	MPU6050_writebyte(INT_ENABLE, 0x01, Tx_MODO_ESCRITURA);
 
+	//bit 6 FIFO_EN 	a 1
+	//bit 2 FIFO_RESET	a 1
+	MPU6050_writebyte(USER_CTRL, 0x44, Tx_MODO_ESCRITURA);
+
+	//Config FIFO
+	//	Habilito FIFO para Temp, Acel y Gyro
+	MPU6050_writebyte(FIFO_EN, 0xF8, Tx_MODO_ESCRITURA);
+
 	pr_alert("%s: Inicializacion del MPU6050 FIN\n", ID);
+}
+
+
+void MPU6050_writeFIFO(uint8_t registro)
+{
+	uint32_t i = 0;
+	uint32_t reg_valor = 0;
+	//uint32_t estado = 0;
+
+	// Chequeo si la línea esta BUSY
+	reg_valor = ioread32(i2c2_baseAddr + I2C_IRQSTATUS_RAW);
+	while ((reg_valor >> 12) & 1)
+	{
+		msleep(100);
+		pr_alert("%s: writebyte ERROR Device busy\n", ID);
+		i++;
+
+		if (i == 4)
+		{
+			return;
+		}
+	}
+	pr_alert("%s: writebyte FIFO\n", ID);
+
+	tx_registro = registro;
+
+	//Tx por escritura
+	// data len = 1 byte
+	iowrite32(1, i2c2_baseAddr + I2C_CNT);
+
+	// config registro -> ENABLE & MASTER & TX
+	reg_valor = ioread32(i2c2_baseAddr + I2C_CON);
+	reg_valor |= 0x600;
+	iowrite32(reg_valor, i2c2_baseAddr + I2C_CON);
+
+	// habilito tx interupcion
+	iowrite32(I2C_IRQSTATUS_XRDY, i2c2_baseAddr + I2C_IRQENABLE_SET);
+
+	// Genero condición de START
+	reg_valor = ioread32(i2c2_baseAddr + I2C_CON);
+	reg_valor |= I2C_CON_START;
+	iowrite32(reg_valor, i2c2_baseAddr + I2C_CON);
+
+	// Pongo el proceso UNINTERRUPTABLE (por estar escribiendo registros) a esperar a que la IRQ termine de transmitir.
+	wait_event(queue_in, queue_cond > 0); //ininterumpible
+
+	queue_cond = 0;
+
+	// Genero condición de STOP
+	reg_valor = ioread32(i2c2_baseAddr + I2C_CON);
+	reg_valor &= 0xFFFFFFFE;
+	reg_valor |= I2C_CON_STOP;
+	iowrite32(reg_valor, i2c2_baseAddr + I2C_CON);
+
+	pr_alert("%s: writebyte FIFO OK\n", ID);
+
+	msleep(1);
 }
 
 void MPU6050_writebyte(uint8_t registro, uint8_t data, uint8_t modo)
@@ -568,15 +655,7 @@ void MPU6050_writebyte(uint8_t registro, uint8_t data, uint8_t modo)
 	iowrite32(reg_valor, i2c2_baseAddr + I2C_CON);
 
 	// Pongo el proceso UNINTERRUPTABLE (por estar escribiendo registros) a esperar a que la IRQ termine de transmitir.
-	wait_event(queue_in, queue_cond > 0);			//ininterumpible
-/*
-	if ((estado = wait_event_interruptible(queue, queue_cond > 0)) < 0)
-	{
-		queue_cond = 0;
-		pr_alert("%s: writebyte ERROR read\n", ID);
-		return;
-	}
-*/
+	wait_event(queue_in, queue_cond > 0); //ininterumpible
 
 	queue_cond = 0;
 
@@ -591,12 +670,72 @@ void MPU6050_writebyte(uint8_t registro, uint8_t data, uint8_t modo)
 	msleep(1);
 }
 
-uint8_t MPU6050_readbyte(void)
+uint8_t MPU6050_readFIFO(uint16_t cant)
 {
 	uint32_t i = 0;
 	uint32_t reg_valor = 0;
 	uint32_t estado = 0;
-	uint8_t nuevo_dato;
+
+	// Chequeo si la línea esta BUSY
+	reg_valor = ioread32(i2c2_baseAddr + I2C_IRQSTATUS_RAW);
+	while ((reg_valor >> 12) & 1)
+	{
+		msleep(100);
+
+		pr_alert("%s: readbyte FIFO ERROR Device busy\n", ID);
+
+		i++;
+		if (i >= 4)
+		{
+			return -1;
+		}
+	}
+	pr_alert("%s: readbyte FIFO\n", ID);
+
+	// data = n byte
+	rx_cant = cant;
+	iowrite32(cant, i2c2_baseAddr + I2C_CNT);
+
+	// config registro -> ENABLE & MASTER & RX
+	reg_valor = ioread32(i2c2_baseAddr + I2C_CON);
+	reg_valor = 0x8400;
+	iowrite32(reg_valor, i2c2_baseAddr + I2C_CON);
+
+	// Habilito interupcion rx
+	iowrite32(I2C_IRQSTATUS_RRDY, i2c2_baseAddr + I2C_IRQENABLE_SET);
+
+	// Genero condición de START
+	reg_valor = ioread32(i2c2_baseAddr + I2C_CON);
+	reg_valor &= 0xFFFFFFFC;
+	reg_valor |= I2C_CON_START;
+	iowrite32(reg_valor, i2c2_baseAddr + I2C_CON);
+
+	// Espero a que la recepción finalice poniendo en espera el proceso.
+	if ((estado = wait_event_interruptible(queue, queue_cond > 0)) < 0)
+	{
+		queue_cond = 0;
+		pr_alert("%s: readbyte ERROR read\n", ID);
+		return estado;
+	}
+
+	queue_cond = 0;
+
+	// Genero condición de STOP
+	reg_valor = ioread32(i2c2_baseAddr + I2C_CON);
+	reg_valor &= 0xFFFFFFFE;
+	reg_valor |= I2C_CON_STOP;
+	iowrite32(reg_valor, i2c2_baseAddr + I2C_CON);
+
+	pr_alert("%s: readbyte OK\n", ID);
+	return estado;
+}
+
+int8_t MPU6050_readbyte(void)
+{
+	uint32_t i = 0;
+	uint32_t reg_valor = 0;
+	uint32_t estado = 0;
+	int8_t nuevo_dato;
 
 	// Chequeo si la línea esta BUSY
 	reg_valor = ioread32(i2c2_baseAddr + I2C_IRQSTATUS_RAW);
@@ -616,6 +755,7 @@ uint8_t MPU6050_readbyte(void)
 	pr_alert("%s: readbyte\n", ID);
 
 	// data = 1 byte
+	rx_cant = 1;
 	iowrite32(1, i2c2_baseAddr + I2C_CNT);
 
 	// config registro -> ENABLE & MASTER & RX
@@ -653,3 +793,4 @@ uint8_t MPU6050_readbyte(void)
 
 	return nuevo_dato;
 }
+

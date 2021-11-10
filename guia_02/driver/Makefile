@@ -33,6 +33,9 @@ rmmod:
 dmesg:
 	dmesg | grep $(GREPN) 
 
+dmesgDato:
+	dmesg | grep $(GREPN)dato 
+
 info:
 	modinfo src/$(NAME_MOD).ko
 

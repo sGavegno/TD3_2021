@@ -7,7 +7,7 @@ CC = gcc
 OFLAGS = -lm -o   
 CFLAGS = -c -Wall
 OUTPUT = ServidorWeb.exe
-OBJETO = $(OBJPATH)ServidorWeb.o $(OBJPATH)funciones.o $(OBJPATH)configuracion.o $(OBJPATH)config.o $(OBJPATH)string.o $(OBJPATH)dictionary.o
+OBJETO = $(OBJPATH)ServidorWeb.o $(OBJPATH)funciones.o $(OBJPATH)funcSIMD.o $(OBJPATH)configuracion.o $(OBJPATH)config.o $(OBJPATH)string.o $(OBJPATH)dictionary.o
 
 all: $(OBJETO) 
 	$(CC) $(OBJETO) $(OFLAGS) $(OUTPUT)	
@@ -16,6 +16,9 @@ $(OBJPATH)ServidorWeb.o: $(SRCPATH)ServidorWeb.c
 	$(CC) $< $(CFLAGS) -o $@
 
 $(OBJPATH)funciones.o: $(SRCPATH)funciones.c
+	$(CC) $< $(CFLAGS) -o $@
+
+$(OBJPATH)funcSIMD.o: $(SRCPATH)funcSIMD.c
 	$(CC) $< $(CFLAGS) -o $@
 
 $(OBJPATH)configuracion.o: $(SRCPATH)configuracion.c

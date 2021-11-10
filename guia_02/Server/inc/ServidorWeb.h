@@ -40,15 +40,28 @@ typedef struct confServer {
     int conexiones;               
 }config_t;
 
-typedef struct MPU6050_REGS { 
-    uint16_t accel_xout;
-    uint16_t accel_yout;
-    uint16_t accel_zout;
+
+typedef struct MPU_REGS { 
+    int16_t accel_xout;
+    int16_t accel_yout;
+    int16_t accel_zout;
     int16_t temp_out;
-    uint16_t gyro_xout;
-    uint16_t gyro_yout;
-    uint16_t gyro_zout;
+    int16_t gyro_xout;
+    int16_t gyro_yout;
+    int16_t gyro_zout;
+} sensorMPU_t;
+
+
+typedef struct MPU6050_REGS { 
+    float accel_xout;
+    float accel_yout;
+    float accel_zout;
+    float temp_out;
+    float gyro_xout;
+    float gyro_yout;
+    float gyro_zout;
 } sensor_t;
+
 
 void ManejadorSensor(void);
 void ProcesarCliente(int s_aux, struct sockaddr_in *pDireccionCliente, int puerto);
