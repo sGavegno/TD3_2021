@@ -9,11 +9,10 @@ sensor_t PromedioSIMD(uint8_t *datos, int cant)
 {
     sensor_t auxDatos;
     int i = 0;
-    float auxAx, auxAy, auxAz, auxGx, auxGy, auxGz, auxT;
+    float auxAx = 0, auxAy = 0, auxAz = 0, auxGx = 0, auxGy = 0, auxGz = 0, auxT = 0;
     int16_t auxTem = 0, auxAcel = 0, auxGyr = 0;
 
-    printf("\n*****************************************\n");
-    while (i < cant * sizeof(sensorMPU_t))
+    while (i < (cant * sizeof(sensorMPU_t)))
     {
         auxAcel = (int16_t)((datos[i] << 8) | datos[i + 1]);
         auxAx += (float)auxAcel * ARES_2G;
@@ -24,7 +23,6 @@ sensor_t PromedioSIMD(uint8_t *datos, int cant)
 
         auxTem = (int16_t)((datos[i + 6] << 8) | datos[i + 7]);
         auxT += ((float)auxTem / 340) + 36.53;
-        printf("Temperatura Promedio:    %.02f°\n", auxT);
 
         auxGyr = (int16_t)((datos[i + 8] << 8) | datos[i + 9]);
         auxGx += (float)auxGyr * GYRO_250;

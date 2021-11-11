@@ -1,8 +1,8 @@
 
 #include <linux/init.h>
 #include <linux/kernel.h>
-#include <linux/kdev_t.h> 			// agregar en /dev
-#include <linux/device.h> 			// agregar en /dev
+#include <linux/kdev_t.h> 			            // agregar en /dev
+#include <linux/device.h> 			            // agregar en /dev
 #include <linux/cdev.h>                         // Char device: File operation struct,
 #include <linux/fs.h>                           // Header for the Linux file system support (alloc_chrdev_region y unregister_chrdev_region)
 #include <linux/module.h>                       // Core header for loading LKMs into the kernel
@@ -14,7 +14,7 @@
 #include <linux/delay.h>                        // msleep, udelay y ndelay
 #include <linux/uaccess.h>                      // copy_to_user - copy_from_user
 #include <linux/types.h>                        // typedefs varios
-#include <linux/slab.h>				// kmalloc
+#include <linux/slab.h>				            // kmalloc
 #include <linux/ioctl.h>
 #include <linux/i2c.h>
 #include <linux/i2c-dev.h>
@@ -31,24 +31,6 @@
 
 #define Tx_MODO_LECTURA 0
 #define Tx_MODO_ESCRITURA 1
-
-/*
-#define XRDY			0
-#define ARDY			1
-#define RRDY			2
-
-#define NONE			0
-#define CHIPID        	_IO('N', 0x44)
-#define STD_CONFIG		_IO('N', 0x45)
-#define OPRES_CONFIG	_IO('N', 0x46)
-#define OTEMP_CONFIG	_IO('N', 0x47)
-#define GET_CONFIG		_IO('N', 0x48)
-#define RESET			_IO('N', 0x49)
-#define GET_PRES		_IO('N', 0x4A)
-#define GET_TEMP		_IO('N', 0x4B)
-#define GET_MEDICIONES 	_IO('N', 0x4C)
-#define GET_CALIB		_IO('N', 0x4E)
-*/
 
 static struct {
 	dev_t I2C_MPU6050;
@@ -72,13 +54,9 @@ static void __exit I2C_MPU6050_exit(void);
 
 void initMPU6050(void);
 void MPU6050_writebyte(uint8_t registro, uint8_t data, uint8_t modo);
-int8_t MPU6050_readbyte(void);
-
-void MPU6050_writeFIFO(uint8_t registro);
-uint8_t MPU6050_readFIFO(uint16_t cant);
+int8_t MPU6050_readbyte(uint16_t cant);
 
 static int I2C_MPU6050_devnode(struct device *dev, struct kobj_uevent_env *env);
-//static int I2C_MPU6050_devnode(struct device *dev, umode_t *mode);
 
 struct file_operations I2C_MPU6050_ops =
 {

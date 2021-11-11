@@ -17,11 +17,6 @@ volatile uint8_t rx_data = 0;
 volatile uint16_t rx_cant = 0;
 uint8_t *bufferFIFO;
 
-volatile int8_t buff_FIFO[140];
-
-
-char *MPUpage;
-
 // queue
 volatile int queue_cond = 0;
 wait_queue_head_t queue = __WAIT_QUEUE_HEAD_INITIALIZER(queue);
@@ -50,17 +45,12 @@ static struct platform_driver I2C_MPU6050_pd = {
 		.of_match_table = of_match_ptr(MPU6050_id)},
 };
 
+
 int I2C_MPU6050_open(struct inode *inode, struct file *file)
 {
-	pr_alert("%s: I2C driver open\n", ID);
-/*
-	// pido una pagina para usar como espacio lectura (vector)
-	if ((MPUpage = (char *)__get_free_page(GFP_KERNEL)) < 0)
-	{
-		pr_alert("%s: Falla al pedir memoria\n", ID);
-		return -1;
-	}
-	*/
+	pr_alert("%s: I2C driver open\n", ID);	
+	// inicializacion MPU6050
+	initMPU6050();
 	pr_alert("%s: I2C driver open exit\n", ID);
 
 	return 0;
@@ -68,11 +58,8 @@ int I2C_MPU6050_open(struct inode *inode, struct file *file)
 
 int I2C_MPU6050_release(struct inode *inode, struct file *file)
 {
+
 	pr_alert("%s: I2C driver close\n", ID);
-	/*
-	// libero la pagina que tome para lectura
-	free_page((unsigned long)MPUpage);
-	*/
 	return 0;
 }
 
@@ -125,17 +112,17 @@ ssize_t I2C_MPU6050_read(struct file *file, char __user *userbuff, size_t len, l
 	{
 		// leo cant de datos FIFO
 		MPU6050_writebyte(FIFO_COUNTH, 0x00, Tx_MODO_LECTURA);
-		buffcountFIFO[0] = MPU6050_readbyte();
+		buffcountFIFO[0] = MPU6050_readbyte(1);
 
 		MPU6050_writebyte(FIFO_COUNTL, 0x00, Tx_MODO_LECTURA);
-		buffcountFIFO[1] = MPU6050_readbyte();
+		buffcountFIFO[1] = MPU6050_readbyte(1);
 		countFIFO = (uint16_t)((buffcountFIFO[0] << 8) | buffcountFIFO[1]);
 		pr_info("%s: Comparo Tam FIFO %d Tam Lectura %d\n", ID, countFIFO, len);
 	} while (countFIFO < len);
 
 	//rx_cant = len;
 	MPU6050_writebyte(FIFO_R_W, 0x00, Tx_MODO_LECTURA);
-	MPU6050_readFIFO(len);
+	MPU6050_readbyte(len);
 
 	pr_info("\n%s:*****************************************\n", ID);
 	while(i < len)
@@ -248,7 +235,6 @@ irqreturn_t i2c_irq_handler(int irq, void *dev_id, struct pt_regs *regs)
 			// wake up write
 			queue_cond = 1;
 			wake_up(&queue_in); //ininterumpible
-								//wake_up_interruptible(&queue);
 		}
 
 		// Borro flags
@@ -342,28 +328,20 @@ int I2C_MPU6050_probe(struct platform_device *i2c_pd)
 	iowrite32(0x00, i2c2_baseAddr + I2C_CON);
 	// config prescaler a 12MHz
 	iowrite32(0x03, i2c2_baseAddr + I2C_PSC); //Prescaler de 3 -> div 4
-	//iowrite32(0x01, i2c2_baseAddr + I2C_PSC); //Prescaler de 1 -> div 4
 
 	// config SCL	MAX 400khz
-	// Velocidad calculada = 100Khz
-	//iowrite32(0x35, i2c2_baseAddr + I2C_SCLL); //(1/12)*(SCLL+7) = 5uS
-	//iowrite32(0x37, i2c2_baseAddr + I2C_SCLH); //(1/12)*(SCLH+5) = 5uS
 	// Velocidad calculada = 342Khz
 	iowrite32(0x08, i2c2_baseAddr + I2C_SCLL); //(1/12)*(SCLL+7) =  1,25uS
 	iowrite32(0x14, i2c2_baseAddr + I2C_SCLH); //(1/12)*(SCLH+5) = 1,666666us
 
-	// Direccion propia (OWN ADDRESS)	direccion cualquiera
+	// Direccion propia (OWN ADDRESS), direccion cualquiera
 	iowrite32(0x95, i2c2_baseAddr + I2C_OA);
 
 	// slave address -> MPU6050
 	iowrite32(MPU6050_DEFAULT_ADDRESS, i2c2_baseAddr + I2C_SA);
 
 	// config registro -> ENABLE & MASTER & RX & STOP
-	//iowrite32(0x8400, i2c2_baseAddr + I2C_CON);
 	iowrite32(0x8000, i2c2_baseAddr + I2C_CON);
-
-	// inicializacion IMU MPU6050
-	initMPU6050();
 
 	pr_info("%s: Termina PROBE ..\n", ID);
 	return estado;
@@ -490,48 +468,33 @@ void initMPU6050(void)
 	pr_alert("%s: Inicializacion del MPU6050\n", ID);
 
 	MPU6050_writebyte(WHO_AM_I, 0x00, Tx_MODO_LECTURA);
-	aux = MPU6050_readbyte();
+	aux = MPU6050_readbyte(1);
 	pr_alert("%s: WHO_AM_I: %#04x\n", ID, aux);
 
-	//  wake up device-don't need this here if using calibration function below
-	MPU6050_writebyte(PWR_MGMT_1, 0x00, Tx_MODO_ESCRITURA); // Clear sleep mode bit (6), enable all sensors
+	MPU6050_writebyte(PWR_MGMT_1, 0x00, Tx_MODO_ESCRITURA);
 
-	msleep(100); // Delay 100 ms for PLL to get established on x-axis gyro; should check for PLL ready interrupt
+	msleep(100); 		//Delay de 100 ms para que PLL se establezca en el giroscopio del eje x
 
-	// get stable time source
-	MPU6050_writebyte(PWR_MGMT_1, 0x01, Tx_MODO_ESCRITURA); // Set clock source to be PLL with x-axis gyroscope reference, bits 2:0 = 001
+	// Fuente de reloj PLL con referencia de giroscopio del eje x, bits 2: 0 = 001
+	MPU6050_writebyte(PWR_MGMT_1, 0x01, Tx_MODO_ESCRITURA); 
 
-	// Configure Gyro and Accelerometer
-	// Disable FSYNC and set accelerometer and gyro bandwidth to 44 and 42 Hz, respectively;
-	// DLPF_CFG = bits 2:0 = 010; this sets the sample rate at 1 kHz for both
+	// Configurar giroscopio y acelerómetro
+	// DLPF_CFG = bits 2:0 = 010; establece la frecuencia de muestreo en 1 kHz para ambos
 	MPU6050_writebyte(CONFIG, 0x03, Tx_MODO_ESCRITURA);
 
-	// Set sample rate = gyroscope output rate/(1 + SMPLRT_DIV)
-	MPU6050_writebyte(SMPLRT_DIV, 0x64, Tx_MODO_ESCRITURA); // Use a 10 Hz sample rate 100ms
+	// Sample rate = giroscopio output rate/(1 + SMPLRT_DIV)
+	MPU6050_writebyte(SMPLRT_DIV, 0x63, Tx_MODO_ESCRITURA); // Use a 10 Hz sample rate 100ms
 
-	// Set gyroscope configuration
-	//MPU6050_writebyte(GYRO_CONFIG, 0x00, Tx_MODO_ESCRITURA);
-	MPU6050_writebyte(GYRO_CONFIG, 0x00, Tx_MODO_LECTURA);
-    aux = MPU6050_readbyte();
-	MPU6050_writebyte(GYRO_CONFIG, aux & ~0xE0, Tx_MODO_ESCRITURA);
-	MPU6050_writebyte(GYRO_CONFIG, aux & ~0x18, Tx_MODO_ESCRITURA);
-	MPU6050_writebyte(GYRO_CONFIG, aux | Gscale << 3, Tx_MODO_ESCRITURA);
+	// Configuracion giroscopio 
+	MPU6050_writebyte(GYRO_CONFIG, 0x00, Tx_MODO_ESCRITURA);
 
-	// Set accelerometer configuration
-	//MPU6050_writebyte(ACCEL_CONFIG, 0x00, Tx_MODO_ESCRITURA);
-	MPU6050_writebyte(ACCEL_CONFIG, 0x00, Tx_MODO_LECTURA);
-    aux = MPU6050_readbyte();
-	MPU6050_writebyte(ACCEL_CONFIG, aux & ~0xE0, Tx_MODO_ESCRITURA);
-	MPU6050_writebyte(ACCEL_CONFIG, aux & ~0x18, Tx_MODO_ESCRITURA);
-	MPU6050_writebyte(ACCEL_CONFIG, aux | Ascale << 3, Tx_MODO_ESCRITURA);
+	// Configuracion acelerómetro
+	MPU6050_writebyte(ACCEL_CONFIG, 0x00, Tx_MODO_ESCRITURA);
 
-	// Configure Interrupts and Bypass Enable
-	// Set interrupt pin active high, push-pull, and clear on read of INT_STATUS,
-	// enable I2C_BYPASS_EN so additional chips
-	// can join the I2C bus and all can be controlled by the Arduino as master
+	// Configurar interrupciones y habilitar Bypass
 	MPU6050_writebyte(INT_PIN_CFG, 0x02, Tx_MODO_ESCRITURA);
 
-	// Enable data ready (bit 0) interrupt
+	// Habilitar interrupción de datos listos (bit 0)
 	MPU6050_writebyte(INT_ENABLE, 0x01, Tx_MODO_ESCRITURA);
 
 	//bit 6 FIFO_EN 	a 1
@@ -539,68 +502,12 @@ void initMPU6050(void)
 	MPU6050_writebyte(USER_CTRL, 0x44, Tx_MODO_ESCRITURA);
 
 	//Config FIFO
-	//	Habilito FIFO para Temp, Acel y Gyro
+	//Habilito FIFO para Temp, Acel y Gyro
 	MPU6050_writebyte(FIFO_EN, 0xF8, Tx_MODO_ESCRITURA);
 
 	pr_alert("%s: Inicializacion del MPU6050 FIN\n", ID);
 }
 
-
-void MPU6050_writeFIFO(uint8_t registro)
-{
-	uint32_t i = 0;
-	uint32_t reg_valor = 0;
-	//uint32_t estado = 0;
-
-	// Chequeo si la línea esta BUSY
-	reg_valor = ioread32(i2c2_baseAddr + I2C_IRQSTATUS_RAW);
-	while ((reg_valor >> 12) & 1)
-	{
-		msleep(100);
-		pr_alert("%s: writebyte ERROR Device busy\n", ID);
-		i++;
-
-		if (i == 4)
-		{
-			return;
-		}
-	}
-	pr_alert("%s: writebyte FIFO\n", ID);
-
-	tx_registro = registro;
-
-	//Tx por escritura
-	// data len = 1 byte
-	iowrite32(1, i2c2_baseAddr + I2C_CNT);
-
-	// config registro -> ENABLE & MASTER & TX
-	reg_valor = ioread32(i2c2_baseAddr + I2C_CON);
-	reg_valor |= 0x600;
-	iowrite32(reg_valor, i2c2_baseAddr + I2C_CON);
-
-	// habilito tx interupcion
-	iowrite32(I2C_IRQSTATUS_XRDY, i2c2_baseAddr + I2C_IRQENABLE_SET);
-
-	// Genero condición de START
-	reg_valor = ioread32(i2c2_baseAddr + I2C_CON);
-	reg_valor |= I2C_CON_START;
-	iowrite32(reg_valor, i2c2_baseAddr + I2C_CON);
-
-	// Pongo el proceso UNINTERRUPTABLE (por estar escribiendo registros) a esperar a que la IRQ termine de transmitir.
-	wait_event(queue_in, queue_cond > 0); //ininterumpible
-
-	queue_cond = 0;
-
-	// Genero condición de STOP
-	reg_valor = ioread32(i2c2_baseAddr + I2C_CON);
-	reg_valor &= 0xFFFFFFFE;
-	reg_valor |= I2C_CON_STOP;
-	iowrite32(reg_valor, i2c2_baseAddr + I2C_CON);
-
-	pr_alert("%s: writebyte FIFO OK\n", ID);
-
-	msleep(1);
-}
 
 void MPU6050_writebyte(uint8_t registro, uint8_t data, uint8_t modo)
 {
@@ -654,8 +561,8 @@ void MPU6050_writebyte(uint8_t registro, uint8_t data, uint8_t modo)
 	reg_valor |= I2C_CON_START;
 	iowrite32(reg_valor, i2c2_baseAddr + I2C_CON);
 
-	// Pongo el proceso UNINTERRUPTABLE (por estar escribiendo registros) a esperar a que la IRQ termine de transmitir.
-	wait_event(queue_in, queue_cond > 0); //ininterumpible
+	// Pongo el proceso ininterumpible (por estar escribiendo registros) a esperar a que la IRQ termine de transmitir.
+	wait_event(queue_in, queue_cond > 0); 
 
 	queue_cond = 0;
 
@@ -670,67 +577,7 @@ void MPU6050_writebyte(uint8_t registro, uint8_t data, uint8_t modo)
 	msleep(1);
 }
 
-uint8_t MPU6050_readFIFO(uint16_t cant)
-{
-	uint32_t i = 0;
-	uint32_t reg_valor = 0;
-	uint32_t estado = 0;
-
-	// Chequeo si la línea esta BUSY
-	reg_valor = ioread32(i2c2_baseAddr + I2C_IRQSTATUS_RAW);
-	while ((reg_valor >> 12) & 1)
-	{
-		msleep(100);
-
-		pr_alert("%s: readbyte FIFO ERROR Device busy\n", ID);
-
-		i++;
-		if (i >= 4)
-		{
-			return -1;
-		}
-	}
-	pr_alert("%s: readbyte FIFO\n", ID);
-
-	// data = n byte
-	rx_cant = cant;
-	iowrite32(cant, i2c2_baseAddr + I2C_CNT);
-
-	// config registro -> ENABLE & MASTER & RX
-	reg_valor = ioread32(i2c2_baseAddr + I2C_CON);
-	reg_valor = 0x8400;
-	iowrite32(reg_valor, i2c2_baseAddr + I2C_CON);
-
-	// Habilito interupcion rx
-	iowrite32(I2C_IRQSTATUS_RRDY, i2c2_baseAddr + I2C_IRQENABLE_SET);
-
-	// Genero condición de START
-	reg_valor = ioread32(i2c2_baseAddr + I2C_CON);
-	reg_valor &= 0xFFFFFFFC;
-	reg_valor |= I2C_CON_START;
-	iowrite32(reg_valor, i2c2_baseAddr + I2C_CON);
-
-	// Espero a que la recepción finalice poniendo en espera el proceso.
-	if ((estado = wait_event_interruptible(queue, queue_cond > 0)) < 0)
-	{
-		queue_cond = 0;
-		pr_alert("%s: readbyte ERROR read\n", ID);
-		return estado;
-	}
-
-	queue_cond = 0;
-
-	// Genero condición de STOP
-	reg_valor = ioread32(i2c2_baseAddr + I2C_CON);
-	reg_valor &= 0xFFFFFFFE;
-	reg_valor |= I2C_CON_STOP;
-	iowrite32(reg_valor, i2c2_baseAddr + I2C_CON);
-
-	pr_alert("%s: readbyte OK\n", ID);
-	return estado;
-}
-
-int8_t MPU6050_readbyte(void)
+int8_t MPU6050_readbyte(uint16_t cant)
 {
 	uint32_t i = 0;
 	uint32_t reg_valor = 0;
@@ -754,9 +601,9 @@ int8_t MPU6050_readbyte(void)
 
 	pr_alert("%s: readbyte\n", ID);
 
-	// data = 1 byte
-	rx_cant = 1;
-	iowrite32(1, i2c2_baseAddr + I2C_CNT);
+	// data = n byte
+	rx_cant = cant;
+	iowrite32(cant, i2c2_baseAddr + I2C_CNT);
 
 	// config registro -> ENABLE & MASTER & RX
 	reg_valor = ioread32(i2c2_baseAddr + I2C_CON);

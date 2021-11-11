@@ -423,6 +423,7 @@ void ManejadorSensor(void)
     int auxMuestreo = 0;
     static int sen_fd;
     uint8_t *bufferMPU6050;
+    uint8_t estado;
 
     printf("Manejador del Sensor\n");
 
@@ -440,23 +441,38 @@ void ManejadorSensor(void)
         semop(semaforoConfig, &liberar, 1); //Libreo el semaforo
 
         bufferMPU6050 = malloc(auxMuestreo * sizeof(sensorMPU_t));
+        if(bufferMPU6050 == NULL)
+        {
+            //No pudo reservar memoria 
+            printf("No pudo reservar memoria en el Manejador de Sensor\n");
+        }
+        else
+        {
+            estado = read(sen_fd, bufferMPU6050, auxMuestreo*sizeof(sensorMPU_t));
+            if( estado != 0)
+            {
+                //Error en la lectura
+                printf("Error en la lectura en el Manejador de Sensor\n");
+            }
+            else
+            {
+                auxDatos = PromedioSIMD( bufferMPU6050, auxMuestreo);
 
-        read(sen_fd, bufferMPU6050, auxMuestreo*sizeof(sensorMPU_t));
+                semop(semaforoSensor, &tomar, 1); //Tomo el semaforo
+                SensorData->accel_xout = auxDatos.accel_xout;
+                SensorData->accel_yout = auxDatos.accel_yout;
+                SensorData->accel_zout = auxDatos.accel_zout;
+                SensorData->temp_out = auxDatos.temp_out;
+                SensorData->gyro_xout = auxDatos.gyro_xout;
+                SensorData->gyro_yout = auxDatos.gyro_yout;
+                SensorData->gyro_zout = auxDatos.gyro_zout;
+                semop(semaforoSensor, &liberar, 1); //Libreo el semaforo
+            }
 
-        auxDatos = PromedioSIMD( bufferMPU6050, auxMuestreo);
+            free(bufferMPU6050);
+        }
 
-        semop(semaforoSensor, &tomar, 1); //Tomo el semaforo
-        SensorData->accel_xout = auxDatos.accel_xout;
-        SensorData->accel_yout = auxDatos.accel_yout;
-        SensorData->accel_zout = auxDatos.accel_zout;
-        SensorData->temp_out = auxDatos.temp_out;
-        SensorData->gyro_xout = auxDatos.gyro_xout;
-        SensorData->gyro_yout = auxDatos.gyro_yout;
-        SensorData->gyro_zout = auxDatos.gyro_zout;
-        semop(semaforoSensor, &liberar, 1); //Libreo el semaforo
-
-        free(bufferMPU6050);
-        sleep(1);
+        sleep(0.5);
     }
 
     close(sen_fd);

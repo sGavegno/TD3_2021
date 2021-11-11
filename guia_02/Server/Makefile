@@ -6,6 +6,8 @@ PUERTO = 10101
 CC = gcc
 OFLAGS = -lm -o   
 CFLAGS = -c -Wall
+CFSIMD = -c -Wall -Ofast -pthread -lrt
+NEONFLAGS = -S
 OUTPUT = ServidorWeb.exe
 OBJETO = $(OBJPATH)ServidorWeb.o $(OBJPATH)funciones.o $(OBJPATH)funcSIMD.o $(OBJPATH)configuracion.o $(OBJPATH)config.o $(OBJPATH)string.o $(OBJPATH)dictionary.o
 
@@ -19,7 +21,7 @@ $(OBJPATH)funciones.o: $(SRCPATH)funciones.c
 	$(CC) $< $(CFLAGS) -o $@
 
 $(OBJPATH)funcSIMD.o: $(SRCPATH)funcSIMD.c
-	$(CC) $< $(CFLAGS) -o $@
+	$(CC) $< $(CFSIMD) -o $@
 
 $(OBJPATH)configuracion.o: $(SRCPATH)configuracion.c
 	$(CC) $< $(CFLAGS) -o $@
@@ -36,6 +38,8 @@ $(OBJPATH)dictionary.o: $(COMPATH)collections/dictionary.c
 run:	
 	./$(OUTPUT) $(PUERTO)
 
-clean:
+asm_NEON:
+	$(CC) $(NEONFLAGS) $(SRCPATH)funcSIMD.c
 
+clean:
 	rm ./obj/*.o *.exe 
