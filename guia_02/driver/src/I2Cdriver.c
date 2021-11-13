@@ -71,11 +71,8 @@ ssize_t I2C_MPU6050_write(struct file *file, const char __user *userbuff, size_t
 
 ssize_t I2C_MPU6050_read(struct file *file, char __user *userbuff, size_t len, loff_t *offset)
 {
-	//uint8_t aux_H, aux_L;
 	uint16_t countFIFO;
 	uint8_t buffcountFIFO[2];
-	uint32_t i = 0;
-	int16_t auxTem, temp_out;
 
 	pr_alert("%s: I2C driver read\n", ID);
 
@@ -107,33 +104,20 @@ ssize_t I2C_MPU6050_read(struct file *file, char __user *userbuff, size_t len, l
 	//bit 6 FIFO_EN 	a 1
 	//bit 2 FIFO_RESET	a 1
 	MPU6050_writebyte(USER_CTRL, 0x44, Tx_MODO_ESCRITURA);
-	//msleep(10);
 	do
 	{
 		// leo cant de datos FIFO
 		MPU6050_writebyte(FIFO_COUNTH, 0x00, Tx_MODO_LECTURA);
-		buffcountFIFO[0] = MPU6050_readbyte(1);
+		buffcountFIFO[0] = MPU6050_readbyte();
 
 		MPU6050_writebyte(FIFO_COUNTL, 0x00, Tx_MODO_LECTURA);
-		buffcountFIFO[1] = MPU6050_readbyte(1);
+		buffcountFIFO[1] = MPU6050_readbyte();
 		countFIFO = (uint16_t)((buffcountFIFO[0] << 8) | buffcountFIFO[1]);
 		pr_info("%s: Comparo Tam FIFO %d Tam Lectura %d\n", ID, countFIFO, len);
 	} while (countFIFO < len);
 
-	//rx_cant = len;
 	MPU6050_writebyte(FIFO_R_W, 0x00, Tx_MODO_LECTURA);
-	MPU6050_readbyte(len);
-
-	pr_info("\n%s:*****************************************\n", ID);
-	while(i < len)
-	{
-    	auxTem = (uint16_t)(bufferFIFO[i+6] << 8 | bufferFIFO[i+7]);
-	    temp_out = auxTem / 340 + 36;
-	    pr_info("%s:Valor de Temperatura en Driver:    %d°\n", ID, temp_out);
-		i+=14;
-	}
-	pr_info("%s:******************************************\n\n", ID);
-	i=0;
+	MPU6050_readFIFO(len);
 
 	if (copy_to_user(userbuff, bufferFIFO, len) > 0) //en copia correcta devuelve 0
 	{
@@ -446,6 +430,7 @@ static int __init I2C_MPU6050_init(void)
 	return 0;
 }
 
+
 static void __exit I2C_MPU6050_exit(void)
 {
 	pr_alert("%s: Cerrando el CharDriver\n", ID);
@@ -468,7 +453,7 @@ void initMPU6050(void)
 	pr_alert("%s: Inicializacion del MPU6050\n", ID);
 
 	MPU6050_writebyte(WHO_AM_I, 0x00, Tx_MODO_LECTURA);
-	aux = MPU6050_readbyte(1);
+	aux = MPU6050_readbyte();
 	pr_alert("%s: WHO_AM_I: %#04x\n", ID, aux);
 
 	MPU6050_writebyte(PWR_MGMT_1, 0x00, Tx_MODO_ESCRITURA);
@@ -508,7 +493,14 @@ void initMPU6050(void)
 	pr_alert("%s: Inicializacion del MPU6050 FIN\n", ID);
 }
 
-
+/**
+ * @fn void MPU6050_writebyte(uint8_t registro, uint8_t data, uint8_t modo)
+ * @details 
+ * @param registro registro a escribir por SDL
+ * @param data datos a escribir por SDL si el modo es de escritura (1), si el modo es de lectura(0), no se usa.
+ * @param modo puede ser de escritura o lectura.
+ * @return void
+**/
 void MPU6050_writebyte(uint8_t registro, uint8_t data, uint8_t modo)
 {
 	uint32_t i = 0;
@@ -577,7 +569,13 @@ void MPU6050_writebyte(uint8_t registro, uint8_t data, uint8_t modo)
 	msleep(1);
 }
 
-int8_t MPU6050_readbyte(uint16_t cant)
+/**
+ * @fn int8_t MPU6050_readbyte(void)
+ * @details prepara el dispositivo para leer un dato
+ * @param void
+ * @return int8_t retorna el dato enviado por el MPU6050
+**/
+int8_t MPU6050_readbyte(void)
 {
 	uint32_t i = 0;
 	uint32_t reg_valor = 0;
@@ -602,8 +600,8 @@ int8_t MPU6050_readbyte(uint16_t cant)
 	pr_alert("%s: readbyte\n", ID);
 
 	// data = n byte
-	rx_cant = cant;
-	iowrite32(cant, i2c2_baseAddr + I2C_CNT);
+	rx_cant = 1;
+	iowrite32(1, i2c2_baseAddr + I2C_CNT);
 
 	// config registro -> ENABLE & MASTER & RX
 	reg_valor = ioread32(i2c2_baseAddr + I2C_CON);
@@ -641,3 +639,70 @@ int8_t MPU6050_readbyte(uint16_t cant)
 	return nuevo_dato;
 }
 
+/**
+ * @fn void MPU6050_readFIFO(uint16_t cant)
+ * @details prepara el dispositivo para leer la FIFO
+ * @param cant cantidad de datos a leer
+ * @return void
+**/
+int8_t MPU6050_readFIFO(uint16_t cant)
+{
+	uint32_t i = 0;
+	uint32_t reg_valor = 0;
+	uint32_t estado = 0;
+
+	// Chequeo si la línea esta BUSY
+	reg_valor = ioread32(i2c2_baseAddr + I2C_IRQSTATUS_RAW);
+	while ((reg_valor >> 12) & 1)
+	{
+		msleep(100);
+
+		pr_alert("%s: readFIFO ERROR Device busy\n", ID);
+
+		i++;
+		if (i >= 4)
+		{
+			return -1;
+		}
+	}
+
+	pr_alert("%s: readFIFO\n", ID);
+
+	// data = n byte
+	rx_cant = cant;
+	iowrite32(cant, i2c2_baseAddr + I2C_CNT);
+
+	// config registro -> ENABLE & MASTER & RX
+	reg_valor = ioread32(i2c2_baseAddr + I2C_CON);
+	reg_valor = 0x8400;
+	iowrite32(reg_valor, i2c2_baseAddr + I2C_CON);
+
+	// Habilito interupcion rx
+	iowrite32(I2C_IRQSTATUS_RRDY, i2c2_baseAddr + I2C_IRQENABLE_SET);
+
+	// Genero condición de START
+	reg_valor = ioread32(i2c2_baseAddr + I2C_CON);
+	reg_valor &= 0xFFFFFFFC;
+	reg_valor |= I2C_CON_START;
+	iowrite32(reg_valor, i2c2_baseAddr + I2C_CON);
+
+	// Espero a que la recepción finalice poniendo en espera el proceso.
+	if ((estado = wait_event_interruptible(queue, queue_cond > 0)) < 0)
+	{
+		queue_cond = 0;
+		pr_alert("%s: readFIFO ERROR read\n", ID);
+		return estado;
+	}
+
+	queue_cond = 0;
+
+	// Genero condición de STOP
+	reg_valor = ioread32(i2c2_baseAddr + I2C_CON);
+	reg_valor &= 0xFFFFFFFE;
+	reg_valor |= I2C_CON_STOP;
+	iowrite32(reg_valor, i2c2_baseAddr + I2C_CON);
+
+	pr_alert("%s: readFIFO OK\n", ID);
+
+	return 0;
+}

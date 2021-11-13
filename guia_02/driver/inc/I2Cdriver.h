@@ -54,7 +54,9 @@ static void __exit I2C_MPU6050_exit(void);
 
 void initMPU6050(void);
 void MPU6050_writebyte(uint8_t registro, uint8_t data, uint8_t modo);
-int8_t MPU6050_readbyte(uint16_t cant);
+int8_t MPU6050_readbyte(void);
+
+int8_t MPU6050_readFIFO(uint16_t cant);
 
 static int I2C_MPU6050_devnode(struct device *dev, struct kobj_uevent_env *env);
 

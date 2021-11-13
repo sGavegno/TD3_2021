@@ -56,7 +56,7 @@ int main(int argc, char *argv[])
     sharMemSensor = creo_SharedMemory(&sharMemIdSensor, KEY_SENSOR);
     if (sharMemSensor == (void *)-1)
     {
-        printf("ERROR: No se pudo obtener Shared Memory para el sensor\n");
+        printf("|ERROR: No se pudo obtener Shared Memory para el sensor\n");
         return -1;
     }
 
@@ -64,7 +64,7 @@ int main(int argc, char *argv[])
     sharMemConfig = creo_SharedMemory(&sharMemIdConfig, KEY_CONFIG);
     if (sharMemConfig == (void *)-1)
     {
-        printf("ERROR: No se pudo obtener Shared Memory para la Configuracion\n");
+        printf("|ERROR: No se pudo obtener Shared Memory para la Configuracion\n");
         return -1;
     }
 
@@ -75,7 +75,7 @@ int main(int argc, char *argv[])
     //Creacion del semaforo para el sensor
     if (crear_semaforo(&semaforoSensor, KEY_SENSOR) < 0)
     {
-        perror("ERROR: No se pudo crear el semaforo para el sensor\n");
+        perror("|ERROR: No se pudo crear el semaforo para el sensor\n");
         semctl(semaforoSensor, 0, IPC_RMID);     //Cierro el semaforo del sensor
         shmdt(sharMemSensor);                    //Separo la memoria del sensor del proceso
         shmdt(sharMemConfig);                    //Separo la memoria de la configuracion del proceso
@@ -87,7 +87,7 @@ int main(int argc, char *argv[])
     //Creacion del semaforo para la configuracion
     if (crear_semaforo(&semaforoConfig, KEY_CONFIG) < 0)
     {
-        perror("ERROR: No se pudo crear el semaforo para la configuracion\n");
+        perror("|ERROR: No se pudo crear el semaforo para la configuracion\n");
         semctl(semaforoSensor, 0, IPC_RMID);     //Cierro el semaforo del sensor
         semctl(semaforoConfig, 0, IPC_RMID);     //Cierro el semaforo de la configuracion
         shmdt(sharMemSensor);                    //Separo la memoria del sensor del proceso
@@ -120,7 +120,7 @@ int main(int argc, char *argv[])
     sock = socket(AF_INET, SOCK_STREAM, 0);
     if (sock == -1)
     {
-        printf("ERROR: El socket no se ha creado correctamente!\n");
+        printf("|ERROR: El socket no se ha creado correctamente!\n");
         semctl(semaforoSensor, 0, IPC_RMID);     //Cierro el semaforo del sensor
         semctl(semaforoConfig, 0, IPC_RMID);     //Cierro el semaforo de la configuracion
         shmdt(sharMemSensor);                    //Separo la memoria del sensor del proceso
@@ -138,7 +138,7 @@ int main(int argc, char *argv[])
     // Obtiene el puerto para este proceso.
     if (bind(sock, (struct sockaddr *)&datosServidor, sizeof(datosServidor)) == -1)
     {
-        printf("ERROR: este proceso no puede tomar el puerto %s\n", argv[1]);
+        printf("|ERROR: este proceso no puede tomar el puerto %s\n", argv[1]);
         semctl(semaforoSensor, 0, IPC_RMID);     //Cierro el semaforo del sensor
         semctl(semaforoConfig, 0, IPC_RMID);     //Cierro el semaforo de la configuracion
         shmdt(sharMemSensor);                    //Separo la memoria del sensor del proceso
@@ -149,7 +149,7 @@ int main(int argc, char *argv[])
         exit(1);
     }
 
-    printf("\nIngrese en el navegador http://192.168.1.XX:%s\n", argv[1]);
+    printf("|Ingrese en el navegador http://192.168.1.XX:%s\n", argv[1]);
 
     // Indicar que el socket encole hasta backlog pedidos de conexion simultaneas.
     semop(semaforoConfig, &tomar, 1); //Tomo el semaforo
@@ -157,7 +157,7 @@ int main(int argc, char *argv[])
     semop(semaforoConfig, &liberar, 1); //Libreo el semaforo
     if (listen(sock, auxBacklog) < 0)
     {
-        perror("Error en listen");
+        perror("|Error en listen");
         shmdt(sharMemSensor);                    //Separo la memoria del proceso
         semctl(semaforoSensor, 0, IPC_RMID);     //Cierro el semaforo
         shmctl(sharMemIdSensor, IPC_RMID, NULL); //Cierro la Shared Memory
@@ -255,7 +255,7 @@ int main(int argc, char *argv[])
             nbr_fds = select(sock + 1, &readfds, NULL, NULL, &timeout);
             if ((nbr_fds < 0) && (errno != EINTR))
             {
-                perror("select");
+                perror("|select");
             }
             if (!FD_ISSET(sock, &readfds))
             {
@@ -270,7 +270,7 @@ int main(int argc, char *argv[])
                 sock_aux = accept(sock, (struct sockaddr *)&datosCliente, &longDirec);
                 if (sock_aux < 0)
                 {
-                    perror("Error en accept");
+                    perror("|Error en accept");
                     semctl(semaforoSensor, 0, IPC_RMID);     //Cierro el semaforo del sensor
                     shmdt(sharMemSensor);                    //Separo la memoria del sensor del proceso
                     shmctl(sharMemIdSensor, IPC_RMID, NULL); //Cierro la Shared Memory del sensor
@@ -284,7 +284,7 @@ int main(int argc, char *argv[])
                 clientePID = fork();
                 if (clientePID < 0)
                 {
-                    perror("No se puede crear un nuevo proceso mediante fork");
+                    perror("|No se puede crear un nuevo proceso mediante fork");
                     close(sock);
                     exit(1);
                 }cantHijos++;
@@ -315,9 +315,9 @@ int main(int argc, char *argv[])
     // Esperando a que mueran los hijos para luego matar al padre.
     while(1) 
     {
-        printf("----------------------------------------------------\n");
-        printf("SERVIDOR: Esperando que mueran los hijos...\n");
-        printf("----------------------------------------------------\n");
+        printf("|----------------------------------------------------\n");
+        printf("|SERVIDOR: Esperando que mueran los hijos...\n");
+        printf("|----------------------------------------------------\n");
         if(cantHijos == 0)
         {
             close(sock);
@@ -328,9 +328,9 @@ int main(int argc, char *argv[])
             shmdt(sharMemConfig);                    //Separo la memoria de la configuracion del proceso
             shmctl(sharMemIdConfig, IPC_RMID, NULL); //Cierro la Shared Memory de la configuracion
             
-            printf("----------------------------------------------------\n");
-            printf("SERVIDOR: Murio el padre\n");
-            printf("----------------------------------------------------\n");
+            printf("|----------------------------------------------------\n");
+            printf("|SERVIDOR: Murio el padre\n");
+            printf("|----------------------------------------------------\n");
             return 0;
         }
         sleep(1);
@@ -425,7 +425,7 @@ void ManejadorSensor(void)
     uint8_t *bufferMPU6050;
     uint8_t estado;
 
-    printf("Manejador del Sensor\n");
+    printf("|Manejador del Sensor\n");
 
     sen_fd = open("/dev/I2Cdriver", O_RDWR);
     if (sen_fd < 0)
@@ -468,10 +468,8 @@ void ManejadorSensor(void)
                 SensorData->gyro_zout = auxDatos.gyro_zout;
                 semop(semaforoSensor, &liberar, 1); //Libreo el semaforo
             }
-
             free(bufferMPU6050);
         }
-
         sleep(0.5);
     }
 
@@ -481,13 +479,13 @@ void ManejadorSensor(void)
 
 /**
  * @fn void ManejadorConfiguracion(void)
- * @brief 
  * @details 
  * @param void
  * @return void
 **/
 void ManejadorConfiguracion(void)
 {
+    printf("Manejador de la configuracion\n");
 
     while (!FLAG_EXIT)
     {
@@ -499,13 +497,12 @@ void ManejadorConfiguracion(void)
             semop(semaforoConfig, &liberar, 1); //Libreo el semaforo
             FLAG_CONF = false;
         }
-        sleep(1);
+        sleep(0.5);
     }
 }
 
 /**
  * @fn void SIGINT_handler_Sensor(int sig)
- * @brief 
  * @details 
  * @param sig
  * @return void
@@ -513,12 +510,11 @@ void ManejadorConfiguracion(void)
 void SIGINT_handler_Sensor(int sig)
 {
     FLAG_EXIT = true;
-    printf("SIGINT sensor ID=%d\r\n", getpid());
+    printf("|SIGINT sensor ID=%d\r\n", getpid());
 }
 
 /**
- * @fn void SIGINT_handler(int sig)
- * @brief 
+ * @fn void SIGINT_handler(int sig) 
  * @details 
  * @param sig
  * @return void
@@ -526,23 +522,22 @@ void SIGINT_handler_Sensor(int sig)
 void SIGINT_handler(int sig)
 {
     FLAG_EXIT = true;
-    printf("SIGINT ID=%d\r\n", getpid());
+    printf("|SIGINT ID=%d\r\n", getpid());
 }
 
 /**
  * @fn void SIGUSR1_handler(int sig)
- * @brief 
  * @details 
  * @param sig
  * @return void
 **/
 void SIGUSR1_handler(int sig)
 {
+
 }
 
 /**
  * @fn void SIGUSR2_handler(int sig)
- * @brief 
  * @details 
  * @param sig
  * @return void
@@ -556,7 +551,6 @@ void SIGUSR2_handler(int sig)
 
 /**
  * @fn void SIGCHLD_handler(int sig)
- * @brief 
  * @details 
  * @param sig
  * @return void
@@ -570,7 +564,7 @@ void SIGCHLD_handler(int sig)
         if (deadchild > 0)
         {
             cantHijos--;
-            printf("Murio el hijo ID=%d\r\n", deadchild);
+            printf("|Murio el hijo ID=%d\r\n", deadchild);
         }
     }
 }

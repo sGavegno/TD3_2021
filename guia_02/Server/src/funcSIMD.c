@@ -5,6 +5,14 @@
 #define ARES_2G 2.0f / 32768.0f
 #define GYRO_250 250.0f / 32768.0f
 
+
+/**
+ * @fn sensor_t PromedioSIMD(uint8_t *datos, int cant)
+ * @details Calcula el promedio 
+ * @param datos datos a promediar
+ * @param cant  cantidad de datos a promediar
+ * @return sensor_t retorna la estructura con el promedio
+**/
 sensor_t PromedioSIMD(uint8_t *datos, int cant)
 {
     sensor_t auxDatos;
@@ -42,6 +50,14 @@ sensor_t PromedioSIMD(uint8_t *datos, int cant)
     auxDatos.gyro_yout = auxGy / cant;
     auxDatos.gyro_zout = auxGz / cant;
 
+    auxAx = 0;
+    auxAy = 0;
+    auxAz = 0;
+    auxT = 0;
+    auxGx = 0;
+    auxGy = 0;
+    auxGz = 0;
+/*
     printf("\n*****************************************\n");
     printf("Valor de Acelerometro X en servidor: %.02fg\n", auxDatos.accel_xout);
     printf("Valor de Acelerometro Y en servidor: %.02fg\n", auxDatos.accel_yout);
@@ -51,14 +67,6 @@ sensor_t PromedioSIMD(uint8_t *datos, int cant)
     printf("Valor de Gyroscopio Y en servidor:   %.02f°/seg\n", auxDatos.gyro_yout);
     printf("Valor de Gyroscopio Z en servidor:   %.02f°/seg\n", auxDatos.gyro_zout);
     printf("******************************************\n\n");
-
-    auxAx = 0;
-    auxAy = 0;
-    auxAz = 0;
-    auxT = 0;
-    auxGx = 0;
-    auxGy = 0;
-    auxGz = 0;
-
+*/
     return auxDatos;
 }
