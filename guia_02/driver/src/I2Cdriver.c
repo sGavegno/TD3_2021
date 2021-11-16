@@ -509,16 +509,10 @@ void MPU6050_writebyte(uint8_t registro, uint8_t data, uint8_t modo)
 
 	// Chequeo si la línea esta BUSY
 	reg_valor = ioread32(i2c2_baseAddr + I2C_IRQSTATUS_RAW);
-	while ((reg_valor >> 12) & 1)
+	if((reg_valor >> 12) & 0x01)
 	{
-		msleep(100);
 		pr_alert("%s: writebyte ERROR Device busy\n", ID);
-		i++;
-
-		if (i == 4)
-		{
-			return;
-		}
+		return;
 	}
 	pr_alert("%s: writebyte\n", ID);
 
@@ -584,19 +578,11 @@ int8_t MPU6050_readbyte(void)
 
 	// Chequeo si la línea esta BUSY
 	reg_valor = ioread32(i2c2_baseAddr + I2C_IRQSTATUS_RAW);
-	while ((reg_valor >> 12) & 1)
+	if((reg_valor >> 12) & 0x01)
 	{
-		msleep(100);
-
-		pr_alert("%s: readbyte ERROR Device busy\n", ID);
-
-		i++;
-		if (i >= 4)
-		{
-			return -1;
-		}
+		pr_alert("%s: writebyte ERROR Device busy\n", ID);
+		return;
 	}
-
 	pr_alert("%s: readbyte\n", ID);
 
 	// data = n byte
@@ -653,19 +639,12 @@ int8_t MPU6050_readFIFO(uint16_t cant)
 
 	// Chequeo si la línea esta BUSY
 	reg_valor = ioread32(i2c2_baseAddr + I2C_IRQSTATUS_RAW);
-	while ((reg_valor >> 12) & 1)
+	if((reg_valor >> 12) & 0x01)
 	{
-		msleep(100);
-
-		pr_alert("%s: readFIFO ERROR Device busy\n", ID);
-
-		i++;
-		if (i >= 4)
-		{
-			return -1;
-		}
+		pr_alert("%s: writebyte ERROR Device busy\n", ID);
+		return;
 	}
-
+	
 	pr_alert("%s: readFIFO\n", ID);
 
 	// data = n byte
